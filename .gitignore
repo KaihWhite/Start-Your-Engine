@@ -3,6 +3,10 @@
 bin-int/
 Intermediates/
 
+# Dependencies
+Dependencies
+**/glad.c
+
 # files
 *.log
 
