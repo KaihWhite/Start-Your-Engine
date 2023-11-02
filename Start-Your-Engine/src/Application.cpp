@@ -1,8 +1,53 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <sstream>
+
+struct ShaderSource
+{
+	std::string VertexSource;
+	std::string FragmentSource;
+};
+
+static ShaderSource parseShader(const std::string& filepath)
+{
+    std::ifstream stream(filepath);
+    std::string line;
+    std::stringstream ss[2];
+
+    enum class ShaderType
+    {
+		NONE = -1, VERTEX = 0, FRAGMENT = 1
+	};
+
+    ShaderType type = ShaderType::NONE;
+
+    while (getline(stream, line))
+    {
+		if (line.find("#shader") != std::string::npos) 
+        {
+            if (line.find("vertex") != std::string::npos)
+            {
+                type = ShaderType::VERTEX;
+
+            }
+            else if (line.find("fragment"))
+            {
+                type = ShaderType::FRAGMENT;
+			}
+            else
+            {
+                ss[(int) type] << line << '\n';
+            }
+        }
+	}
+    
+	return { ss[0].str(), ss[1].str() };
+}
 
 // Callback function for resizing the window
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
