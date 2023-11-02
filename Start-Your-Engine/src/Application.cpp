@@ -1,53 +1,10 @@
 #pragma once
 
 #include <iostream>
-#include <fstream>
-#include <string>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <sstream>
+#include <glm/glm.hpp>
 
-struct ShaderSource
-{
-	std::string VertexSource;
-	std::string FragmentSource;
-};
-
-static ShaderSource parseShader(const std::string& filepath)
-{
-    std::ifstream stream(filepath);
-    std::string line;
-    std::stringstream ss[2];
-
-    enum class ShaderType
-    {
-		NONE = -1, VERTEX = 0, FRAGMENT = 1
-	};
-
-    ShaderType type = ShaderType::NONE;
-
-    while (getline(stream, line))
-    {
-		if (line.find("#shader") != std::string::npos) 
-        {
-            if (line.find("vertex") != std::string::npos)
-            {
-                type = ShaderType::VERTEX;
-
-            }
-            else if (line.find("fragment"))
-            {
-                type = ShaderType::FRAGMENT;
-			}
-            else
-            {
-                ss[(int) type] << line << '\n';
-            }
-        }
-	}
-    
-	return { ss[0].str(), ss[1].str() };
-}
 
 // Callback function for resizing the window
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -73,7 +30,9 @@ int main(void)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // for Mac OS X
+    #ifdef __APPLE__
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    #endif
 
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(800, 600, "Hello World", NULL, NULL);
@@ -90,19 +49,32 @@ int main(void)
     /*set frambuffer function*/
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    // GLAD Loader
+    /* GLAD Loader */
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
-    /*Set size of rendering window*/
+    /* Set size of rendering window */
     glViewport(0, 0, 800, 600);
+
+    /* create projection matrix */
+    glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, -1.0f, 1.0f);
+
+
+    /* deltaTime variables */
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
+        /* calculate delta time  */
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+        glfwPollEvents();
 
         processInput(window);
 
