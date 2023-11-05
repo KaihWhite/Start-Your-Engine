@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include "renderer.h"
 
 
 // Callback function for resizing the window
@@ -59,9 +60,19 @@ int main(void)
     /* Set size of rendering window */
     glViewport(0, 0, 800, 600);
 
-    /* create projection matrix */
-    glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, -1.0f, 1.0f);
+    /* load shader */
+    ResourceManager::LoadShader("shaders/sprite.vs", "shaders/sprite.fs", nullptr, "sprite");
 
+    /* configure shader with uniforms */
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(800), static_cast<float>(600), 0.0f, -1.0f, 1.0f);
+    ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
+    ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
+
+    /* create renderer */
+    Renderer *renderer = new Renderer(ResourceManager::GetShader("sprite"));
+
+    /* load textures */
+    ResourceManager::LoadTexture("textures/awesomeface.png", true, "face");
 
     /* deltaTime variables */
     float deltaTime = 0.0f;
@@ -79,7 +90,9 @@ int main(void)
         processInput(window);
 
         /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+        
+        renderer->RenderSprite(ResourceManager::GetTexture("face"), glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), 45.0f * currentFrame, glm::vec3(1.0f, 1.0f, 1.0f));
+
 
 
         /* Swap front and back buffers */
