@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include "renderer.h"
+#include "GameObject.h"
 
 
 // Callback function for resizing the window
@@ -60,19 +61,32 @@ int main(void)
     /* Set size of rendering window */
     glViewport(0, 0, 800, 600);
 
-    /* load shader */
+    /* load shaders */
     ResourceManager::LoadShader("shaders/sprite.vs", "shaders/sprite.fs", nullptr, "sprite");
+    ResourceManager::LoadShader("shaders/sprite.vs", "shaders/fragAnim.fs", nullptr, "anim");
 
-    /* configure shader with uniforms */
+    /* configure shaders with uniforms */
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(800), static_cast<float>(600), 0.0f, -1.0f, 1.0f);
     ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
     ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
 
+    ResourceManager::GetShader("anim").Use().SetInteger("image", 0);
+    ResourceManager::GetShader("anim").SetMatrix4("projection", projection);
+    ResourceManager::GetShader("anim").SetInteger("currentFrame", 0);
+    ResourceManager::GetShader("anim").SetInteger("totalFrames", 10);
+
+
+
     /* create renderer */
     Renderer *renderer = new Renderer(ResourceManager::GetShader("sprite"));
+    Renderer *animRenderer = new Renderer(ResourceManager::GetShader("anim"));
 
     /* load textures */
     ResourceManager::LoadTexture("textures/awesomeface.png", true, "face");
+    ResourceManager::LoadTexture("textures/idle.png", true, "idle");
+
+    /* create player game object*/
+    GameObject *player = new GameObject(glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), 0.0f, ResourceManager::GetTexture("idle"));
 
     /* deltaTime variables */
     float deltaTime = 0.0f;
@@ -83,17 +97,21 @@ int main(void)
     {
         /* calculate delta time  */
         float currentFrame = glfwGetTime();
+        std::cout << currentFrame << std::endl;
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+
         glfwPollEvents();
 
         processInput(window);
 
         /* Render here */
         
-        renderer->RenderSprite(ResourceManager::GetTexture("face"), glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), 45.0f * currentFrame, glm::vec3(1.0f, 1.0f, 1.0f));
+        //renderer->RenderSprite(ResourceManager::GetTexture("face"), glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), 45.0f * currentFrame, glm::vec3(1.0f, 1.0f, 1.0f));
 
-
+        /* Set current frame for character animations by texture sampling with the fragment shader. Check shaders/fragAmin.fs */
+        ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * currentFrame) % 10);
+        player->draw(*animRenderer);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
