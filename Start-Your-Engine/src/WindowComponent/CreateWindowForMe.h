@@ -1,4 +1,8 @@
 #pragma once
+
+/**
+	by kunga ngochetsang
+*/
 #include<glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <string>
@@ -19,6 +23,8 @@ public:
 	void activateWindow();
 	void setWindowColorBackground(float,float,float,float);
 	GLFWwindow* giveMeWindow();
+	void keyCallback(GLFWwindow*, int, int,int, int);
+	void activateBasickeyboardInputs();
 	void pressEscToExit();
 	void terminateWindow();
 	

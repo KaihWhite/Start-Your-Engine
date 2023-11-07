@@ -1,3 +1,6 @@
+/**
+	by kunga ngochetsang
+*/
 #include "CreateWindowForMe.h"
 #include <glad/glad.h>
 #include<GLFW/glfw3.h>
@@ -42,6 +45,7 @@ void CreateWindowForMe::checkingWindowFailure() {
 void CreateWindowForMe::activateWindow() {
 	// making the window as our current thread
 	glfwMakeContextCurrent(window);
+	
 }
 
 GLFWwindow* CreateWindowForMe::giveMeWindow() {
@@ -56,6 +60,13 @@ void CreateWindowForMe::pressEscToExit() {
 		glfwSetWindowShouldClose(window, true);
 	}
 }
+
+ void CreateWindowForMe::activateBasickeyboardInputs(){
+	 pressEscToExit();
+}
+ void CreateWindowForMe::keyCallback(GLFWwindow* w,int key, int scancode,int action, int mod) {
+
+ }
 void CreateWindowForMe::terminateWindow() {
 	glfwTerminate();
 }
