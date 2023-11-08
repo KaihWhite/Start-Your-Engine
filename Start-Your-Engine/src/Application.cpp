@@ -20,7 +20,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // Callback function for key presses and save key state to an array
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-    // when a user presses the escape key, we set the WindowShouldClose property to true, closing the application
+    // when a user presses the escape key, set the WindowShouldClose property to true, closing the application
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (key >= 0 && key < 1024)
@@ -49,7 +49,7 @@ int main(void)
 
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(800, 600, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(800, 600, "Start Your Engine", NULL, NULL);
     if (!window)
     {
         std::cout << "Failed to create GLFW window" << std::endl;

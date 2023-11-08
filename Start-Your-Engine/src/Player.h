@@ -5,6 +5,7 @@
 class Player : public GameObject
 {
 public:
+
 	Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, glm::vec2 velocity, float rotation, Texture2D sprite);
 
 	void move(glm::vec2 velocity);
