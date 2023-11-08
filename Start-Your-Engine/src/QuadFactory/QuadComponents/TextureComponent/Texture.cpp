@@ -12,12 +12,14 @@ Texture::Texture(const char* imageLocatiion) {
 }
 
 unsigned char* Texture::loadTexture(const char* imageLocatiion) {
-	 return stbi_load(imageLocatiion, &this->width, &this->height, &this->nrChannels, 0);
+	stbi_set_flip_vertically_on_load(true);
+	return stbi_load(imageLocatiion, &this->width, &this->height, &this->nrChannels, 0);
 }
 
 void Texture::generateTexture() {
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
+	
 	if (this->data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, this->data);
 		glGenerateMipmap(GL_TEXTURE_2D);

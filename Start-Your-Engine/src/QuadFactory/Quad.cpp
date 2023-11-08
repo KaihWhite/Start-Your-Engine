@@ -1,6 +1,8 @@
 #include "Quad.h"
+#include <glad/glad.h>
 
-Quad::Quad(float* v, unsigned int* i) 
+
+Quad::Quad()
 {
 	
 }
