@@ -6,9 +6,14 @@
 #include <glm/glm.hpp>
 #include "renderer.h"
 #include "Player.h"
+#include "game.h"
 
 // Global variables
+unsigned short SCR_WIDTH = 800;
+unsigned short SCR_HEIGHT = 600;
+Game* demo = new Game(SCR_WIDTH, SCR_HEIGHT);
 bool Keys[1024];
+
 
 
 // Callback function for resizing the window
@@ -49,7 +54,7 @@ int main(void)
 
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(800, 600, "Start Your Engine", NULL, NULL);
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Start Your Engine", NULL, NULL);
     if (!window)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -79,33 +84,11 @@ int main(void)
 
 
     /* Set size of rendering window */
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-
-    /* load shaders */
-    ResourceManager::LoadShader("shaders/sprite.vs", "shaders/sprite.fs", nullptr, "sprite");
-    ResourceManager::LoadShader("shaders/sprite.vs", "shaders/fragAnim.fs", nullptr, "anim");
-
-
-    /* configure shaders with uniforms */
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(800), static_cast<float>(600), 0.0f, -1.0f, 1.0f);
-    ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
-    ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
-
-    ResourceManager::GetShader("anim").Use().SetInteger("image", 0);
-    ResourceManager::GetShader("anim").SetMatrix4("projection", projection);
-    ResourceManager::GetShader("anim").SetInteger("currentFrame", 0);
-    ResourceManager::GetShader("anim").SetInteger("totalFrames", 10);
-
-
-    /* create renderer */
-    //Renderer *renderer = new Renderer(ResourceManager::GetShader("sprite"));
-    Renderer *animRenderer = new Renderer(ResourceManager::GetShader("anim"));
-
-
-    /* load textures */
-    //ResourceManager::LoadTexture("textures/awesomeface.png", true, "face");
-    ResourceManager::LoadTexture("textures/idle.png", true, "idle");
+    
+    // TODO: init game here
+    demo->Init();
 
 
     /* create player game object */
