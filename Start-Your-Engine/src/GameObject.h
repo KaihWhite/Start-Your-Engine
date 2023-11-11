@@ -20,6 +20,7 @@ public:
 	bool collidable, gravity;
 
 	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, glm::vec2 velocity, float rotation, std::unordered_map<std::string, Animation*> animations);
+	~GameObject();
 
 	void init(bool gravity, bool collidable);
 

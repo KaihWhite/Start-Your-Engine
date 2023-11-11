@@ -5,6 +5,15 @@ GameObject::GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, glm::vec2
 {
 }
 
+GameObject::~GameObject()
+{
+	for (auto& animation : this->animations)
+	{
+		delete animation.second;
+	}
+	this->animations.clear();
+}
+
 void GameObject::init(bool collidable = false, bool gravity = false) {
 	this->collidable = collidable;
 	this->gravity = gravity;

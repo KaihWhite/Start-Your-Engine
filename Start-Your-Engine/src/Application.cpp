@@ -117,6 +117,7 @@ int main(void)
         glfwPollEvents();
     }
 
+    delete demo;
     glfwTerminate();
     return 0;
 }

@@ -46,12 +46,12 @@ void Game::Init(unsigned int width, unsigned int height)
     player = new Player(glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), 0.0f, animations);
 }
 
-void Game::Update(float dt)
+void Game::Update(float& dt)
 {
     player->update(dt);
 }
 
-void Game::ProcessInput(float dt)
+void Game::ProcessInput(float& dt)
 {
 
 }

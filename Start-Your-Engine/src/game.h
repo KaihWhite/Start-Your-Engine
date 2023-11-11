@@ -34,8 +34,8 @@ public:
     // initialize game state (load all shaders/textures/levels)
     void Init(unsigned int width, unsigned int height);
     // game loop
-    void ProcessInput(float dt);
-    void Update(float dt);
+    void ProcessInput(float& dt);
+    void Update(float& dt);
     void Render();
 };
 
