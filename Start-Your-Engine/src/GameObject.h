@@ -17,6 +17,7 @@ public:
 	float rotation;
 	glm::vec3 color;
 
+	// TODO: do something with these
 	bool collidable, gravity;
 
 	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, glm::vec2 velocity, float rotation, std::unordered_map<std::string, Animation*> animations);
