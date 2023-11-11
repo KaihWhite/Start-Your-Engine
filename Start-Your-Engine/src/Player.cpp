@@ -1,8 +1,7 @@
 #include "Player.h"
-#include <GLFW/glfw3.h>
 
-Player::Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, glm::vec2 velocity, float rotation, Texture2D sprite)
-	: GameObject(pos, size, color, velocity, rotation, sprite)
+Player::Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, glm::vec2 velocity, float rotation, std::unordered_map<std::string, Animation*> animations)
+	: GameObject(pos, size, color, velocity, rotation, animations)
 {
 }
 

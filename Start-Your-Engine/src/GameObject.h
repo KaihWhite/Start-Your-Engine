@@ -2,19 +2,23 @@
 #include "glm/glm.hpp"
 #include "renderer.h"
 #include "texture.h"
+#include "Animation.h"
+#include <unordered_map>
 
 
 class GameObject
 {
 public:
-	Texture2D Sprite;
+	std::unordered_map<std::string, Animation*> animations;
+	std::string currentAnimation = "idle";
+
 	glm::vec2 position, size, velocity;
 	float rotation;
 	glm::vec3 color;
 
 	bool collidable, gravity;
 
-	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, glm::vec2 velocity, float rotation, Texture2D sprite);
+	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, glm::vec2 velocity, float rotation, std::unordered_map<std::string, Animation*> animations);
 
 	void init(bool gravity, bool collidable);
 
@@ -23,5 +27,7 @@ public:
 	void phyics(float dt);
 
 	void draw(Renderer& renderer);
+
+	unsigned short getTotalFrames();
 
 };
