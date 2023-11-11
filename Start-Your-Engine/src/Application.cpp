@@ -117,6 +117,7 @@ int main(void)
         glfwPollEvents();
     }
 
+    ResourceManager::Clear();
     glfwTerminate();
     return 0;
 }

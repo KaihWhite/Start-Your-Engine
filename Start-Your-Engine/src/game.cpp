@@ -37,6 +37,7 @@ void Game::Init(unsigned int width, unsigned int height)
     /* create animations */
     Animation* idle = new Animation("idle", 10);
 
+    // Should I allocate these maps on the heap?
     std::unordered_map<std::string, Animation*> animations = {
     	{"idle", idle}
     };

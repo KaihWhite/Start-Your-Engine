@@ -26,7 +26,7 @@ public:
 
 	void update(float dt);
 
-	void phyics(float dt);
+	void physics(float dt);
 
 	void draw(Renderer& renderer);
 
