@@ -89,14 +89,14 @@ int main(void)
 
     /* deltaTime variables */
     float deltaTime = 0.0f;
-    float lastFrame = 0.0f;
+    double lastFrame = 0.0f;
 
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* calculate delta time  */
-        float currentFrame = glfwGetTime();
+        double currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
@@ -107,7 +107,7 @@ int main(void)
         demo->Update(deltaTime);
 
         /* Render here */
-        demo->Render(currentFrame);
+        demo->Render();
 
 
         /* Swap front and back buffers */

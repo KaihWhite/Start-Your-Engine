@@ -3,6 +3,7 @@
 #include "renderer.h"
 #include "texture.h"
 #include "Animation.h"
+#include <GLFW/glfw3.h>
 #include <unordered_map>
 
 
@@ -27,7 +28,5 @@ public:
 	void phyics(float dt);
 
 	void draw(Renderer& renderer);
-
-	unsigned short getTotalFrames();
 
 };

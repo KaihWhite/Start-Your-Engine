@@ -36,7 +36,7 @@ public:
     // game loop
     void ProcessInput(float dt);
     void Update(float dt);
-    void Render(float currentFrame);
+    void Render();
 };
 
 #endif

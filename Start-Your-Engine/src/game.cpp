@@ -1,19 +1,7 @@
-/*
-Give credit to the author of LearnOpenGL.com Joey de Vries
-*/
+
 #include "game.h"
 #include <unordered_map>
 #include <iostream>
-
-
-/*
-    TODO: create an animation object which stores a sprite sheet with its uniform -- totalFrames.
-        totalFrames will need to be set every time a new animation is to be played; create a function
-        to do this or have the renderer do it by overloading the renderer to take the animation type.
-        I'll likely need to revamp the game object class to store multiple animations.
-        Within the game object class, within the render function, I should determine there which animation
-        is to be played instead of switching the animation.
-*/
 
 
 Game::Game(unsigned int width, unsigned int height)
@@ -68,12 +56,10 @@ void Game::ProcessInput(float dt)
 
 }
 
-void Game::Render(float currentFrame)
+void Game::Render()
 {
     /*
-        Set current frame for character animations by texture sampling with the fragment shader.
-        Check shaders/fragAnim.fs
+        Render every game object here
     */
-    ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * currentFrame) % player->getTotalFrames());
     player->draw(*renderer);
 }

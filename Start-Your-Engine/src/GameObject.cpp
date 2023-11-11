@@ -12,7 +12,14 @@ void GameObject::init(bool collidable = false, bool gravity = false) {
 
 void GameObject::draw(Renderer& renderer)
 {
+	/*
+		Set current frame for animations by texture sampling with the fragment shader.
+		Check shaders/fragAnim.fs
+	*/
+	ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * glfwGetTime()) % animations[currentAnimation]->getTotalFrames());
+
 	Texture2D sprite = animations[currentAnimation]->getSpriteSheet();
+
     renderer.RenderSprite(sprite, this->position, this->size, this->rotation, this->color);
 }
 
@@ -30,9 +37,3 @@ void GameObject::update(float dt)
 		//this->velocity.y += 10.0f;
 	}
 }
-
-unsigned short GameObject::getTotalFrames() {
-	return animations[currentAnimation]->getTotalFrames();
-}
-
-// TODO: create a init function that sets whether the object is collidable or feels gravity

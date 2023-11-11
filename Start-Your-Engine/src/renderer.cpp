@@ -1,4 +1,3 @@
-//By Kaih White
 #include "renderer.h"
 
 Renderer::Renderer(Shader& shader)
