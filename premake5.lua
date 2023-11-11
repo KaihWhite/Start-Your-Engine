@@ -24,8 +24,8 @@ project "Start-Your-Engine"
       libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022" }
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
-      links { "glfw3", "Glad", "opengl32" }
-      --staticruntime "On" -- turn this on when I can get VS to compile with it (i.e. when I switch from MD to MT in the runtime)
+      links { "glfw3_mt", "Glad", "opengl32" }
+      staticruntime "On"
 
    -- MacOS specific include and lib directories
    filter "system:macosx"
@@ -35,7 +35,7 @@ project "Start-Your-Engine"
       systemversion "latest"
       defines { "PLATFORM_MACOS" }
       links { "Cocoa.framework", "OpenGL.framework", "IOKit.framework", "CoreVideo.framework" }
-      --staticruntime "On"
+      staticruntime "On"
 
    filter "configurations:Debug"
       defines { "DEBUG" }
