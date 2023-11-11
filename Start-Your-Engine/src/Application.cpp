@@ -8,7 +8,7 @@
 // Global variables
 unsigned int SCR_WIDTH = 800;
 unsigned int SCR_HEIGHT = 600;
-Game* demo = new Game(SCR_WIDTH, SCR_HEIGHT);
+Game demo(SCR_WIDTH, SCR_HEIGHT);
 
 
 
@@ -27,9 +27,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key >= 0 && key < 1024)
     {
         if (action == GLFW_PRESS)
-            demo->Keys[key] = true;
+            demo.Keys[key] = true;
         else if (action == GLFW_RELEASE)
-            demo->Keys[key] = false;
+            demo.Keys[key] = false;
     }
 }
 
@@ -84,7 +84,7 @@ int main(void)
 
 
     /* Init game */
-    demo->Init(SCR_WIDTH, SCR_HEIGHT);
+    demo.Init(SCR_WIDTH, SCR_HEIGHT);
 
 
     /* deltaTime variables */
@@ -104,10 +104,10 @@ int main(void)
 
 
         /* Update game objects */
-        demo->Update(deltaTime);
+        demo.Update(deltaTime);
 
         /* Render here */
-        demo->Render();
+        demo.Render();
 
 
         /* Swap front and back buffers */
@@ -117,7 +117,6 @@ int main(void)
         glfwPollEvents();
     }
 
-    delete demo;
     glfwTerminate();
     return 0;
 }
