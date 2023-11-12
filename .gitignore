@@ -14,5 +14,12 @@ Intermediates/
 **.vcxproj.user
 **.csproj
 
+# Xcode and Mac files and folder
+*.xcodeproj
+*.xcworkspace
+*.xcuserstate
+.DS_Store
+
+
 # Directories
 scripts/__pycache__

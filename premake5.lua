@@ -18,31 +18,29 @@ project "Start-Your-Engine"
 
    files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp" }
 
-   -- Windows specific include and lib directories
+   -- Windows specific settings
    filter "system:windows"
       includedirs { "include", IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"] }
       libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022" }
-      systemversion "latest"
-      defines { "PLATFORM_WINDOWS" }
       links { "glfw3_mt", "Glad", "opengl32" }
       staticruntime "On"
+      systemversion "latest"
+      defines { "PLATFORM_WINDOWS" }
 
-   -- MacOS specific include and lib directories
+   -- MacOS specific settings
    filter "system:macosx"
       includedirs { "include", IncludeDir["GLFW"] .. "/MacOS/include", IncludeDir["Glad"], IncludeDir["glm"] }
       libdirs { IncludeDir["GLFW"] .. "/MacOS/lib-arm64" }
+      links { "Cocoa.framework", "OpenGL.framework", "IOKit.framework", "CoreVideo.framework" }
       architecture "arm64" -- or "x64" for Intel, "arm64" for M1 specifically, or "universal"
       systemversion "latest"
       defines { "PLATFORM_MACOS" }
-      links { "Cocoa.framework", "OpenGL.framework", "IOKit.framework", "CoreVideo.framework" }
-      staticruntime "On"
 
+   -- General settings for Debug and Release configurations
    filter "configurations:Debug"
       defines { "DEBUG" }
       symbols "On"
-      runtime "MDd"
 
    filter "configurations:Release"
       defines { "NDEBUG" }
       optimize "On"
-      runtime "MD"
