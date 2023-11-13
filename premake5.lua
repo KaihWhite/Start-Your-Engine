@@ -5,7 +5,7 @@ workspace "Start-Your-Engine"
    -- Path to the Dependencies directory
    IncludeDir = {}
    IncludeDir["GLFW"] = "Dependencies/GLFW"  -- Base GLFW path
-   IncludeDir["Glad"] = "Dependencies/Glad/include"
+   IncludeDir["Glad"] = "Dependencies/GLAD/include"
    IncludeDir["glm"] = "Dependencies/glm"
 
 project "Start-Your-Engine"
@@ -21,11 +21,11 @@ project "Start-Your-Engine"
    filter "system:windows"
       includedirs { "include", IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"] }
       libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022" }
-      links { "glfw3_mt", "Glad", "opengl32" }
       architecture "x64"
-      staticruntime "On"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
+      links { "glfw3_mt", "glad", "opengl32" }
+      staticruntime "off"
 
    -- MacOS specific settings
    filter "system:macosx"
@@ -35,6 +35,7 @@ project "Start-Your-Engine"
       architecture "arm64" -- or "x64" for Intel, "arm64" for M1 specifically, or "universal"
       systemversion "latest"
       defines { "PLATFORM_MACOS" }
+      staticruntime "off"
 
    -- General settings for Debug and Release configurations
    filter "configurations:Debug"
