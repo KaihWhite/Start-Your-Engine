@@ -1,7 +1,6 @@
 workspace "Start-Your-Engine"
    configurations { "Debug", "Release" }
    startproject "Start-Your-Engine"
-   architecture "x64"
 
    -- Path to the Dependencies directory
    IncludeDir = {}
@@ -23,6 +22,7 @@ project "Start-Your-Engine"
       includedirs { "include", IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"] }
       libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022" }
       links { "glfw3_mt", "Glad", "opengl32" }
+      architecture "x64"
       staticruntime "On"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
