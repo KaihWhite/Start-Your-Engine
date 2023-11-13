@@ -12,11 +12,12 @@ public:
 	glm::mat4 getPVMatrix();
 	void setCameraPosition(glm::vec2);
 	void moveCamera();
+	void setCameraSpeed(float speed);
 private:
 	glm::mat4 projectionMatrix;
 	glm::mat4 viewMatrix;
 	glm::vec3 cameraPosition;
-	float cameraSpeed; // still working on it
+	float cameraSpeed; 
 
 };
 

@@ -42,8 +42,8 @@ int main(void)
     if (!glfwInit())
         return -1;
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -93,6 +93,7 @@ int main(void)
 
     /*initialize the camera the camera  */
     Camera2D mainCamera = Camera2D(0.0f, static_cast<float>(800), static_cast<float>(600), 0.0f);
+    mainCamera.setCameraSpeed(50.0f);
 
     ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
     ResourceManager::GetShader("sprite").SetMatrix4("projectionView", mainCamera.getPVMatrix());
@@ -142,11 +143,11 @@ int main(void)
         player->update(deltaTime);*/
 
         //moves the camera to the up and right at a constant speed
-        mainCamera.setCameraPosition(glm::vec2(glfwGetTime() * 100, glfwGetTime() * 100));
+        mainCamera.setCameraPosition(glm::vec2(glfwGetTime(), glfwGetTime()));
 
         /* Set current frame for character animations by texture sampling with the fragment shader. Check shaders/fragAmin.fs */
         ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * currentFrame) % 10);
-
+        ResourceManager::GetShader("anim").SetMatrix4("projectionView", mainCamera.getPVMatrix());
         /*sets the projection view matrix to the player object shader*/
         player->draw(*animRenderer);
 

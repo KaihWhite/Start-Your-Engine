@@ -13,9 +13,13 @@ glm::mat4 Camera2D::getPVMatrix() {
 	return this->projectionMatrix * this->viewMatrix;
 }
 void Camera2D::setCameraPosition(glm::vec2 pos) {
-	this->cameraPosition = glm::vec3(pos.x, -pos.y, 0.0f);
+	this->cameraPosition = glm::vec3(pos.x, -pos.y, 0.0f) * this->cameraSpeed;
 	moveCamera();
 }
 void Camera2D::moveCamera() {
 	this->viewMatrix = glm::inverse(glm::translate(glm::mat4(1.0f), this->cameraPosition));
+}
+
+void Camera2D::setCameraSpeed(float speed) {
+	this->cameraSpeed = speed;
 }
