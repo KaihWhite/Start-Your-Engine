@@ -6,3 +6,4 @@ https://zegley.itch.io/2d-platformermetroidvania-asset-pack for character assets
 learnopengl.com for boilerplate code
 box2d for 2D pyhsics library
 glm for openGL math library
+stb_image for image loading
