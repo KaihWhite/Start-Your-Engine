@@ -141,10 +141,15 @@ int main(void)
         player->draw(*animRenderer);
         player->update(deltaTime);*/
 
+        //moves the camera to the up and right at a constant speed
+        mainCamera.setCameraPosition(glm::vec2(glfwGetTime() * 100, glfwGetTime() * 100));
+
         /* Set current frame for character animations by texture sampling with the fragment shader. Check shaders/fragAmin.fs */
-        ResourceManager::GetShader("anim").SetMatrix4("projectionView", mainCamera.getPVMatrix());
         ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * currentFrame) % 10);
+
+        /*sets the projection view matrix to the player object shader*/
         player->draw(*animRenderer);
+
         //player->update(deltaTime);
 
         /* Swap front and back buffers */
