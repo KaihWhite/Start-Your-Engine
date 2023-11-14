@@ -3,10 +3,6 @@
 bin-int/
 Intermediates/
 
-# Dependencies
-Dependencies
-**/glad.c
-
 # files
 *.log
 
@@ -17,6 +13,13 @@ Dependencies
 **.vcxproj.filters
 **.vcxproj.user
 **.csproj
+
+# Xcode and Mac files and folder
+*.xcodeproj
+*.xcworkspace
+*.xcuserstate
+.DS_Store
+
 
 # Directories
 scripts/__pycache__

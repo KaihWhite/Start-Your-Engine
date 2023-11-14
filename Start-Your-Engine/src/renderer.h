@@ -13,7 +13,6 @@ public:
 	void RenderSprite(Texture2D& texture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color);
 
 private:
-
 	Shader shader;
 	unsigned int quadVAO;
 

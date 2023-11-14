@@ -1,0 +1,3 @@
+[submodule "Dependencies/box2d"]
+	path = Dependencies/box2d
+	url = https://github.com/KaihWhite/box2d.git

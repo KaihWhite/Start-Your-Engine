@@ -2,25 +2,30 @@
 #include "glm/glm.hpp"
 #include "renderer.h"
 #include "texture.h"
+#include "Animation.h"
+#include "GLFW/glfw3.h"
+#include <unordered_map>
+#include "box2d/box2d.h"
 
 
 class GameObject
 {
 public:
-	Texture2D Sprite;
-	glm::vec2 position, size, velocity;
-	float rotation;
+	std::unordered_map<std::string, Animation*> animations;
+	std::string currentAnimation = "idle";
+
 	glm::vec3 color;
+	glm::vec2 size;
 
-	bool collidable, gravity;
+	b2Body* body;
 
-	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, glm::vec2 velocity, float rotation, Texture2D sprite);
 
-	void init(bool gravity, bool collidable);
+	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam = false);
+	~GameObject();
 
 	void update(float dt);
 
-	void phyics(float dt);
+	void physics(float dt);
 
 	void draw(Renderer& renderer);
 
