@@ -12,6 +12,8 @@ Dependencies
 
 # Visual Studio files and folder
 .vs/
+External libraries/
+x64/
 **.sln
 **.vcxproj
 **.vcxproj.filters
