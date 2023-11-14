@@ -12,7 +12,7 @@ Dependencies
 
 # Visual Studio files and folder
 .vs/
-External libraries/
+External_lib/
 x64/
 **.sln
 **.vcxproj
