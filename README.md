@@ -23,10 +23,6 @@ configured for windows pcs and ARM macs
 ```
 premake vs2022
 ```
-or
-```
-premake xcode4
-```
 
 
 open the project in your IDE and build the demo 
