@@ -29,4 +29,8 @@ public:
 
 	void draw(Renderer& renderer);
 
+private:
+	/* converts physics body's position to renderer coordinates */
+	glm::vec2 getPosition();
+
 };

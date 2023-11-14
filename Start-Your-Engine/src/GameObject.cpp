@@ -1,9 +1,8 @@
 #include "GameObject.h"
 
 GameObject::GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam = false)
-	: color(color), animations(animations)
+	: color(color), animations(animations), size(size)
 {
-
 	b2BodyDef bodyDef;
 	bodyDef.type = dynam ? b2_staticBody : b2_dynamicBody;
 	bodyDef.position.Set(pos.x, pos.y);
@@ -39,20 +38,14 @@ void GameObject::draw(Renderer& renderer)
 
 	Texture2D sprite = animations[currentAnimation]->getSpriteSheet();
 
-    renderer.RenderSprite(sprite, this->position, this->size, this->rotation, this->color);
+    renderer.RenderSprite(sprite, this->getPosition(), this->size, this->body->GetAngle(), this->color);
 }
 
 void GameObject::update(float dt)
 {
+	
+}
 
-	// velocity + vector
-
-	this->position += this->velocity * dt;
-
-	//Apply collisions
-
-	//Apply gravity if gravity is needed
-	if (this->velocity.y < 1.0f) {
-		//this->velocity.y += 10.0f;
-	}
+glm::vec2 GameObject::getPosition() {
+	return glm::vec2(this->body->GetPosition().x - ((this->size.x) / 2), this->body->GetPosition().y - ((this->size.y) / 2));
 }
