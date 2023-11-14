@@ -4,7 +4,18 @@ Capstone group project. We are creating a game engine from scratch using OpenGL.
 To get started:
 
 
-1) clone the repository
+1) clone the repository using the recursive flag
+
+    ```
+    git clone --recursive <repository_url>
+    ```
+    
+ or clone normally and run:
+
+    ```
+    git submodule init
+    git submodule update
+    ```
 
 
 2) run the premake script to build project files for your system
@@ -12,20 +23,13 @@ To get started:
     ```
     premake vs2022
     ```
-    or
+ or
     ```
     premake xcode4
     ```
 
 
-3) run:
-```
-git submodule init
-git submodule update
-```
-
-
-4) open the project in your IDE and build the demo 
+3) open the project in your IDE and build the demo 
 
 
 Credit to:
