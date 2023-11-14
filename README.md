@@ -8,7 +8,7 @@ To get started:
 
 
 2) run the premake script to build project files for your system
-    example:
+
     ```
     premake vs2022
     ```
