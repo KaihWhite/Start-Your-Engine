@@ -12,30 +12,30 @@ project "Start-Your-Engine"
    kind "ConsoleApp"
    language "C++"
    cppdialect "C++17"
+   staticruntime "on"
+
    targetdir "bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
    objdir "bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
 
-   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp" }
+   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c" }
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { "include", IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"] }
-      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022" }
+      includedirs { "%{prj.name}/src", "Dependencies", IncludeDir["GLFW"] .. "/Windows/include/GLFW", IncludeDir["Glad"], IncludeDir["glm"] }
+      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["Glad"] }
       architecture "x64"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
-      links { "glfw3_mt", "glad", "opengl32" }
-      staticruntime "off"
+      links { "GLFW", "Glad", "opengl32" }
 
    -- MacOS specific settings
    filter "system:macosx"
-      includedirs { "include", IncludeDir["GLFW"] .. "/MacOS/include", IncludeDir["Glad"], IncludeDir["glm"] }
+      includedirs { "%{prj.name}/src", "Dependencies", IncludeDir["GLFW"] .. "/MacOS/include", IncludeDir["Glad"], IncludeDir["glm"] }
       libdirs { IncludeDir["GLFW"] .. "/MacOS/lib-arm64" }
-      links { "Cocoa.framework", "OpenGL.framework", "IOKit.framework", "CoreVideo.framework" }
+      links { "glfw3", "Cocoa.framework", "OpenGL.framework", "IOKit.framework", "CoreVideo.framework" }
       architecture "arm64" -- or "x64" for Intel, "arm64" for M1 specifically, or "universal"
       systemversion "latest"
       defines { "PLATFORM_MACOS" }
-      staticruntime "off"
 
    -- General settings for Debug and Release configurations
    filter "configurations:Debug"
@@ -45,3 +45,8 @@ project "Start-Your-Engine"
    filter "configurations:Release"
       defines { "NDEBUG" }
       optimize "On"
+
+   filter {"system:windows", "configurations:Release"}
+      buildoptions "/MT"
+   filter {"system:windows", "configurations:Debug"}
+      buildoptions "/MTd"

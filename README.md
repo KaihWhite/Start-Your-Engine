@@ -18,6 +18,7 @@ git submodule update
 ```
 
 run the premake script to build project files for your system
+configured for windows pcs and ARM macs
 
 ```
 premake vs2022
