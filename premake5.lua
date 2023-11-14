@@ -22,7 +22,7 @@ project "Start-Your-Engine"
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { "%{prj.name}/src", "Dependencies", IncludeDir["GLFW"] .. "/Windows/include/GLFW", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2D"] }
+      includedirs { "%{prj.name}/src", "Dependencies", IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2D"] }
       libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["Glad"] }
       architecture "x64"
       systemversion "latest"
