@@ -5,6 +5,7 @@
 #include "Animation.h"
 #include "GLFW/glfw3.h"
 #include <unordered_map>
+#include "box2d/box2d.h"
 
 
 class GameObject
@@ -13,17 +14,14 @@ public:
 	std::unordered_map<std::string, Animation*> animations;
 	std::string currentAnimation = "idle";
 
-	glm::vec2 position, size, velocity;
-	float rotation;
 	glm::vec3 color;
+	glm::vec2 size;
 
-	// TODO: do something with these
-	bool collidable, gravity;
+	b2Body* body;
 
-	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, glm::vec2 velocity, float rotation, std::unordered_map<std::string, Animation*> animations);
+
+	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam = false);
 	~GameObject();
-
-	void init(bool gravity, bool collidable);
 
 	void update(float dt);
 
