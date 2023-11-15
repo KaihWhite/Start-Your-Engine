@@ -1,6 +1,6 @@
 #include "GameObject.h"
 
-GameObject::GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam = false)
+GameObject::GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam)
 	: color(color), animations(animations), size(size)
 {
 	b2BodyDef bodyDef;
@@ -25,6 +25,8 @@ GameObject::~GameObject()
 		delete animation.second;
 	}
 	this->animations.clear();
+
+	this->body->GetWorld()->DestroyBody(body);
 }
 
 

@@ -13,6 +13,7 @@ Game::~Game()
 {
     delete this->player;
     delete this->renderer;
+    delete this->world;
 }
 
 void Game::Init(unsigned int width, unsigned int height)
@@ -33,16 +34,19 @@ void Game::Init(unsigned int width, unsigned int height)
 
     /* load textures */
     ResourceManager::LoadTexture("textures/idle.png", true, "idle");
+    ResourceManager::LoadTexture("textures/Grey_Brick.png", true, "ground");
 
     /* create animations */
     Animation* idle = new Animation("idle", 10);
+    Animation* groundAnim = new Animation("ground", 1);
 
     // Should I allocate these maps on the heap?
     std::unordered_map<std::string, Animation*> player_animations = {
     	{"idle", idle}
     };
 
-    std::unordered_map<std::string, Animation*> ground = {
+    std::unordered_map<std::string, Animation*> groundSprite = {
+        {"idle", groundAnim}
     };
 
     /* create physics world */
@@ -57,15 +61,16 @@ void Game::Init(unsigned int width, unsigned int height)
     groundBox.SetAsBox(50.0f, 10.0f);
     groundBody->CreateFixture(&groundBox, 0.0f); */
 
-    GameObject* ground = new GameObject(glm::vec2(0.0f, 10.0f), glm::vec2(50.0f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), ground, world);
+    GameObject* ground = new GameObject(glm::vec2(0.0f, 10.0f), glm::vec2(50.0f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), groundSprite, world);
 
 
     /* create player game object */
-    player = new Player(glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), 0.0f, player_animations);
+    //player = new Player(glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), 0.0f, player_animations); // old constructor
+    player = new Player(glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), glm::vec3(1.0f, 1.0f, 1.0f), player_animations, world, true);
 
     /* add game objects to gameObjects vector */
-    gameObjects.push_back(player);
-    gameObjects.push_back(ground);
+    this->gameObjects.push_back(player);
+    this->gameObjects.push_back(ground);
 }
 
 void Game::Update(float& dt)

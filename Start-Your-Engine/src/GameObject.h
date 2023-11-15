@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include "box2d/box2d.h"
 
-
 class GameObject
 {
 public:
