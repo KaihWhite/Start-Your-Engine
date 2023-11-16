@@ -19,7 +19,7 @@ Game::~Game()
 void Game::Init(unsigned int width, unsigned int height)
 {
     /* load shaders */
-    ResourceManager::LoadShader("shaders/sprite.vs", "shaders/fragAnim.fs", nullptr, "anim");
+    ResourceManager::LoadShader("Start-Your-Engine/shaders/sprite.vs", "Start-Your-Engine/shaders/fragAnim.fs", nullptr, "anim");
 
 
     /* configure shaders with image and projection uniforms */
@@ -50,7 +50,7 @@ void Game::Init(unsigned int width, unsigned int height)
     };
 
     /* create physics world */
-    b2Vec2 gravity(0.0f, 9.8f); // Y is positive down becuase positive Y is down in OpenGL
+    b2Vec2 gravity(0.0f, 9.8f); // positive Y for things to fall down in openGL
     world = new b2World(gravity);
 
     /* create a static ground body
