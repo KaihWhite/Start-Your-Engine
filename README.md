@@ -21,7 +21,7 @@ run the premake script to build project files for your system
 configured for windows pcs only so far
 
 ```
-premake5 vs2022
+premake/premake5 vs2022
 ```
 
 
