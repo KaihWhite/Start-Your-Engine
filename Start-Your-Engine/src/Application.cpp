@@ -92,14 +92,14 @@ int main(void)
     //ResourceManager::LoadShader("shaders/bacground.vs", "shaders/bacground.fs", nullptr, "background");
 
     /*initialize the camera the camera  */
-    Camera2D mainCamera = Camera2D(0.0f, static_cast<float>(800), static_cast<float>(600), 0.0f);
-    mainCamera.setCameraSpeed(50.0f);
+    Camera2D mainCamera = Camera2D(0.0f, static_cast<float>(800),0.0f, static_cast<float>(600));
+    //mainCamera.setCameraSpeed(50.0f);
 
     ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
-    ResourceManager::GetShader("sprite").SetMatrix4("projectionView", mainCamera.getPVMatrix());
+    ResourceManager::GetShader("sprite").SetMatrix4("projectionView", mainCamera.getProjectionViewMatrix());
 
     ResourceManager::GetShader("anim").Use().SetInteger("image", 0);
-    ResourceManager::GetShader("anim").SetMatrix4("projectionView", mainCamera.getPVMatrix());
+    ResourceManager::GetShader("anim").SetMatrix4("projectionView", mainCamera.getProjectionViewMatrix());
     ResourceManager::GetShader("anim").SetInteger("currentFrame", 0);
     ResourceManager::GetShader("anim").SetInteger("totalFrames", 10);
 
@@ -115,7 +115,7 @@ int main(void)
 
 
     /* create player game object */
-    Player* player = new Player(glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), 0.0f, ResourceManager::GetTexture("idle"));
+    Player* player = new Player(glm::vec2(0.0f, 0.0f), glm::vec2(300.0f, 400.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), 0.0f, ResourceManager::GetTexture("idle"));
 
 
     /* deltaTime variables */
@@ -143,15 +143,42 @@ int main(void)
         player->update(deltaTime);*/
 
         //moves the camera to the up and right at a constant speed
-        mainCamera.setCameraPosition(glm::vec2(glfwGetTime(), glfwGetTime()));
+        //mainCamera.setCameraPosition(glm::vec2( 200.0f, 200.0f));
 
+
+        if (Keys[GLFW_KEY_A]) {
+            //player->move(glm::vec2( -50.0f,0.0f));
+            mainCamera.moveCamera(glm::vec2(-50.0f, 0.0f),deltaTime);
+        }
+        else if(Keys[GLFW_KEY_D]){
+            //player->move(glm::vec2(50.0f, 0.0f));
+            mainCamera.moveCamera(glm::vec2(50.0f, 0.0f), deltaTime);
+        }
+        else if (Keys[GLFW_KEY_W]) {
+            //player->move(glm::vec2(0.0f, 50.0f));
+            mainCamera.moveCamera(glm::vec2(0.0f, 50.0f), deltaTime);
+        }
+        else if (Keys[GLFW_KEY_S]) {
+            //player->move(glm::vec2(0.0f,-50.0f));
+            mainCamera.moveCamera(glm::vec2(0.0f, -50.0f), deltaTime);
+        }
+        else if (Keys[GLFW_KEY_SPACE]) {
+            player->move(glm::vec2(0.0f, 700.0f));
+        }
+        else{
+            player->move(glm::vec2(0.0f, 0.0f));
+        }
+        player->update(deltaTime);
+        //mainCamera.lockCameraPosition(player->position.x, player->position.y, deltaTime);
+
+        std::cout << player->position.x << "," << player->position.y << std::endl;
         /* Set current frame for character animations by texture sampling with the fragment shader. Check shaders/fragAmin.fs */
         ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * currentFrame) % 10);
-        ResourceManager::GetShader("anim").SetMatrix4("projectionView", mainCamera.getPVMatrix());
+        ResourceManager::GetShader("anim").SetMatrix4("projectionView", mainCamera.getProjectionViewMatrix());
         /*sets the projection view matrix to the player object shader*/
         player->draw(*animRenderer);
 
-        //player->update(deltaTime);
+        
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

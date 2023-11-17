@@ -23,7 +23,7 @@ void GameObject::update(float dt)
 
 	//Apply gravity if gravity is needed
 	if (this->velocity.y < 1.0f) {
-		//this->velocity.y += 10.0f;
+		this->velocity.y += 10.0f;
 	}
 }
 
