@@ -23,7 +23,7 @@ project "Start-Your-Engine"
    -- Windows specific settings
    filter "system:windows"
       includedirs { "%{prj.name}/src", "Dependencies", IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] .. "/include", IncludeDir["box2d"] .. "/src" }
-      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] .. "/build/bin/Debug" }
+      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] .. "/include" }
       architecture "x64"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
