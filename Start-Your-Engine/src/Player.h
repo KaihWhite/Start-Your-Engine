@@ -6,9 +6,9 @@ class Player : public GameObject
 {
 public:
 
-	Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, glm::vec2 velocity, float rotation, std::unordered_map<std::string, Animation*> animations);
+	Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam = false);
 
-	void move(glm::vec2 velocity);
+	void move(bool Keys[1024]);
 };
 
 

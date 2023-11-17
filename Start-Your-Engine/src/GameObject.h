@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include "box2d/box2d.h"
 
-
 class GameObject
 {
 public:
@@ -28,5 +27,9 @@ public:
 	void physics(float dt);
 
 	void draw(Renderer& renderer);
+
+private:
+	/* converts physics body's position to renderer coordinates */
+	glm::vec2 getPosition();
 
 };

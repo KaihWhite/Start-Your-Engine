@@ -7,7 +7,7 @@ workspace "Start-Your-Engine"
    IncludeDir["GLFW"] = "Dependencies/GLFW"  -- Base GLFW path
    IncludeDir["Glad"] = "Dependencies/GLAD/include"
    IncludeDir["glm"] = "Dependencies/glm"
-   IncludeDir["box2D"] = "Dependencies/box2D/include"
+   IncludeDir["box2d"] = "Dependencies/box2d"
 
 project "Start-Your-Engine"
    kind "ConsoleApp"
@@ -22,16 +22,16 @@ project "Start-Your-Engine"
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { "%{prj.name}/src", "Dependencies", IncludeDir["GLFW"] .. "/Windows/include/GLFW", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2D"] }
-      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["Glad"] }
+      includedirs { "%{prj.name}/src", "Dependencies", IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] .. "/include", IncludeDir["box2d"] .. "/src" }
+      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] .. "/build/bin/Debug" }
       architecture "x64"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
-      links { "glfw3_mt", "Glad", "opengl32" }
+      links { "glfw3_mt", "opengl32", "box2d"}
 
    -- MacOS specific settings
    filter "system:macosx"
-      includedirs { "%{prj.name}/src", "Dependencies", IncludeDir["GLFW"] .. "/MacOS/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2D"] }
+      includedirs { "%{prj.name}/src", "Dependencies", IncludeDir["GLFW"] .. "/MacOS/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] .. "/include" }
       libdirs { IncludeDir["GLFW"] .. "/MacOS/lib-arm64" }
       links { "glfw3", "Cocoa.framework", "OpenGL.framework", "IOKit.framework", "CoreVideo.framework" }
       architecture "arm64" -- or "x64" for Intel, "arm64" for M1 specifically, or "universal"
