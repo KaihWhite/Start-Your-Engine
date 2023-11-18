@@ -22,7 +22,7 @@ project "Start-Your-Engine"
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { "%{prj.name}/src", "Dependencies", IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] .. "/include", IncludeDir["box2d"] .. "/src" }
+      includedirs { IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] .. "/include", IncludeDir["box2d"] .. "/src" }
       libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] .. "/include" }
       architecture "x64"
       systemversion "latest"
@@ -31,7 +31,7 @@ project "Start-Your-Engine"
 
    -- MacOS specific settings
    filter "system:macosx"
-      includedirs { "%{prj.name}/src", "Dependencies", IncludeDir["GLFW"] .. "/MacOS/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] .. "/include" }
+      includedirs { IncludeDir["GLFW"] .. "/MacOS/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] .. "/include" }
       libdirs { IncludeDir["GLFW"] .. "/MacOS/lib-arm64" }
       links { "glfw3", "Cocoa.framework", "OpenGL.framework", "IOKit.framework", "CoreVideo.framework" }
       architecture "arm64" -- or "x64" for Intel, "arm64" for M1 specifically, or "universal"

@@ -33,8 +33,8 @@ void Game::Init(unsigned int width, unsigned int height)
 
 
     /* load textures */
-    ResourceManager::LoadTexture("textures/idle.png", true, "idle");
-    ResourceManager::LoadTexture("textures/Grey_Brick.png", true, "ground");
+    ResourceManager::LoadTexture("Start-Your-Engine/textures/idle.png", true, "idle");
+    ResourceManager::LoadTexture("Start-Your-Engine/textures/Grey_Brick.png", true, "ground");
 
     /* create animations */
     Animation* idle = new Animation("idle", 10);
@@ -61,16 +61,16 @@ void Game::Init(unsigned int width, unsigned int height)
     groundBox.SetAsBox(50.0f, 10.0f);
     groundBody->CreateFixture(&groundBox, 0.0f); */
 
-    GameObject* ground = new GameObject(glm::vec2(0.0f, 10.0f), glm::vec2(50.0f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), groundSprite, world);
+    //GameObject* ground = new GameObject(glm::vec2(0.0f, 10.0f), glm::vec2(50.0f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), groundSprite, world);
 
 
     /* create player game object */
     //player = new Player(glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), 0.0f, player_animations); // old constructor
-    player = new Player(glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), glm::vec3(1.0f, 1.0f, 1.0f), player_animations, world, true);
+    player = new Player(glm::vec2(4.0f, 4.0f), glm::vec2(3.0f, 4.0f), glm::vec3(1.0f, 1.0f, 1.0f), player_animations, world, true);
 
     /* add game objects to gameObjects vector */
     this->gameObjects.push_back(player);
-    this->gameObjects.push_back(ground);
+    //this->gameObjects.push_back(ground);
 }
 
 void Game::Update(float& dt)

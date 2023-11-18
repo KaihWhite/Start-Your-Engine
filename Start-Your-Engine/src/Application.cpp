@@ -82,12 +82,30 @@ int main(void)
 
 
     /* Init game */
-    demo.Init(SCR_WIDTH, SCR_HEIGHT);
+    //demo.Init(SCR_WIDTH, SCR_HEIGHT);
 
 
     /* deltaTime variables */
     float deltaTime = 0.0f;
     double lastFrame = 0.0f;
+
+
+    /* Test */
+    ResourceManager::LoadShader("Start-Your-Engine/shaders/sprite.vs", "Start-Your-Engine/shaders/sprite.fs", nullptr, "sprite");
+    ResourceManager::GetShader("sprite").Use().SetInteger("image", (int)0);
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH), static_cast<float>(SCR_HEIGHT), 0.0f, -1.0f, 1.0f);
+    ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
+    
+    // I think the error lies in the paths. Changing the project settings change the default path for the project.
+    // the reason nothing was rendering is because the relative paths need to be different.
+    ResourceManager::LoadTexture("Start-Your-Engine/textures/Grey_Brick.png", true, "ground");
+
+    Renderer* renderer = new Renderer(ResourceManager::GetShader("sprite"));
+    glm::vec2 position = glm::vec2(200.0f, 200.0f);
+    glm::vec2 size = glm::vec2(300.0f, 400.0f);
+    float rotate = glm::radians(0.0f);
+    glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+    
 
 
     /* Loop until the user closes the window */
@@ -102,10 +120,14 @@ int main(void)
 
 
         /* Update game objects */
-        demo.Update(deltaTime);
+        //demo.Update(deltaTime);
+
+
 
         /* Render here */
-        demo.Render();
+        //demo.Render();
+
+        renderer->RenderSprite(ResourceManager::GetTexture("ground"), position, size, rotate, color);
 
 
         /* Swap front and back buffers */
