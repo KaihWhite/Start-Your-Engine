@@ -5,7 +5,7 @@ GameObject::GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unor
 	: color(color), animations(animations), size(size)
 {
 	b2BodyDef bodyDef;
-	bodyDef.type = dynam ? b2_staticBody : b2_dynamicBody;
+	bodyDef.type = dynam ? b2_dynamicBody : b2_staticBody;
 	bodyDef.position.Set(pos.x, pos.y);
 	body = world->CreateBody(&bodyDef);
 
@@ -37,6 +37,7 @@ void GameObject::draw(Renderer& renderer)
 		Set current frame for animations by texture sampling with the fragment shader.
 		Check shaders/fragAnim.fs
 	*/
+
 	ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * glfwGetTime()) % animations[currentAnimation]->getTotalFrames());
 
 	Texture2D sprite = animations[currentAnimation]->getSpriteSheet();
@@ -44,14 +45,14 @@ void GameObject::draw(Renderer& renderer)
     renderer.RenderSprite(sprite, this->metersToPixels(this->getPosition()), this->metersToPixels(this->size), this->body->GetAngle(), this->color);
 }
 
-void GameObject::update(float dt)
+void GameObject::update()
 {
 	
 }
 
 glm::vec2 GameObject::getPosition() {
 
-
+	/*
 	std::cout << "size x: " << this->size.x << std::endl;
 	std::cout << "original x: " << this->body->GetPosition().x << std::endl;
 	std::cout << "original y: " << this->body->GetPosition().y << std::endl;
@@ -60,6 +61,8 @@ glm::vec2 GameObject::getPosition() {
 	std::cout << "shifted y:" << this->body->GetPosition().y - ((this->size.y) / 2) << std::endl;
 
 	std::cout << "\n" << std::endl;
+	*/
+	
 
 	return glm::vec2(this->body->GetPosition().x - ((this->size.x) / 2), this->body->GetPosition().y - ((this->size.y) / 2));
 }

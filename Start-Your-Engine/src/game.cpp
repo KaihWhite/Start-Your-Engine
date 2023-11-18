@@ -1,7 +1,7 @@
 
 #include "game.h"
 #include <unordered_map>
-#include <iostream>
+
 
 
 Game::Game(unsigned int width, unsigned int height)
@@ -34,20 +34,20 @@ void Game::Init(unsigned int width, unsigned int height)
 
     /* load textures */
     ResourceManager::LoadTexture("Start-Your-Engine/textures/idle.png", true, "idle");
-    ResourceManager::LoadTexture("Start-Your-Engine/textures/Grey_Brick.png", true, "ground");
+    //ResourceManager::LoadTexture("", true, "ground");
 
     /* create animations */
     Animation* idle = new Animation("idle", 10);
-    Animation* groundAnim = new Animation("ground", 1);
+    //Animation* groundAnim = new Animation("ground", 1);
 
     // Should I allocate these maps on the heap?
     std::unordered_map<std::string, Animation*> player_animations = {
     	{"idle", idle}
     };
 
-    std::unordered_map<std::string, Animation*> groundSprite = {
+    /*std::unordered_map<std::string, Animation*> groundSprite = {
         {"idle", groundAnim}
-    };
+    };*/
 
     /* create physics world */
     b2Vec2 gravity(0.0f, 9.8f); // positive Y for things to fall down in openGL
@@ -65,7 +65,6 @@ void Game::Init(unsigned int width, unsigned int height)
 
 
     /* create player game object */
-    //player = new Player(glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), 0.0f, player_animations); // old constructor
     player = new Player(glm::vec2(4.0f, 4.0f), glm::vec2(3.0f, 4.0f), glm::vec3(1.0f, 1.0f, 1.0f), player_animations, world, true);
 
     /* add game objects to gameObjects vector */
@@ -73,15 +72,15 @@ void Game::Init(unsigned int width, unsigned int height)
     //this->gameObjects.push_back(ground);
 }
 
-void Game::Update(float& dt)
+void Game::Update()
 {
     /* update physics world:
         This function moves the world objects according to physics */
-    world->Step(timeStep, velocityIterations, positionIterations);
+    world->Step(this->timeStep, this->velocityIterations, this->positionIterations);
 
     for (auto& gameObject : gameObjects)
     {
-		gameObject->update(dt);
+		gameObject->update();
 	}
 
     // player->update(dt);

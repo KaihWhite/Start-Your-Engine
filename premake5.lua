@@ -31,8 +31,8 @@ project "Start-Your-Engine"
 
    -- MacOS specific settings
    filter "system:macosx"
-      includedirs { IncludeDir["GLFW"] .. "/MacOS/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] .. "/include" }
-      libdirs { IncludeDir["GLFW"] .. "/MacOS/lib-arm64" }
+      includedirs { IncludeDir["GLFW"] .. "/MacOS/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] }
+      libdirs { IncludeDir["GLFW"] .. "/MacOS/lib-arm64", IncludeDir["box2d"] }
       links { "glfw3", "Cocoa.framework", "OpenGL.framework", "IOKit.framework", "CoreVideo.framework" }
       architecture "arm64" -- or "x64" for Intel, "arm64" for M1 specifically, or "universal"
       systemversion "latest"

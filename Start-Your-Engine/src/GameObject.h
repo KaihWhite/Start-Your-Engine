@@ -22,7 +22,7 @@ public:
 	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam = false);
 	~GameObject();
 
-	void update(float dt);
+	void update();
 
 	void physics(float dt);
 

@@ -47,7 +47,7 @@ public:
     void Init(unsigned int width, unsigned int height);
     // game loop
     void ProcessInput(float& dt);
-    void Update(float& dt);
+    void Update();
     void Render();
 };
 
