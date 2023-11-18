@@ -105,6 +105,7 @@ int main(void)
     glm::vec2 size = glm::vec2(300.0f, 400.0f);
     float rotate = glm::radians(0.0f);
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+
     
 
 
