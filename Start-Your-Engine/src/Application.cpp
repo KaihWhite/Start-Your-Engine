@@ -40,7 +40,7 @@ int main(void)
         return -1;
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -98,7 +98,7 @@ int main(void)
     
     // I think the error lies in the paths. Changing the project settings change the default path for the project.
     // the reason nothing was rendering is because the relative paths need to be different.
-    ResourceManager::LoadTexture("Start-Your-Engine/textures/Grey_Brick.png", true, "ground");
+    ResourceManager::LoadTexture("Start-Your-Engine/textures/awesomeface.png", true, "ground");
 
     Renderer* renderer = new Renderer(ResourceManager::GetShader("sprite"));
     glm::vec2 position = glm::vec2(200.0f, 200.0f);

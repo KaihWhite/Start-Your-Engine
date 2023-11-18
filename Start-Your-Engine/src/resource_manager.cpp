@@ -105,7 +105,7 @@ Texture2D ResourceManager::loadTextureFromFile(const char* file, bool alpha)
     int width, height, nrChannels;
     unsigned char* data = stbi_load(file, &width, &height, &nrChannels, 0);
 
-    if (data == NULL) {
+    if (data == nullptr) {
         std::cout << "Failed to load texture" << std::endl;
         return texture;
     }
