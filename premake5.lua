@@ -7,7 +7,7 @@ workspace "Start-Your-Engine"
    IncludeDir["GLFW"] = "Dependencies/GLFW"  -- Base GLFW path
    IncludeDir["Glad"] = "Dependencies/GLAD/include"
    IncludeDir["glm"] = "Dependencies/glm"
-   IncludeDir["box2d"] = "Dependencies/box2d"
+   IncludeDir["box2d"] = "Dependencies/box2d/include"
 
 project "Start-Your-Engine"
    kind "ConsoleApp"
@@ -22,8 +22,8 @@ project "Start-Your-Engine"
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] .. "/include", IncludeDir["box2d"] .. "/src" }
-      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] .. "/include" }
+      includedirs { IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] }
+      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] }
       architecture "x64"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
