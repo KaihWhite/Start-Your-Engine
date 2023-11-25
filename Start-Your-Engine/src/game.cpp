@@ -50,7 +50,8 @@ void Game::Init(unsigned int width, unsigned int height)
     };*/
 
     /* create physics world */
-    b2Vec2 gravity(0.0f, 9.8f); // positive Y for things to fall down in openGL
+    //b2Vec2 gravity(0.0f, 9.8f); // positive Y for things to fall down in openGL
+    b2Vec2 gravity(0.0f, 0.0f);
     world = new b2World(gravity);
 
     /* create a static ground body
