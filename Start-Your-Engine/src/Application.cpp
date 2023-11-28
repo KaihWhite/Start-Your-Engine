@@ -4,8 +4,8 @@
 #include "game.h"
 
 // Global variables
-unsigned int SCR_WIDTH = 800;
-unsigned int SCR_HEIGHT = 600;
+unsigned int SCR_WIDTH = 1600;
+unsigned int SCR_HEIGHT = 800;
 Game demo(SCR_WIDTH, SCR_HEIGHT);
 
 

@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include <iostream>
+#include "game.h"
 
 GameObject::GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam)
 	: color(color), animations(animations), size(size)
@@ -41,13 +42,13 @@ void GameObject::draw(Renderer& renderer)
 	ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * glfwGetTime()) % animations[currentAnimation]->getTotalFrames());
 
 	Texture2D sprite = animations[currentAnimation]->getSpriteSheet();
-
+	//bool flip = dynamic_cast<Player*>(this) ? !dynamic_cast<Player*>(this)->facingRight : false;
     renderer.RenderSprite(sprite, this->metersToPixels(this->getPosition()), this->metersToPixels(this->size), this->body->GetAngle(), this->color);
 }
 
 void GameObject::update()
 {
-	
+
 }
 
 glm::vec2 GameObject::getPosition() {
