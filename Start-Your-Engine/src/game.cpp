@@ -5,7 +5,7 @@
 
 
 Game::Game(unsigned int width, unsigned int height)
-    : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
+    : State(GAME_ACTIVE), Keys(), Width(width), Height(height), cameraMan (Camera2DSystem(static_cast<float>(width), static_cast<float>(height)))
 {
 }
 
@@ -23,9 +23,10 @@ void Game::Init(unsigned int width, unsigned int height)
 
 
     /* configure shaders with image and projection uniforms */
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, -1.0f, 1.0f);
+    //glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, -1.0f, 1.0f);
+    
     ResourceManager::GetShader("anim").Use().SetInteger("image", 0);
-    ResourceManager::GetShader("anim").SetMatrix4("projection", projection);
+    ResourceManager::GetShader("anim").SetMatrix4("projectionView", cameraMan.getCamera().getProjectionViewMatrix());
 
 
     /* create renderer */
@@ -83,7 +84,7 @@ void Game::Update()
     {
 		gameObject->update();
 	}
-
+    
     // player->update(dt);
 }
 
@@ -94,13 +95,18 @@ void Game::ProcessInput(float& dt)
 
 void Game::Render()
 {
-    /*
+        /*
         Render every game object here
     */
     for (auto& gameObject : gameObjects)
     {
         gameObject->draw(*renderer);
-    }
+        
+        //cameraMan.follow(player->body->GetPosition().x*100, player->body->GetPosition().y*100, 5);
+        //ResourceManager::GetShader("anim").SetMatrix4("projectionView", cameraMan.getCamera().getProjectionViewMatrix());
 
+
+    }
+    cameraMan.transitionTo(300, 0, 5, 0.04);
     // player->draw(*renderer);
 }

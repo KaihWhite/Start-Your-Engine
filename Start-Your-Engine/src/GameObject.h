@@ -31,7 +31,7 @@ public:
 private:
 	/* converts physics body's position to renderer coordinates */
 	glm::vec2 getPosition();
-
+public:
 	glm::vec2 metersToPixels(glm::vec2 v);
 	glm::vec2 pixelsToMeters(glm::vec2 v);
 
