@@ -44,7 +44,7 @@ void GameObject::draw(Renderer& renderer)
 
     renderer.RenderSprite(sprite, this->metersToPixels(this->getPosition()), this->metersToPixels(this->size), this->body->GetAngle(), this->color);
 }
-
+ 
 void GameObject::update()
 {
 	
@@ -63,7 +63,6 @@ glm::vec2 GameObject::getPosition() {
 	std::cout << "\n" << std::endl;
 	*/
 	
-
 	return glm::vec2(this->body->GetPosition().x - ((this->size.x) / 2), this->body->GetPosition().y - ((this->size.y) / 2));
 }
 

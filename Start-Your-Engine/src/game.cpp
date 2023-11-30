@@ -5,7 +5,7 @@
 
 
 Game::Game(unsigned int width, unsigned int height)
-    : State(GAME_ACTIVE), Keys(), Width(width), Height(height), cameraMan (Camera2DSystem(static_cast<float>(width), static_cast<float>(height)))
+    : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
 {
 }
 
@@ -24,9 +24,9 @@ void Game::Init(unsigned int width, unsigned int height)
 
     /* configure shaders with image and projection uniforms */
     //glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, -1.0f, 1.0f);
-    
+    Camera2DSystem* cameraMan = new Camera2DSystem(static_cast<float>(width), static_cast<float>(height));
     ResourceManager::GetShader("anim").Use().SetInteger("image", 0);
-    ResourceManager::GetShader("anim").SetMatrix4("projectionView", cameraMan.getCamera().getProjectionViewMatrix());
+    ResourceManager::GetShader("anim").SetMatrix4("projectionView", cameraMan->getCamera().getProjectionViewMatrix());
 
 
     /* create renderer */
@@ -67,8 +67,8 @@ void Game::Init(unsigned int width, unsigned int height)
 
 
     /* create player game object */
-    player = new Player(glm::vec2(4.0f, 4.0f), glm::vec2(3.0f, 4.0f), glm::vec3(1.0f, 1.0f, 1.0f), player_animations, world, true);
-
+    this->player = new Player(glm::vec2(4.0f, 4.0f), glm::vec2(3.0f, 4.0f), glm::vec3(1.0f, 1.0f, 1.0f), player_animations, world, cameraMan, true);
+    
     /* add game objects to gameObjects vector */
     this->gameObjects.push_back(player);
     //this->gameObjects.push_back(ground);
@@ -85,7 +85,8 @@ void Game::Update()
 		gameObject->update();
 	}
     
-    // player->update(dt);
+    this->player->updateCamera();
+    this->player->move(this->Keys);
 }
 
 void Game::ProcessInput(float& dt)
@@ -102,11 +103,8 @@ void Game::Render()
     {
         gameObject->draw(*renderer);
         
-        //cameraMan.follow(player->body->GetPosition().x*100, player->body->GetPosition().y*100, 5);
-        //ResourceManager::GetShader("anim").SetMatrix4("projectionView", cameraMan.getCamera().getProjectionViewMatrix());
-
+        
 
     }
-    cameraMan.transitionTo(300, 0, 5, 0.04);
-    // player->draw(*renderer);
+    
 }

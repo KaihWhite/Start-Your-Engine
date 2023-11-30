@@ -14,6 +14,7 @@ Game demo(SCR_WIDTH, SCR_HEIGHT);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+
 }
 
 // Callback function for key presses and save key state to an array

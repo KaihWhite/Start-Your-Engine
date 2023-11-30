@@ -1,10 +1,96 @@
 #include "Player.h"
 
-Player::Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam)
-	: GameObject(pos, size, color, animations, world, dynam)
+#include<iostream>
+Player::Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, Camera2DSystem* cameraMan, bool dynam)
+	: GameObject(pos, size, color, animations, world, dynam), cameraMan(cameraMan), deltaTime(0.0f), previousTime(0.0f)
 {
+    offset = glm::vec2(0.0f, 0.0f);
 }
 
+Player::~Player()
+{
+	delete this->cameraMan;
+}
+
+
 void Player::move(bool Keys[1024]) {
+   
+    if (Keys[GLFW_KEY_A]) {
+        //player->move(glm::vec2(100.0f, 0.0f));
+        
+        //this->cameraMan->offsetCameraMovement(-100.0f, 0.0f,0.5f,  deltaTime);
+        //this->cameraMan->getCamera().moveCameraOffset(glm::vec2(-100.0f, 0.0f), deltaTime);
+       
+        offset.x = -300.0f;
+        offset.y = 0.0f;
+        this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
+        //this->cameraMan->moveCameraOffset(glm::vec2(offset.x, offset.y), deltaTime);
+    }
+    else if (Keys[GLFW_KEY_D]) {
+        //player->move(glm::vec2(-100.0f, 0.0f));
+        //this->cameraMan->moveCameraOffset(glm::vec2(100.0f, 0.0f), deltaTime);
+        //this->cameraMan->offsetCameraMovement(100.0f, 0.0f,0.5f,  deltaTime);
+        //this->cameraMan->getCamera().moveCameraOffset(glm::vec2(100.0f, 0.0f), deltaTime);
+        //this->cameraMan->moveCameraOffset(glm::vec2(-100.0f, 0.0f), deltaTime);
+
+        offset.x = 300.0f;
+        offset.y = 0.0f;
+        this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
+        //this->cameraMan->moveCameraOffset(glm::vec2(offset.x, offset.y), deltaTime);
+    }
+    else if (Keys[GLFW_KEY_F]) {
+        //player->move(glm::vec2(-100.0f, 0.0f));
+        this->cameraMan->moveCamera(glm::vec2(300.0f, 0.0f), deltaTime);
+        //this->cameraMan->offsetCameraMovement(100.0f, 0.0f,0.5f,  deltaTime);
+        //this->cameraMan->getCamera().moveCameraOffset(glm::vec2(100.0f, 0.0f), deltaTime);
+        this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
+       /* offset.x = 200.0f;
+        offset.y = 0.0f;
+        this->cameraMan->offsetCameraMovement(offset.x, offset.y, 0.5f, deltaTime);*/
+    }
+    else if (Keys[GLFW_KEY_W]) {
+        //player->move(glm::vec2(0.0f, 100.0f));
+        //this->cameraMan->moveCameraOffset(glm::vec2(0.0f, -100.0f), deltaTime);
+        //this->cameraMan->offsetCameraMovement(0.0f,-100.0f, 0.5f, deltaTime);
+        //this->cameraMan->getCamera().moveCameraOffset(glm::vec2(0.0f,-100.0f ), deltaTime);
+        
+       
+        offset.y = -300.0f;
+        offset.x = 0.0f;
+        this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
+        //this->cameraMan->moveCameraOffset(glm::vec2(offset.x, offset.y), deltaTime);
+    }
+    else if (Keys[GLFW_KEY_S]) {
+        //player->move(glm::vec2(0.0f, -100.0f));
+        //this->cameraMan->moveCameraOffset(glm::vec2(0.0f, 100.0f), deltaTime);
+        //this->cameraMan->offsetCameraMovement(0.0f, 100.0f, 0.5f, deltaTime);
+        
+        //this->cameraMan->getCamera().moveCameraOffset(glm::vec2(0.0f, 100.0f), deltaTime);
+       
+        offset.x = 0.0f;
+        offset.y = 300.0f;
+        this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
+        //this->cameraMan->moveCameraOffset(glm::vec2(offset.x, offset.y), deltaTime);
+    }
+    else {
+        
+        //this->cameraMan->lookAheadCameraMovement(getPosition().x,getPosition().y,2.0f, deltaTime);
+        this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
+        //this->cameraMan->moveCameraOffset(glm::vec2(offset.x, offset.y), deltaTime);
+    }
+}
+
+
+void Player::updateCamera()
+{
+	//std::cout << this->body->GetPosition().x << "," << this->body->GetPosition().y << std::endl;
+	float currentTime = glfwGetTime();
+	this->deltaTime = currentTime - this->previousTime;
+	this->previousTime = currentTime; 
+	cameraMan->follow(this->body->GetPosition().x*100, this->body->GetPosition().y*100, 1.5f, this->deltaTime);
+    //std::cout << this->cameraMan->getCamera().cameraPosition.x << "," << this->cameraMan->getCamera().cameraPosition.y << std::endl;
+    std::cout << this->cameraMan->getCamera().offset.x << "," << this->cameraMan->getCamera().offset.y << std::endl;    //this->cameraMan->transitionTo(getPosition().x, getPosition().y, 2.0f, deltaTime);
+	ResourceManager::GetShader("anim").SetMatrix4("projectionView", cameraMan->getCamera().getProjectionViewMatrix());
+    //std::cout << this->body->GetLinearVelocity().y << std::endl;
 	
 }

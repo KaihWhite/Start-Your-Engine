@@ -7,7 +7,7 @@
 #include "glm/glm.hpp"
 #include "Animation.h"
 #include "box2d/box2d.h"
-#include "Camera2DSystem.h"
+
 #include <vector>
 
 // Represents the current state of the game
@@ -30,7 +30,7 @@ public:
     unsigned int            Height;
     Player                  *player;
     Renderer                *renderer;
-    Camera2DSystem          cameraMan;
+   
     std::vector<GameObject*> gameObjects;
     b2World                 *world;
 
