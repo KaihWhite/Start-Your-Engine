@@ -7,6 +7,7 @@
 #include "glm/glm.hpp"
 #include "Animation.h"
 #include "box2d/box2d.h"
+
 #include <vector>
 
 // Represents the current state of the game
@@ -31,7 +32,7 @@ public:
     GameObject              *platform1;
     GameObject              *platform2;
     Renderer                *renderer;
-
+   
     std::vector<GameObject*> gameObjects;
     b2World                 *world;
 

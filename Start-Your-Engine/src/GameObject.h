@@ -18,7 +18,6 @@ public:
 
 	b2Body* body;
 
-
 	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam = false);
 	~GameObject();
 
@@ -28,10 +27,8 @@ public:
 
 	void draw(Renderer& renderer);
 
-private:
 	/* converts physics body's position to renderer coordinates */
 	glm::vec2 getPosition();
-
 	glm::vec2 metersToPixels(glm::vec2 v);
 	glm::vec2 pixelsToMeters(glm::vec2 v);
 

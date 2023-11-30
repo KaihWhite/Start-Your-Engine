@@ -26,9 +26,10 @@ void Game::Init(unsigned int width, unsigned int height)
 
 
     /* configure shaders with image and projection uniforms */
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, -1.0f, 1.0f);
+    //glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, -1.0f, 1.0f);
+    Camera2DSystem* cameraMan = new Camera2DSystem(static_cast<float>(width), static_cast<float>(height));
     ResourceManager::GetShader("anim").Use().SetInteger("image", 0);
-    ResourceManager::GetShader("anim").SetMatrix4("projection", projection);
+    ResourceManager::GetShader("anim").SetMatrix4("projectionView", cameraMan->getCamera().getProjectionViewMatrix());
 
 
     /* create renderer */
@@ -64,11 +65,10 @@ void Game::Init(unsigned int width, unsigned int height)
     world = new b2World(gravity);
 
     /* create player game object */
-    player = new Player(glm::vec2(4.0f, 4.0f), glm::vec2(3.0f, 4.0f), glm::vec3(1.0f, 1.0f, 1.0f), player_animations, world, true);
-    // Create platform object
+    this->player = new Player(glm::vec2(4.0f, 4.0f), glm::vec2(3.0f, 4.0f), glm::vec3(1.0f, 1.0f, 1.0f), player_animations, world, cameraMan, true);
+     // Create platform object
     platform1 = new GameObject(glm::vec2(5.0f, 7.0f), glm::vec2(10.0f, 0.1f), glm::vec3(0.5f, 0.5f, 0.5f), platform_animations1, world, false);
     platform2 = new GameObject(glm::vec2(12.0f, 5.0f), glm::vec2(1.0f, 6.0f), glm::vec3(0.5f, 0.5f, 0.5f), platform_animations2, world, false);
-
     /* add game objects to gameObjects vector */
     this->gameObjects.push_back(player);
     //this->gameObjects.push_back(ground);
@@ -94,8 +94,8 @@ void Game::Update()
     {
 		gameObject->update();
 	}
-
-    // player->update(dt);
+    
+    this->player->updateCamera();
 }
 
 void Game::ProcessInput(float& dt)
@@ -105,13 +105,15 @@ void Game::ProcessInput(float& dt)
 
 void Game::Render()
 {
-    /*
+        /*
         Render every game object here
     */
     for (auto& gameObject : gameObjects)
     {
         gameObject->draw(*renderer);
-    }
+        
+        
 
-    // player->draw(*renderer);
+    }
+    
 }
