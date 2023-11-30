@@ -4,8 +4,8 @@
 #include "game.h"
 
 // Global variables
-unsigned int SCR_WIDTH = 800;
-unsigned int SCR_HEIGHT = 600;
+unsigned int SCR_WIDTH = 1600;
+unsigned int SCR_HEIGHT = 800;
 Game demo(SCR_WIDTH, SCR_HEIGHT);
 
 
@@ -99,7 +99,7 @@ int main(void)
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame; */
 
-        glfwPollEvents();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
         /* Update game objects */

@@ -1,6 +1,7 @@
 
 #include "game.h"
 #include <unordered_map>
+#include "ContactListener.h"
 
 
 
@@ -12,6 +13,8 @@ Game::Game(unsigned int width, unsigned int height)
 Game::~Game()
 {
     delete this->player;
+    delete this->platform1;
+    delete this->platform2;
     delete this->renderer;
     delete this->world;
 }
@@ -35,43 +38,47 @@ void Game::Init(unsigned int width, unsigned int height)
 
     /* load textures */
     ResourceManager::LoadTexture("Start-Your-Engine/textures/idle.png", true, "idle");
-    //ResourceManager::LoadTexture("", true, "ground");
+    ResourceManager::LoadTexture("Start-Your-Engine/textures/run cycle 48x48.png", true, "run");
+    ResourceManager::LoadTexture("Start-Your-Engine/textures/player jump 48x48.png", true, "jump");
+    ResourceManager::LoadTexture("Start-Your-Engine/textures/awesomeface.png", true, "awesomeface");
 
     /* create animations */
     Animation* idle = new Animation("idle", 10);
-    //Animation* groundAnim = new Animation("ground", 1);
+    Animation* run = new Animation("run", 8);
+    Animation* jump = new Animation("jump", 3);
+    Animation* ground1 = new Animation("awesomeface", 1);
+    Animation* ground2 = new Animation("awesomeface", 1);
 
     // Should I allocate these maps on the heap?
     std::unordered_map<std::string, Animation*> player_animations = {
-    	{"idle", idle}
+    	{"idle", idle}, {"run", run}, {"jump", jump}
+    };
+    std::unordered_map<std::string, Animation*> platform_animations1 = {
+        {"idle", ground1}
+    };
+    std::unordered_map<std::string, Animation*> platform_animations2 = {
+        {"idle", ground2}
     };
 
-    /*std::unordered_map<std::string, Animation*> groundSprite = {
-        {"idle", groundAnim}
-    };*/
-
     /* create physics world */
-    //b2Vec2 gravity(0.0f, 9.8f); // positive Y for things to fall down in openGL
-    b2Vec2 gravity(0.0f, 0.0f);
+    b2Vec2 gravity(0.0f, 9.8f); // positive Y for things to fall down in openGL G = 9.8
     world = new b2World(gravity);
-
-    /* create a static ground body
-    b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(0.0f, 10.0f);
-    b2Body* groundBody = world->CreateBody(&groundBodyDef);
-    b2PolygonShape groundBox;
-    groundBox.SetAsBox(50.0f, 10.0f);
-    groundBody->CreateFixture(&groundBox, 0.0f); */
-
-    //GameObject* ground = new GameObject(glm::vec2(0.0f, 10.0f), glm::vec2(50.0f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), groundSprite, world);
-
 
     /* create player game object */
     this->player = new Player(glm::vec2(4.0f, 4.0f), glm::vec2(3.0f, 4.0f), glm::vec3(1.0f, 1.0f, 1.0f), player_animations, world, cameraMan, true);
-    
+     // Create platform object
+    platform1 = new GameObject(glm::vec2(5.0f, 7.0f), glm::vec2(10.0f, 0.1f), glm::vec3(0.5f, 0.5f, 0.5f), platform_animations1, world, false);
+    platform2 = new GameObject(glm::vec2(12.0f, 5.0f), glm::vec2(1.0f, 6.0f), glm::vec3(0.5f, 0.5f, 0.5f), platform_animations2, world, false);
     /* add game objects to gameObjects vector */
     this->gameObjects.push_back(player);
     //this->gameObjects.push_back(ground);
+    // Add platform to game objects
+    this->gameObjects.push_back(platform1);
+    this->gameObjects.push_back(platform2);
+
+    // Initialize and Set the Contact Listener
+    ContactListener* contactListener = new ContactListener();
+    world->SetContactListener(contactListener);
 }
 
 void Game::Update()
@@ -80,13 +87,15 @@ void Game::Update()
         This function moves the world objects according to physics */
     world->Step(this->timeStep, this->velocityIterations, this->positionIterations);
 
+    // Update player movement based on key inputs
+    this->player->move(this->Keys, this->timeStep);
+
     for (auto& gameObject : gameObjects)
     {
 		gameObject->update();
 	}
     
     this->player->updateCamera();
-    this->player->move(this->Keys);
 }
 
 void Game::ProcessInput(float& dt)
