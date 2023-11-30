@@ -24,6 +24,8 @@ void Player::move(bool Keys[1024], float timeStep) {
     float desiredVelocity = 0.0f;
     float jumpImpulse = 0.0f;
     currentAnimation = "idle";
+    this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
+
     if (Keys[GLFW_KEY_W]) {
         if (onPlatform && !isJumping) {
             isJumping = true;
@@ -34,16 +36,13 @@ void Player::move(bool Keys[1024], float timeStep) {
         //this->cameraMan->offsetCameraMovement(0.0f,-100.0f, 0.5f, deltaTime);
         //this->cameraMan->getCamera().moveCameraOffset(glm::vec2(0.0f,-100.0f ), deltaTime);
 
-
         offset.y = -300.0f;
         offset.x = 0.0f;
         this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
         //this->cameraMan->moveCameraOffset(glm::vec2(offset.x, offset.y), deltaTime);
-
-
-       
+ 
     }
-    else if (Keys[GLFW_KEY_D]) {
+    if (Keys[GLFW_KEY_D]) {
         desiredVelocity = 2.0f; // Move right
         currentAnimation = "run";
         //player->move(glm::vec2(-100.0f, 0.0f));
@@ -57,7 +56,7 @@ void Player::move(bool Keys[1024], float timeStep) {
         this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
         //this->cameraMan->moveCameraOffset(glm::vec2(offset.x, offset.y), deltaTime);
     }
-    else if (Keys[GLFW_KEY_F]) {
+    if (Keys[GLFW_KEY_F]) {
         //player->move(glm::vec2(-100.0f, 0.0f));
         this->cameraMan->moveCamera(glm::vec2(300.0f, 0.0f), deltaTime);
         //this->cameraMan->offsetCameraMovement(100.0f, 0.0f,0.5f,  deltaTime);
@@ -67,7 +66,7 @@ void Player::move(bool Keys[1024], float timeStep) {
         offset.y = 0.0f;
         this->cameraMan->offsetCameraMovement(offset.x, offset.y, 0.5f, deltaTime);*/
     }
-    else if (Keys[GLFW_KEY_A]) {
+    if (Keys[GLFW_KEY_A]) {
 
         desiredVelocity = -2.0f; // Move left
         currentAnimation = "run";
@@ -82,7 +81,7 @@ void Player::move(bool Keys[1024], float timeStep) {
         //this->cameraMan->moveCameraOffset(glm::vec2(offset.x, offset.y), deltaTime);
 
     }
-    else if (Keys[GLFW_KEY_S]) {
+    if (Keys[GLFW_KEY_S]) {
         //player->move(glm::vec2(0.0f, -100.0f));
         //this->cameraMan->moveCameraOffset(glm::vec2(0.0f, 100.0f), deltaTime);
         //this->cameraMan->offsetCameraMovement(0.0f, 100.0f, 0.5f, deltaTime);
@@ -94,12 +93,8 @@ void Player::move(bool Keys[1024], float timeStep) {
         this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
         //this->cameraMan->moveCameraOffset(glm::vec2(offset.x, offset.y), deltaTime);
     }
-    else {
-        
         //this->cameraMan->lookAheadCameraMovement(getPosition().x,getPosition().y,2.0f, deltaTime);
-        this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
         //this->cameraMan->moveCameraOffset(glm::vec2(offset.x, offset.y), deltaTime);
-    }
 
     if (isJumping) {
         jumpPressDuration += timeStep;
