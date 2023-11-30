@@ -1,6 +1,7 @@
 
 #include "game.h"
 #include <unordered_map>
+#include "ContactListener.h"
 
 
 
@@ -74,6 +75,10 @@ void Game::Init(unsigned int width, unsigned int height)
     // Add platform to game objects
     this->gameObjects.push_back(platform1);
     this->gameObjects.push_back(platform2);
+
+    // Initialize and Set the Contact Listener
+    ContactListener* contactListener = new ContactListener();
+    world->SetContactListener(contactListener);
 }
 
 void Game::Update()

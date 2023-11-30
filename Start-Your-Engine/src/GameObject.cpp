@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include <iostream>
 #include "game.h"
+//#include "ContactListener.h"
 
 GameObject::GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam)
 	: color(color), animations(animations), size(size)
@@ -9,6 +10,12 @@ GameObject::GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unor
 	bodyDef.type = dynam ? b2_dynamicBody : b2_staticBody;
 	bodyDef.position.Set(pos.x, pos.y);
 	body = world->CreateBody(&bodyDef);
+	/*BodyUserData* userData = new BodyUserData();
+	userData->object = this;
+	userData->objectType = "GameObject";  // Or more specific type
+	body->GetUserData().pointer = reinterpret_cast<uintptr_t>(userData);*/
+	// Updated way to set user data in Box2D
+	body->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
 
 	b2PolygonShape dynamicBox;
 	// TODO: make a function that converts units from pixels to meters and vice versa. I have no idea what this will look like yet
@@ -29,6 +36,7 @@ GameObject::~GameObject()
 	this->animations.clear();
 
 	this->body->GetWorld()->DestroyBody(body);
+	//delete reinterpret_cast<BodyUserData*>(body->GetUserData().pointer);
 }
 
 

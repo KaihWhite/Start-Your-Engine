@@ -3,6 +3,7 @@
 Player::Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam)
 	: GameObject(pos, size, color, animations, world, dynam)
 {
+    onPlatform = false;
 }
 
 void Player::move(bool Keys[1024]) {
@@ -23,8 +24,8 @@ void Player::move(bool Keys[1024]) {
         //facingRight = true;
         
     }
-    if (Keys[GLFW_KEY_W]) {
-        jumpImpulse = -4.0f; // Jump
+    if (Keys[GLFW_KEY_W] && onPlatform) {
+        jumpImpulse = -50.0f; // Jump
         currentAnimation = "jump";
     }
 
