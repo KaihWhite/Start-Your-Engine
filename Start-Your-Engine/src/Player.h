@@ -1,3 +1,5 @@
+// By Chonglin Guan
+
 #pragma once
 #include "GameObject.h"
 #include "glm/glm.hpp"
@@ -5,10 +7,13 @@
 class Player : public GameObject
 {
 public:
-
+	bool onPlatform;
+	bool isJumping;
+	float jumpPressDuration;
+	float maxJumpTime; // Duration of the jump in seconds
+	
 	Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam = false);
-
-	void move(bool Keys[1024]);
+	void move(bool Keys[1024], float dt);
 };
 
 

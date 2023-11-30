@@ -28,6 +28,8 @@ public:
     unsigned int            Width; 
     unsigned int            Height;
     Player                  *player;
+    GameObject              *platform1;
+    GameObject              *platform2;
     Renderer                *renderer;
 
     std::vector<GameObject*> gameObjects;
