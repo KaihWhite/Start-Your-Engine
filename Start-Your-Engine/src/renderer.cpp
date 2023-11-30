@@ -20,7 +20,7 @@ void Renderer::RenderSprite(Texture2D& texture, glm::vec2 position, glm::vec2 si
     /* because the sprite is drawn from the top left corner which is currently (0, 0),
     we need to translate (0, 0) to the center of the sprite before rotating */
     model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-    model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
+    //model = glm::rotate(model, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
     model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
 
     //float scaleX = flip ? -1.0f : 1.0f;
