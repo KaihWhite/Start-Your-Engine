@@ -1,4 +1,4 @@
-// By Chonglin Guan
+// Modified by Chonglin Guan
 
 #pragma once
 #include "GameObject.h"
