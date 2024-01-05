@@ -10,7 +10,7 @@ workspace "Start-Your-Engine"
    IncludeDir["box2d"] = "Dependencies/box2d/include"
 
 project "Start-Your-Engine"
-   kind "ConsoleApp"
+   kind "StaticLib"
    language "C++"
    cppdialect "C++17"
    staticruntime "on"
@@ -51,3 +51,23 @@ project "Start-Your-Engine"
       buildoptions "/MT"
    filter {"system:windows", "configurations:Debug"}
       buildoptions "/MTd"
+
+project "Start-Your-Editor"
+   kind "ConsoleApp"
+   language "C++"
+   cppdialect "C++17"
+   staticruntime "on"
+
+   targetdir "bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
+   objdir "bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
+
+   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c" }
+
+   -- Windows specific settings
+   filter "system:windows"
+      includedirs {}
+      libdirs {}
+      architecture "x64"
+      systemversion "latest"
+      defines { "PLATFORM_WINDOWS" }
+      links {}
