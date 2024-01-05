@@ -1,3 +1,4 @@
+// Made by Kaih White
 #pragma once
 #include "texture.h"
 #include "resource_manager.h"

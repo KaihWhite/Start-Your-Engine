@@ -1,3 +1,6 @@
+/*
+Credit to the author of LearnOpenGL.com Joey de Vries for boilerplate code
+*/
 #ifndef SHADER_H
 #define SHADER_H
 

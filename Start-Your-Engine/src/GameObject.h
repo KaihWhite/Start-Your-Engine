@@ -1,3 +1,4 @@
+// Made by Kaih White
 #pragma once
 #include "glm/glm.hpp"
 #include "renderer.h"

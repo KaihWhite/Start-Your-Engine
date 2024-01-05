@@ -1,3 +1,4 @@
+// Made by Kaih White
 #include <iostream>
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"

@@ -1,3 +1,4 @@
+// Made by Kaih White
 #include "GameObject.h"
 #include <iostream>
 #include "game.h"

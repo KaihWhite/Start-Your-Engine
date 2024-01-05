@@ -1,3 +1,4 @@
+// Made by Kaih White
 #include "Animation.h"
 #include <iostream>
 

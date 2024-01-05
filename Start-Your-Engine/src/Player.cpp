@@ -1,4 +1,5 @@
-// By Chonglin Guan
+// Made by Kaih White
+// Edits added by Chonglin Guan
 
 #include "Player.h"
 

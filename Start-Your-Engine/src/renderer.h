@@ -1,3 +1,6 @@
+/*
+Credit to the author of LearnOpenGL.com Joey de Vries for boilerplate code
+*/
 #pragma once
 
 #include "resource_manager.h"

@@ -1,5 +1,5 @@
 /*
-Give credit to the author of LearnOpenGL.com Joey de Vries
+Credit to the author of LearnOpenGL.com Joey de Vries for boilerplate code
 */
 #include <iostream>
 

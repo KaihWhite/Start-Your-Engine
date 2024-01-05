@@ -1,3 +1,4 @@
+// Made by Kaih White
 #ifndef GAME_H
 #define GAME_H
 

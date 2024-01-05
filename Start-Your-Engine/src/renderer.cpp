@@ -1,3 +1,6 @@
+/*
+Credit to the author of LearnOpenGL.com Joey de Vries for boilerplate code
+*/
 #include "renderer.h"
 
 Renderer::Renderer(Shader& shader)
