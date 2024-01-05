@@ -1,4 +1,4 @@
-// By Chonglin Guan
+// Made by Chonglin Guan
 
 #pragma once
 #include "box2d/box2d.h"
@@ -15,7 +15,6 @@ public:
             return; // Neither fixture is a player
         }
 
-        // Assuming the player's user data is set to the player object
         b2Body* playerBody = fixtureA->GetBody()->GetType() == b2_dynamicBody ? fixtureA->GetBody() : fixtureB->GetBody();
         Player* player = reinterpret_cast<Player*>(playerBody->GetUserData().pointer);
 
@@ -29,7 +28,7 @@ public:
 
         // Similar logic as BeginContact to identify the player
         if (fixtureA->GetBody()->GetType() != b2_dynamicBody && fixtureB->GetBody()->GetType() != b2_dynamicBody) {
-            return; // Neither fixture is a player
+            return;
         }
 
         b2Body* playerBody = fixtureA->GetBody()->GetType() == b2_dynamicBody ? fixtureA->GetBody() : fixtureB->GetBody();
