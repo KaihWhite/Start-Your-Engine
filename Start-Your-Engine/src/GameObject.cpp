@@ -9,6 +9,7 @@ GameObject::GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unor
 	b2BodyDef bodyDef;
 	bodyDef.type = dynam ? b2_dynamicBody : b2_staticBody;
 	bodyDef.position.Set(pos.x, pos.y);
+	bodyDef.fixedRotation = true;
 	body = world->CreateBody(&bodyDef);
 	/*BodyUserData* userData = new BodyUserData();
 	userData->object = this;

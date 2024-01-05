@@ -26,21 +26,33 @@ void Player::move(bool Keys[1024], float timeStep) {
     currentAnimation = "idle";
     this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
 
-    if (Keys[GLFW_KEY_W]) {
+    if (Keys[GLFW_KEY_SPACE]) {
         if (onPlatform && !isJumping) {
             isJumping = true;
             jumpPressDuration = 0.0f;
         }
+        if (isJumping) {
+            jumpPressDuration += timeStep;
+            if (jumpPressDuration < maxJumpTime) {
+                jumpImpulse = -4.0f;
+                currentAnimation = "jump";
+            }
+            else {
+                isJumping = false; // End jump after max duration
+            }
+        }
+    }
+    
+    if (Keys[GLFW_KEY_W]) {
         //player->move(glm::vec2(0.0f, 100.0f));
-        //this->cameraMan->moveCameraOffset(glm::vec2(0.0f, -100.0f), deltaTime);
-        //this->cameraMan->offsetCameraMovement(0.0f,-100.0f, 0.5f, deltaTime);
-        //this->cameraMan->getCamera().moveCameraOffset(glm::vec2(0.0f,-100.0f ), deltaTime);
-
+       //this->cameraMan->moveCameraOffset(glm::vec2(0.0f, -100.0f), deltaTime);
+       //this->cameraMan->offsetCameraMovement(0.0f,-100.0f, 0.5f, deltaTime);
+       //this->cameraMan->getCamera().moveCameraOffset(glm::vec2(0.0f,-100.0f ), deltaTime);
         offset.y = -300.0f;
         offset.x = 0.0f;
         this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
         //this->cameraMan->moveCameraOffset(glm::vec2(offset.x, offset.y), deltaTime);
- 
+
     }
     if (Keys[GLFW_KEY_D]) {
         desiredVelocity = 2.0f; // Move right
@@ -96,16 +108,7 @@ void Player::move(bool Keys[1024], float timeStep) {
         //this->cameraMan->lookAheadCameraMovement(getPosition().x,getPosition().y,2.0f, deltaTime);
         //this->cameraMan->moveCameraOffset(glm::vec2(offset.x, offset.y), deltaTime);
 
-    if (isJumping) {
-        jumpPressDuration += timeStep;
-        if (jumpPressDuration < maxJumpTime) {
-            jumpImpulse = -4.0f;
-            currentAnimation = "jump";
-        }
-        else {
-            isJumping = false; // End jump after max duration
-        }
-    }
+    
     
     // Apply a horizontal force for movement
     // Calculate the change in velocity needed for the desired movement.
