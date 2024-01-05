@@ -1,5 +1,5 @@
 // Made by Kaih White
-// Edits added by Chonglin Guan and Kunga
+// Edits added by Chonglin Guan and Kunga Ngochetsang
 
 #pragma once
 #include "GameObject.h"

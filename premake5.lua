@@ -1,6 +1,6 @@
 workspace "Start-Your-Engine"
    configurations { "Debug", "Release" }
-   startproject "Start-Your-Engine"
+   startproject "Start-Your-Editor"
 
    -- Path to the Dependencies directory
    IncludeDir = {}
@@ -10,7 +10,7 @@ workspace "Start-Your-Engine"
    IncludeDir["box2d"] = "Dependencies/box2d/include"
 
 project "Start-Your-Engine"
-   kind "StaticLib"
+   kind "ConsoleApp"
    language "C++"
    cppdialect "C++17"
    staticruntime "on"
@@ -71,3 +71,17 @@ project "Start-Your-Editor"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
       links {}
+
+      -- General settings for Debug and Release configurations
+   filter "configurations:Debug"
+   defines { "DEBUG" }
+   symbols "On"
+
+   filter "configurations:Release"
+      defines { "NDEBUG" }
+      optimize "On"
+
+   filter {"system:windows", "configurations:Release"}
+      buildoptions "/MT"
+   filter {"system:windows", "configurations:Debug"}
+      buildoptions "/MTd"
