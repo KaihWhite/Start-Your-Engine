@@ -10,7 +10,7 @@ workspace "Start-Your-Engine"
    IncludeDir["box2d"] = "Dependencies/box2d/include"
 
 project "Start-Your-Engine"
-   kind "ConsoleApp"
+   kind "StaticLib"
    language "C++"
    cppdialect "C++17"
    staticruntime "on"
