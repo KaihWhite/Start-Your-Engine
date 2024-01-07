@@ -8,49 +8,7 @@ workspace "Start-Your-Engine"
    IncludeDir["Glad"] = "Dependencies/GLAD/include"
    IncludeDir["glm"] = "Dependencies/glm"
    IncludeDir["box2d"] = "Dependencies/box2d/include"
-
-project "Start-Your-Engine"
-   kind "StaticLib"
-   language "C++"
-   cppdialect "C++17"
-   staticruntime "on"
-
-   targetdir "bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
-   objdir "bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
-
-   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c" }
-
-   -- Windows specific settings
-   filter "system:windows"
-      includedirs { IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] }
-      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] }
-      architecture "x64"
-      systemversion "latest"
-      defines { "PLATFORM_WINDOWS" }
-      links { "glfw3_mt", "opengl32", "box2d"}
-
-   -- MacOS specific settings
-   filter "system:macosx"
-      includedirs { IncludeDir["GLFW"] .. "/MacOS/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] }
-      libdirs { IncludeDir["GLFW"] .. "/MacOS/lib-arm64", IncludeDir["box2d"] }
-      links { "glfw3", "Cocoa.framework", "OpenGL.framework", "IOKit.framework", "CoreVideo.framework" }
-      architecture "arm64" -- or "x64" for Intel, "arm64" for M1 specifically, or "universal"
-      systemversion "latest"
-      defines { "PLATFORM_MACOS" }
-
-   -- General settings for Debug and Release configurations
-   filter "configurations:Debug"
-      defines { "DEBUG" }
-      symbols "On"
-
-   filter "configurations:Release"
-      defines { "NDEBUG" }
-      optimize "On"
-
-   filter {"system:windows", "configurations:Release"}
-      buildoptions "/MT"
-   filter {"system:windows", "configurations:Debug"}
-      buildoptions "/MTd"
+   IncludeDir["Start-Your-Engine"] = "Start-Your-Engine/src"
 
 project "Start-Your-Editor"
    kind "ConsoleApp"
@@ -65,17 +23,60 @@ project "Start-Your-Editor"
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs {}
-      libdirs {}
+      includedirs {IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["Start-Your-Engine"]}
+      libdirs {IncludeDir["GLFW"] .. "/Windows/lib-vc2022"}
       architecture "x64"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
-      links {}
+      links {"Start-Your-Engine"}
 
       -- General settings for Debug and Release configurations
    filter "configurations:Debug"
    defines { "DEBUG" }
    symbols "On"
+
+   filter "configurations:Release"
+      defines { "NDEBUG" }
+      optimize "On"
+
+   filter {"system:windows", "configurations:Release"}
+      buildoptions "/MT"
+   filter {"system:windows", "configurations:Debug"}
+      buildoptions "/MTd"
+
+project "Start-Your-Engine"
+   kind "StaticLib"
+   language "C++"
+   cppdialect "C++17"
+   staticruntime "on"
+
+   targetdir "bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
+   objdir "bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
+
+   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp" }
+
+   -- Windows specific settings
+   filter "system:windows"
+      includedirs { IncludeDir["glm"], IncludeDir["box2d"] }
+      libdirs { IncludeDir["box2d"] }
+      architecture "x64"
+      systemversion "latest"
+      defines { "PLATFORM_WINDOWS" }
+      links { "glfw3_mt", "opengl32", "box2d"}
+
+   -- MacOS specific settings
+   -- filter "system:macosx"
+   --    includedirs { IncludeDir["GLFW"] .. "/MacOS/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] }
+   --    libdirs { IncludeDir["GLFW"] .. "/MacOS/lib-arm64", IncludeDir["box2d"] }
+   --    links { "glfw3", "Cocoa.framework", "OpenGL.framework", "IOKit.framework", "CoreVideo.framework" }
+   --    architecture "arm64" -- or "x64" for Intel, "arm64" for M1 specifically, or "universal"
+   --    systemversion "latest"
+   --    defines { "PLATFORM_MACOS" }
+
+   -- General settings for Debug and Release configurations
+   filter "configurations:Debug"
+      defines { "DEBUG" }
+      symbols "On"
 
    filter "configurations:Release"
       defines { "NDEBUG" }
