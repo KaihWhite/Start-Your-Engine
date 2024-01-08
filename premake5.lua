@@ -23,7 +23,7 @@ project "Start-Your-Editor"
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs {IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["Start-Your-Engine"]}
+      includedirs {IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Start-Your-Engine"]}
       libdirs {IncludeDir["GLFW"] .. "/Windows/lib-vc2022"}
       architecture "x64"
       systemversion "latest"
@@ -57,8 +57,8 @@ project "Start-Your-Engine"
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { IncludeDir["glm"], IncludeDir["box2d"] }
-      libdirs { IncludeDir["box2d"] }
+      includedirs { IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] }
+      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] }
       architecture "x64"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
