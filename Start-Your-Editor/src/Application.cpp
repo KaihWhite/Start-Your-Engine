@@ -13,6 +13,7 @@
 unsigned int SCR_WIDTH = 1600;
 unsigned int SCR_HEIGHT = 800;
 Game demo(SCR_WIDTH, SCR_HEIGHT);
+bool In_Game = false;
 
 // Callback function for resizing the window
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -90,19 +91,35 @@ int main()
 
 
         // Here you can add ImGui widgets
-        ImGui::Begin("wellcome tab ");
+        /*ImGui::Begin("wellcome tab ");
         ImGui::Text("welcome to the UI/game edditor, which uses an awesome 2d game engine called Start-Your-Engine ");
-        ImGui::End();
+        ImGui::End();*/
+        if (!In_Game) {
+            // Render title screen
+            ImGui::Begin("Title Screen");
+            ImGui::Text("Welcome to the Game");
+
+            if (ImGui::Button("Play")) {
+                In_Game = true; // Change state to start the game
+            }
+
+            ImGui::End();
+        }
+        else if (In_Game) {
+            // Update and render game
+            demo.Update();
+            demo.Render();
+        }
 		// Rendering imgui elements
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         /* Update game objects */
-        demo.Update();
+        //demo.Update();
 
 
         /* Render here */
-        demo.Render();
+        //demo.Render();
 
 
         /* Swap front and back buffers */
