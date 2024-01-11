@@ -6,6 +6,8 @@ Credit to the author of LearnOpenGL.com Joey de Vries for boilerplate code
 #include "resource_manager.h"
 #include "shader.h"
 #include "stb_image.h"
+#include <glad/glad.h>
+#include "GLFW/glfw3.h"
 
 class Renderer
 {

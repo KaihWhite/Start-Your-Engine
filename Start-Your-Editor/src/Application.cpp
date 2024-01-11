@@ -3,13 +3,16 @@
 */
 
 #include <iostream>
+#include <glad/glad.h>
 #include "GLFW/glfw3.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "game.h"
 
 unsigned int SCR_WIDTH = 1600;
 unsigned int SCR_HEIGHT = 800;
+Game demo(SCR_WIDTH, SCR_HEIGHT);
 
 // Callback function for resizing the window
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -49,6 +52,13 @@ int main()
     /* set frambuffercallback */
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+    /* GLAD Loader */
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }
+
 
     /* Set size of rendering window */
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
@@ -64,6 +74,9 @@ int main()
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 400");
+
+    /* Init game */
+    demo.Init(SCR_WIDTH, SCR_HEIGHT);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -84,6 +97,13 @@ int main()
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+        /* Update game objects */
+        demo.Update();
+
+
+        /* Render here */
+        demo.Render();
+
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
@@ -95,6 +115,7 @@ int main()
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
+    ResourceManager::Clear();
     glfwTerminate();
 
 

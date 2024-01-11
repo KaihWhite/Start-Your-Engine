@@ -24,12 +24,12 @@ project "Start-Your-Editor"
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs {IncludeDir["GLFW"] .. "/Windows/include",IncludeDir["imgui"], IncludeDir["Start-Your-Engine"]}
-      libdirs {IncludeDir["GLFW"] .. "/Windows/lib-vc2022"}
+      includedirs { IncludeDir["Glad"], IncludeDir["GLFW"] .. "/Windows/include",IncludeDir["imgui"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["Start-Your-Engine"] }
+      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] }
       architecture "x64"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
-      links {"glfw3_mt","Start-Your-Engine"}
+      links { "glfw3_mt", "opengl32", "box2d", "Start-Your-Engine" }
 
       
    -- MacOS specific settings
@@ -73,7 +73,7 @@ project "Start-Your-Engine"
       architecture "x64"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
-      links { "glfw3_mt", "opengl32", "box2d"}
+      links { "glfw3_mt", "opengl32", "box2d" }
 
    -- MacOS specific settings
    -- filter "system:macosx"
