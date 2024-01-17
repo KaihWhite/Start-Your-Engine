@@ -22,6 +22,24 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 }
 
+// Callback function for key presses and save key state to an array
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+    // when a user presses the escape key, set the WindowShouldClose property to true, closing the application
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        //glfwSetWindowShouldClose(window, true);
+        In_Game = false;
+    }
+
+    if (key >= 0 && key < 1024)
+    {
+        if (action == GLFW_PRESS)
+            demo.Keys[key] = true;
+        else if (action == GLFW_RELEASE)
+            demo.Keys[key] = false;
+    }
+}
+
 int main()
 {
     std::cout << "welcome page" << std::endl;
@@ -48,6 +66,9 @@ int main()
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
+
+    /* set key callback */
+    glfwSetKeyCallback(window, key_callback);
 
 
     /* set frambuffercallback */
@@ -82,7 +103,7 @@ int main()
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
-      
+
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -91,36 +112,38 @@ int main()
 
 
         // Here you can add ImGui widgets
-        /*ImGui::Begin("wellcome tab ");
-        ImGui::Text("welcome to the UI/game edditor, which uses an awesome 2d game engine called Start-Your-Engine ");
-        ImGui::End();*/
+        ImGui::Begin("wellcome tab ");
+        ImGui::Text("welcome to the UI/game editor, which uses an awesome 2d game engine called Start-Your-Engine ");
+        ImGui::End();
         if (!In_Game) {
             // Render title screen
-            ImGui::Begin("Title Screen");
-            ImGui::Text("Welcome to the Game");
+            ImGui::Begin("Main menu");
+            ImGui::Text("Press the \"Play\" to start your game");
 
             if (ImGui::Button("Play")) {
                 In_Game = true; // Change state to start the game
+            }
+            ImGui::Text("Press the \"Exit Program\" to Close the application");
+            if (ImGui::Button("Exit Program")) {
+                glfwSetWindowShouldClose(window, true);
             }
 
             ImGui::End();
         }
         else if (In_Game) {
+            ImGui::Begin("controller tab ");
+            ImGui::Text(" Press the esc key to go back to the main menu");
+            ImGui::Text(" Press the 'A' and 'D' keys respectively to go left and right  ");
+            ImGui::Text(" Press the 'W' and 'S' keys respectively to look up and down  ");
+            ImGui::Text(" Press the 'SPACE' key respectively to jump ");
+            ImGui::End();
             // Update and render game
             demo.Update();
             demo.Render();
         }
-		// Rendering imgui elements
+        // Rendering imgui elements
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        /* Update game objects */
-        //demo.Update();
-
-
-        /* Render here */
-        //demo.Render();
-
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
