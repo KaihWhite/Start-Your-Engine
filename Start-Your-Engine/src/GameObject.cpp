@@ -4,8 +4,8 @@
 #include "game.h"
 //#include "ContactListener.h"
 
-GameObject::GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam)
-	: color(color), animations(animations), size(size)
+GameObject::GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam, ObjectType type)
+	: color(color), animations(animations), size(size), rigidBodyType(dynam ? RigidBodyType::DYNAMIC : RigidBodyType::STATIC), type(type)
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = dynam ? b2_dynamicBody : b2_staticBody;

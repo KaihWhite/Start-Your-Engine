@@ -18,3 +18,7 @@ Texture2D Animation::getSpriteSheet() {
 unsigned int Animation::getTotalFrames() {
 	return totalFrames;
 }
+
+const char* Animation::getSpriteSheetName() {
+	return spriteSheet;
+}
