@@ -9,6 +9,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "game.h"
+#include "ImGuiEditorWindow.h"
 
 unsigned int SCR_WIDTH = 1600;
 unsigned int SCR_HEIGHT = 800;
@@ -85,17 +86,9 @@ int main()
     /* Set size of rendering window */
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
+    ImGuiEditorWindow* imguiWindow = new ImGuiEditorWindow(window);
+    imguiWindow->createWindow();
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-
-    // Setup Platform/Renderer bindings
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 400");
 
     /* Init game */
     demo.Init(SCR_WIDTH, SCR_HEIGHT);
@@ -105,16 +98,19 @@ int main()
     {
 
         // Start the Dear ImGui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        imguiWindow->startRender();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
+        
         // Here you can add ImGui widgets
         ImGui::Begin("wellcome tab ");
         ImGui::Text("welcome to the UI/game editor, which uses an awesome 2d game engine called Start-Your-Engine ");
         ImGui::End();
+
+        ImGui::Begin("scene tab ");
+		// here you can add ImGui
+        ImGui::End();
+
         if (!In_Game) {
             // Render title screen
             ImGui::Begin("Main menu");
@@ -142,8 +138,7 @@ int main()
             demo.Render();
         }
         // Rendering imgui elements
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        imguiWindow->endRender();
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
@@ -151,9 +146,7 @@ int main()
         /* Poll for and process events */
         glfwPollEvents();
     }
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+    imguiWindow->destroyWindow();
 
     ResourceManager::Clear();
     glfwTerminate();
