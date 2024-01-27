@@ -34,7 +34,7 @@ public:
 
 	b2Body* body;
 
-	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam = false, ObjectType type);
+	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, bool dynam = false);
 	~GameObject();
 
 	void update();

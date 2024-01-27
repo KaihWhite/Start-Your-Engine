@@ -15,7 +15,7 @@ class Player : public GameObject
 public:
 	
 
-	Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, Camera2DSystem* cameraMan, bool dynam = false);
+	Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, Camera2DSystem* cameraMan, std::string type, bool dynam = false);
 	void updateCamera();
 	void move(bool Keys[1024], float timeStep);
 

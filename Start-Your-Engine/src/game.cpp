@@ -65,10 +65,10 @@ void Game::Init(unsigned int width, unsigned int height)
     world = new b2World(gravity);
 
     /* create player game object */
-    this->player = new Player(glm::vec2(4.0f, 4.0f), glm::vec2(3.0f, 4.0f), glm::vec3(1.0f, 1.0f, 1.0f), player_animations, world, cameraMan, true);
+    this->player = new Player(glm::vec2(4.0f, 4.0f), glm::vec2(3.0f, 4.0f), glm::vec3(1.0f, 1.0f, 1.0f), player_animations, world, cameraMan, "Player", true);
      // Create platform object
-    platform1 = new GameObject(glm::vec2(5.0f, 7.0f), glm::vec2(10.0f, 0.1f), glm::vec3(0.5f, 0.5f, 0.5f), platform_animations1, world, false);
-    platform2 = new GameObject(glm::vec2(12.0f, 5.0f), glm::vec2(1.0f, 6.0f), glm::vec3(0.5f, 0.5f, 0.5f), platform_animations2, world, false);
+    platform1 = new GameObject(glm::vec2(5.0f, 7.0f), glm::vec2(10.0f, 0.1f), glm::vec3(0.5f, 0.5f, 0.5f), platform_animations1, world, "Object", false);
+    platform2 = new GameObject(glm::vec2(12.0f, 5.0f), glm::vec2(1.0f, 6.0f), glm::vec3(0.5f, 0.5f, 0.5f), platform_animations2, world, "Object", false);
     /* add game objects to gameObjects vector */
     this->gameObjects.push_back(player);
     //this->gameObjects.push_back(ground);
