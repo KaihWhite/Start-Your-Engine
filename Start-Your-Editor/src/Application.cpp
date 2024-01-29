@@ -41,8 +41,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 }
 
-int main()
-{
+int main() {
+
     std::cout << "welcome page" << std::endl;
     GLFWwindow* window;
 
@@ -90,8 +90,28 @@ int main()
     imguiWindow->createWindow();
 
 
+    /* setting for the frame buffer for ImGui  */
+    unsigned int imguiframebuffer;
+    glGenFramebuffers(1, &imguiframebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, imguiframebuffer);
+    /* setting for the texture buffer for ImGui  */
+    unsigned int imguitexturebuffer;
+    glGenTextures(1, &imguitexturebuffer);
+    glBindTexture(GL_TEXTURE_2D, imguitexturebuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, imguitexturebuffer, 0);
+
+	// check if the frame bufer is working
+    if (!(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE))
+        std::cout << "This is an error message that the frame buffer is incomplete" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
     /* Init game */
     demo.Init(SCR_WIDTH, SCR_HEIGHT);
+
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -101,15 +121,13 @@ int main()
         imguiWindow->startRender();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        
+
         // Here you can add ImGui widgets
         ImGui::Begin("wellcome tab ");
         ImGui::Text("welcome to the UI/game editor, which uses an awesome 2d game engine called Start-Your-Engine ");
         ImGui::End();
 
-        ImGui::Begin("scene tab ");
-		// here you can add ImGui
-        ImGui::End();
+
 
         if (!In_Game) {
             // Render title screen
@@ -133,9 +151,23 @@ int main()
             ImGui::Text(" Press the 'W' and 'S' keys respectively to look up and down  ");
             ImGui::Text(" Press the 'SPACE' key respectively to jump ");
             ImGui::End();
-            // Update and render game
+            ImGui::Begin("scene tab ");
+            // frame buffer rendering section
+            glBindFramebuffer(GL_FRAMEBUFFER, imguiframebuffer);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
+            glClear(GL_COLOR_BUFFER_BIT);
+            // game is rendered here and updated
             demo.Update();
             demo.Render();
+			// unbind the framebuffer that renders the scene
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			// gets the scene window size so it can resize the image per frame
+            ImVec2 wSize = ImGui::GetWindowSize();
+            
+			// renders the buffered texture from the frame buffer into the ImGui image scene
+            ImGui::Image((void*)(intptr_t)imguitexturebuffer, ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
+
+            ImGui::End();
         }
         // Rendering imgui elements
         imguiWindow->endRender();
@@ -147,7 +179,9 @@ int main()
         glfwPollEvents();
     }
     imguiWindow->destroyWindow();
-
+    // destroying the frame buffer
+    glDeleteFramebuffers(1, &imguiframebuffer);
+    glDeleteTextures(1, &imguitexturebuffer);
     ResourceManager::Clear();
     glfwTerminate();
 
