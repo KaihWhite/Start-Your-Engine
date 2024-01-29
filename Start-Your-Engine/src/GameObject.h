@@ -8,18 +8,33 @@
 #include <unordered_map>
 #include "box2d/box2d.h"
 
+enum ObjectType {
+	PLAYER,
+	OBJECT,
+	NPC
+};
+
+enum RigidBodyType {
+	STATIC,
+	DYNAMIC
+};
+
 class GameObject
 {
 public:
+	ObjectType type;
+
 	std::unordered_map<std::string, Animation*> animations;
 	std::string currentAnimation = "idle";
 
 	glm::vec3 color;
 	glm::vec2 size;
 
+	bool rigidBodyType;
+
 	b2Body* body;
 
-	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, bool dynam = false);
+	GameObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, bool dynam = false);
 	~GameObject();
 
 	void update();

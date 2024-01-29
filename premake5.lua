@@ -10,6 +10,7 @@ workspace "Start-Your-Engine"
    IncludeDir["box2d"] = "Dependencies/box2d/include"
    IncludeDir["Start-Your-Engine"] = "Start-Your-Engine/src"
    IncludeDir["imgui"] = "Dependencies/imgui/include"
+   IncludeDir["rapidjson"] = "Dependencies/rapidjson"
 
 project "Start-Your-Editor"
    kind "ConsoleApp"
@@ -20,11 +21,11 @@ project "Start-Your-Editor"
    targetdir "bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
    objdir "bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
 
-   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c","Dependencies/imgui/include/*.h","Dependencies/imgui/src/*.cpp" }
+   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c", "Dependencies/imgui/src/*.cpp" }
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { IncludeDir["Glad"], IncludeDir["GLFW"] .. "/Windows/include",IncludeDir["imgui"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["Start-Your-Engine"] }
+      includedirs { IncludeDir["Glad"], IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["imgui"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"], IncludeDir["Start-Your-Engine"] }
       libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] }
       architecture "x64"
       systemversion "latest"
@@ -64,11 +65,11 @@ project "Start-Your-Engine"
    targetdir "bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
    objdir "bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
 
-   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp" }
+   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c"}
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"] }
+      includedirs { IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"] }
       libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] }
       architecture "x64"
       systemversion "latest"

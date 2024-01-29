@@ -16,4 +16,5 @@ public:
 	Texture2D getSpriteSheet();
 
 	unsigned int getTotalFrames();
+	const char* getSpriteSheetName();
 };
