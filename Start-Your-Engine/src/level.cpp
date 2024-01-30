@@ -68,6 +68,7 @@ void Level::saveToJSON(const std::string& filename, std::vector<GameObject*> gam
     doc.AddMember("gameObjects", objects, allocator);
 
     // Write to file
+    // TODO: set an absolute path to the levels folder to save and read levels from
     FILE* fp = fopen(filename.c_str(), "wb");
     char writeBuffer[65536];
     rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
