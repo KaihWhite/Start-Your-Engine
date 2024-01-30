@@ -10,6 +10,7 @@
 #include "imgui_impl_opengl3.h"
 #include "game.h"
 #include "ImGuiEditorWindow.h"
+#include "level.h"
 
 unsigned int SCR_WIDTH = 1600;
 unsigned int SCR_HEIGHT = 800;
@@ -148,6 +149,7 @@ int main()
     }
     imguiWindow->destroyWindow();
 
+    Level::saveToJSON("autosave.json", demo.gameObjects);
     ResourceManager::Clear();
     glfwTerminate();
 
