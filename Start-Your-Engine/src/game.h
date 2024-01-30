@@ -30,8 +30,6 @@ public:
     unsigned int            Width; 
     unsigned int            Height;
     Player                  *player;
-    GameObject              *platform1;
-    GameObject              *platform2;
     Renderer                *renderer;
    
     std::vector<GameObject*> gameObjects;
@@ -50,8 +48,8 @@ public:
     // initialize game state (load all shaders/textures/levels)
     void Init(unsigned int width, unsigned int height);
 
-    // TODO:  Implement this to take a level (GameObject vector) and initialize the gameObjects vector of the Game class
-    void initLevel(std::vector<GameObject*> levelObjects);
+    // TODO: is there a beneifit to passing this by reference over value
+    void initLevel(std::vector<GameObject*>& level);
 
     // game loop
     void ProcessInput(float& dt);

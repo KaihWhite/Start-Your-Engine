@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <vector>
 #include <string>
+#include <iostream>
 
 #include "GameObject.h" // Include your GameObject class
 

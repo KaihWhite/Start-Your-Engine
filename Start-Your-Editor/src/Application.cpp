@@ -150,6 +150,7 @@ int main()
     imguiWindow->destroyWindow();
 
     Level::saveToJSON("autosave.json", demo.gameObjects);
+    std::cout << "autosaved" << std::endl;
     ResourceManager::Clear();
     glfwTerminate();
 
