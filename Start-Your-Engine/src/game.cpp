@@ -64,6 +64,8 @@ void Game::Init(unsigned int width, unsigned int height)
     b2Vec2 gravity(0.0f, 9.8f); // positive Y for things to fall down in openGL G = 9.8
     world = new b2World(gravity);
 
+    // TODO: Move this into initLevel() that takes a gameobject vector and sets the game's gameObjects vector to it
+
     /* create player game object */
     this->player = new Player(glm::vec2(4.0f, 4.0f), glm::vec2(3.0f, 4.0f), glm::vec3(1.0f, 1.0f, 1.0f), player_animations, world, cameraMan, "Player", true);
      // Create platform object
@@ -116,4 +118,9 @@ void Game::Render()
 
     }
     
+}
+
+void Game::initLevel(std::vector<GameObject*> levelObjects)
+{
+	this->gameObjects = levelObjects;
 }

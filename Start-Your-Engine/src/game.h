@@ -49,6 +49,10 @@ public:
     ~Game();
     // initialize game state (load all shaders/textures/levels)
     void Init(unsigned int width, unsigned int height);
+
+    // TODO:  Implement this to take a level (GameObject vector) and initialize the gameObjects vector of the Game class
+    void initLevel(std::vector<GameObject*> levelObjects);
+
     // game loop
     void ProcessInput(float& dt);
     void Update();
