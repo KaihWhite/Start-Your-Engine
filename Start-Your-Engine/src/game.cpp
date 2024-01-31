@@ -119,7 +119,7 @@ void Game::Render()
     
 }
 
-void Game::initLevel(std::vector<GameObject*>& level)
+void Game::initLevel(std::vector<GameObject*> level)
 {
 	this->gameObjects = level;
 }

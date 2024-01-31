@@ -40,16 +40,35 @@ public:
     int32 positionIterations = 3;
 
 
-
-
     // constructor/destructor
     Game(unsigned int width, unsigned int height);
     ~Game();
+
     // initialize game state (load all shaders/textures/levels)
     void Init(unsigned int width, unsigned int height);
 
-    // TODO: is there a beneifit to passing this by reference over value
-    void initLevel(std::vector<GameObject*>& level);
+    void initLevel(std::vector<GameObject*> level);
+
+    // TODO: implement below
+
+    Animation* loadAnimation(const char* file, bool alpha, std::string name, int numFrames);
+
+    // adds the game object to the level
+    void addGameObject(ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+    
+    // removes the game object from the level
+    void removeGameObject(int index);
+
+    // updates a game object in the level
+    void updateGameObject(int index, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+
+    // Only allows for one player
+    void addPlayer(std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+
+    // Removes the player if it exists
+    void removePlayer();
+
+    void updatePlayer(std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 
     // game loop
     void ProcessInput(float& dt);
