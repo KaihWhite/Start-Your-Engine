@@ -34,7 +34,7 @@ void Level::saveToJSON(const std::string& filename, std::vector<GameObject*> gam
 
             //std::string name = anim.second->getSpriteSheetName();
             rapidjson::Value key;
-            key.SetString(anim.second->getSpriteSheetName(), allocator);
+            key.SetString(anim.second->getSpriteSheetName().c_str(), allocator);
 
             // Convert the value (total frames) to a RapidJSON Value
             rapidjson::Value value;
@@ -86,7 +86,9 @@ void Level::saveToJSON(const std::string& filename, std::vector<GameObject*> gam
 std::vector<GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world) {
     std::vector<GameObject*> gameObjects;
 
-    FILE* fp = fopen(filename.c_str(), "rb");
+    std::string path = "Start-Your-Editor/Levels/" + filename;
+
+    FILE* fp = fopen(path.c_str(), "rb");
     char readBuffer[65536];
     rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
     rapidjson::Document doc;
@@ -105,12 +107,14 @@ std::vector<GameObject*> Level::loadFromJSON(const std::string& filename, b2Worl
             std::unordered_map<std::string, Animation*> animations;
             for (const auto& anim : objValue["animations"].GetObject()) {
                 const std::string name = anim.name.GetString();
-                const std::string spriteSheetName = name + ".png";
+                //const std::string spriteSheetName = name + ".png";
                 const int totalFrames = anim.value.GetInt();
-                animations[name] = new Animation(spriteSheetName.c_str(), totalFrames);
+                const char* nameChar = name.c_str();
+                animations[name] = new Animation(name, totalFrames);
             }
 
-            bool dynam = objValue["rigidBodyType"].GetString() == "Dynamic";
+            std::string dynamCheck = "Dynamic";
+            bool dynam = objValue["rigidBodyType"].GetString() == dynamCheck;
 
             std::string type = objValue["type"].GetString();
 

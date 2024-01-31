@@ -94,6 +94,8 @@ int main()
     /* Init game */
     demo.Init(SCR_WIDTH, SCR_HEIGHT);
 
+    demo.initLevel(Level::loadFromJSON("test.json", demo.world));
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
