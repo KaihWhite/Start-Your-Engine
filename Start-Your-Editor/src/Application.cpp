@@ -10,6 +10,7 @@
 #include "imgui_impl_opengl3.h"
 #include "game.h"
 #include "ImGuiEditorWindow.h"
+#include "Framebuffer.h"
 
 unsigned int SCR_WIDTH = 1600;
 unsigned int SCR_HEIGHT = 800;
@@ -91,23 +92,8 @@ int main() {
 
 
     /* setting for the frame buffer for ImGui  */
-    unsigned int imguiframebuffer;
-    glGenFramebuffers(1, &imguiframebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, imguiframebuffer);
-    /* setting for the texture buffer for ImGui  */
-    unsigned int imguitexturebuffer;
-    glGenTextures(1, &imguitexturebuffer);
-    glBindTexture(GL_TEXTURE_2D, imguitexturebuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, imguitexturebuffer, 0);
-
-	// check if the frame bufer is working
-    if (!(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE))
-        std::cout << "This is an error message that the frame buffer is incomplete" << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+    FrameBuffer frameBuffer = FrameBuffer();
+    frameBuffer.setupConfig(SCR_WIDTH, SCR_HEIGHT);
 
     /* Init game */
     demo.Init(SCR_WIDTH, SCR_HEIGHT);
@@ -153,19 +139,19 @@ int main() {
             ImGui::End();
             ImGui::Begin("scene tab ");
             // frame buffer rendering section
-            glBindFramebuffer(GL_FRAMEBUFFER, imguiframebuffer);
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
+            frameBuffer.startBind();
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             // game is rendered here and updated
             demo.Update();
             demo.Render();
-			// unbind the framebuffer that renders the scene
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			// gets the scene window size so it can resize the image per frame
+            // unbind the framebuffer that renders the scene
+            frameBuffer.endBind();
+            // gets the scene window size so it can resize the image per frame
             ImVec2 wSize = ImGui::GetWindowSize();
-            
-			// renders the buffered texture from the frame buffer into the ImGui image scene
-            ImGui::Image((void*)(intptr_t)imguitexturebuffer, ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
+
+            // renders the buffered texture from the frame buffer into the ImGui image scene
+            ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
         }
@@ -180,8 +166,7 @@ int main() {
     }
     imguiWindow->destroyWindow();
     // destroying the frame buffer
-    glDeleteFramebuffers(1, &imguiframebuffer);
-    glDeleteTextures(1, &imguitexturebuffer);
+    frameBuffer.destroy();
     ResourceManager::Clear();
     glfwTerminate();
 
