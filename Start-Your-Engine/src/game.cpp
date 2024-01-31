@@ -122,5 +122,6 @@ void Game::Render()
 
 void Game::initLevel(std::vector<GameObject*> levelObjects)
 {
+
 	this->gameObjects = levelObjects;
 }
