@@ -83,7 +83,7 @@ void Level::saveToJSON(const std::string& filename, std::vector<GameObject*> gam
 }
 
 
-std::vector<GameObject*> loadFromJSON(const std::string& filename, b2World* world) {
+std::vector<GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world) {
     std::vector<GameObject*> gameObjects;
 
     FILE* fp = fopen(filename.c_str(), "rb");
