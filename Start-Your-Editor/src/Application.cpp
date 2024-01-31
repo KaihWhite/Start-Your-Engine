@@ -113,7 +113,38 @@ int main() {
         ImGui::Text("welcome to the UI/game editor, which uses an awesome 2d game engine called Start-Your-Engine ");
         ImGui::End();
 
-
+        // Upper head toolbar
+        if (ImGui::BeginMainMenuBar()) {
+            if (ImGui::BeginMenu("File")) {
+                // Add items to the File menu here
+                if (ImGui::MenuItem("Open", "Ctrl+O")) {
+                }
+                if (ImGui::MenuItem("Save", "Ctrl+S")) {
+                }
+                // More File menu items...
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Edit")) {
+                // Add items to the Edit menu here
+                if (ImGui::MenuItem("Undo", "Ctrl+Z")) {
+                }
+                if (ImGui::MenuItem("Redo", "Ctrl+Y")) {
+                }
+                // More File menu items...
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Insert")) {
+                // Add items to the Insert menu here
+                if (ImGui::MenuItem("Text", "?")) {
+                }
+                if (ImGui::MenuItem("Image", "?")) {
+                }
+                // More File menu items...
+                ImGui::EndMenu();
+            }
+            // More toolbar items
+            ImGui::EndMainMenuBar();
+        }
 
         if (!In_Game) {
             // Render title screen
