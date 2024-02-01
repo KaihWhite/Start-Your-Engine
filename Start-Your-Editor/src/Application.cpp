@@ -111,43 +111,7 @@ int main() {
 
 
         // Here you can add ImGui widgets
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.8f, 0.1f, 1.0f));
-        if (ImGui::BeginMainMenuBar())
-        {
-            if (ImGui::BeginMenu("File"))
-            {
-
-                if (ImGui::MenuItem("Exit"))
-                {
-                    // exit the application
-                    glfwSetWindowShouldClose(window, true);
-                }
-                ImGui::EndMenu();
-            }
-            if (ImGui::BeginMenu("level"))
-            {
-                if (ImGui::MenuItem("Play"))
-                {
-
-                    // plays the level
-                    In_Game = true;
-                }
-                if (ImGui::MenuItem("Load"))
-                {
-                    // loads the level
-                    //demo.initLevel(Level::loadFromJSON("loadLevelTest.json", demo.world));
-                }
-                if (ImGui::MenuItem("Save"))
-                {
-                    // saves the level
-                    //Level::saveToJSON("loadLevelTest.json", demo.gameObjects);
-
-                }
-                ImGui::EndMenu();
-            }
-            ImGui::EndMainMenuBar();
-            ImGui::PopStyleColor();
-        }
+       
         ImGui::Begin("Game Objects tab ");
         ImGui::TextWrapped("welcome to the UI/game editor, which uses an awesome 2d game engine called Start-Your-Engine ");
         ImGui::End();
