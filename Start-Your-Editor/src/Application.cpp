@@ -8,9 +8,11 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "imgui_internal.h"
 #include "game.h"
 #include "ImGuiEditorWindow.h"
 #include "Framebuffer.h"
+#include "level.h"
 
 unsigned int SCR_WIDTH = 1600;
 unsigned int SCR_HEIGHT = 800;
@@ -91,10 +93,10 @@ int main() {
     imguiWindow->createWindow();
 
 
+
     /* setting for the frame buffer for ImGui  */
     FrameBuffer frameBuffer = FrameBuffer();
     frameBuffer.setupConfig(SCR_WIDTH, SCR_HEIGHT);
-
     /* Init game */
     demo.Init(SCR_WIDTH, SCR_HEIGHT);
 
@@ -107,13 +109,7 @@ int main() {
         imguiWindow->startRender();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-        // Here you can add ImGui widgets
-        ImGui::Begin("wellcome tab ");
-        ImGui::Text("welcome to the UI/game editor, which uses an awesome 2d game engine called Start-Your-Engine ");
-        ImGui::End();
-
-        // Upper head toolbar
+          // Upper head toolbar
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("File")) {
                 // Add items to the File menu here
@@ -145,29 +141,41 @@ int main() {
             // More toolbar items
             ImGui::EndMainMenuBar();
         }
+        // Here you can add ImGui widgets
+       
+        ImGui::Begin("Game Objects tab ");
+        ImGui::TextWrapped("welcome to the UI/game editor, which uses an awesome 2d game engine called Start-Your-Engine ");
+        ImGui::End();
+
+
+        ImGui::Begin("Game Object attributes tab ");
+        ImGui::TextWrapped("this is the attributes tab where the object's property is displayed and changed accordingly");
+        ImGui::End();
+
+        ImGui::Begin("Assets tab ");
+        ImGui::TextWrapped("this is the asset's tab where the user can import and export assets into the level and outside the level");
+        ImGui::End();
 
         if (!In_Game) {
             // Render title screen
-            ImGui::Begin("Main menu");
-            ImGui::Text("Press the \"Play\" to start your game");
+            ImGui::Begin("scene tab ");
+            
+            // frame buffer rendering section
+            frameBuffer.startBind();
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+            // unbind the framebuffer that renders the scene
+            frameBuffer.endBind();
+            // gets the scene window size so it can resize the image per frame
+            ImVec2 wSize = ImGui::GetWindowSize();
 
-            if (ImGui::Button("Play")) {
-                In_Game = true; // Change state to start the game
-            }
-            ImGui::Text("Press the \"Exit Program\" to Close the application");
-            if (ImGui::Button("Exit Program")) {
-                glfwSetWindowShouldClose(window, true);
-            }
+            // renders the buffered texture from the frame buffer into the ImGui image scene
+            ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
         }
         else if (In_Game) {
-            ImGui::Begin("controller tab ");
-            ImGui::Text(" Press the esc key to go back to the main menu");
-            ImGui::Text(" Press the 'A' and 'D' keys respectively to go left and right  ");
-            ImGui::Text(" Press the 'W' and 'S' keys respectively to look up and down  ");
-            ImGui::Text(" Press the 'SPACE' key respectively to jump ");
-            ImGui::End();
+            
             ImGui::Begin("scene tab ");
             // frame buffer rendering section
             frameBuffer.startBind();
@@ -185,6 +193,14 @@ int main() {
             ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
+
+            ImGui::Begin("controller tab ");
+            ImGui::TextWrapped(" Press the esc key to go back to the main menu");
+            ImGui::TextWrapped(" Press the 'A' and 'D' keys respectively to go left and right  ");
+            ImGui::TextWrapped(" Press the 'W' and 'S' keys respectively to look up and down  ");
+            ImGui::TextWrapped(" Press the 'SPACE' key respectively to jump ");
+            ImGui::End();
+
         }
         // Rendering imgui elements
         imguiWindow->endRender();
