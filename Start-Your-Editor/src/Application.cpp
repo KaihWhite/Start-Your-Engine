@@ -100,7 +100,6 @@ int main() {
     /* Init game */
     demo.Init(SCR_WIDTH, SCR_HEIGHT);
 
-
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -212,8 +211,7 @@ int main() {
         glfwPollEvents();
     }
     imguiWindow->destroyWindow();
-    // destroying the frame buffer
-    frameBuffer.destroy();
+
     ResourceManager::Clear();
     glfwTerminate();
 

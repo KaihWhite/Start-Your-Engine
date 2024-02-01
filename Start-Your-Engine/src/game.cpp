@@ -13,8 +13,6 @@ Game::Game(unsigned int width, unsigned int height)
 Game::~Game()
 {
     delete this->player;
-    delete this->platform1;
-    delete this->platform2;
     delete this->renderer;
     delete this->world;
 }
@@ -64,19 +62,6 @@ void Game::Init(unsigned int width, unsigned int height)
     b2Vec2 gravity(0.0f, 9.8f); // positive Y for things to fall down in openGL G = 9.8
     world = new b2World(gravity);
 
-    // TODO: Move this into initLevel() that takes a gameobject vector and sets the game's gameObjects vector to it
-
-    /* create player game object */
-    this->player = new Player(glm::vec2(4.0f, 4.0f), glm::vec2(3.0f, 4.0f), glm::vec3(1.0f, 1.0f, 1.0f), player_animations, world, cameraMan, "Player", true);
-     // Create platform object
-    platform1 = new GameObject(glm::vec2(5.0f, 7.0f), glm::vec2(10.0f, 0.1f), glm::vec3(0.5f, 0.5f, 0.5f), platform_animations1, world, "Object", false);
-    platform2 = new GameObject(glm::vec2(12.0f, 5.0f), glm::vec2(1.0f, 6.0f), glm::vec3(0.5f, 0.5f, 0.5f), platform_animations2, world, "Object", false);
-    /* add game objects to gameObjects vector */
-    this->gameObjects.push_back(player);
-    //this->gameObjects.push_back(ground);
-    // Add platform to game objects
-    this->gameObjects.push_back(platform1);
-    this->gameObjects.push_back(platform2);
 
     // Initialize and Set the Contact Listener
     ContactListener* contactListener = new ContactListener();
@@ -120,8 +105,7 @@ void Game::Render()
     
 }
 
-void Game::initLevel(std::vector<GameObject*> levelObjects)
+void Game::initLevel(std::vector<GameObject*> level)
 {
-
-	this->gameObjects = levelObjects;
+	this->gameObjects = level;
 }

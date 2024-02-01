@@ -5,16 +5,16 @@
 
 class Animation {
 
-	const char* spriteSheet;
+	std::string spriteSheet;
 	unsigned int totalFrames;
 
 public:
 
-	Animation(const char* spriteSheet, unsigned int totalFrames);
+	Animation(std::string spriteSheet, unsigned int totalFrames);
 	~Animation();
 
 	Texture2D getSpriteSheet();
 
 	unsigned int getTotalFrames();
-	const char* getSpriteSheetName();
+	std::string getSpriteSheetName();
 };

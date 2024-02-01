@@ -2,7 +2,7 @@
 #include "Animation.h"
 #include <iostream>
 
-Animation::Animation(const char* spriteSheet, unsigned int totalFrames)
+Animation::Animation(std::string spriteSheet, unsigned int totalFrames)
 	: spriteSheet(spriteSheet), totalFrames(totalFrames)
 {
 }
@@ -19,6 +19,6 @@ unsigned int Animation::getTotalFrames() {
 	return totalFrames;
 }
 
-const char* Animation::getSpriteSheetName() {
+std::string Animation::getSpriteSheetName() {
 	return spriteSheet;
 }
