@@ -29,11 +29,13 @@ public:
     bool                    Keys[1024];
     unsigned int            Width; 
     unsigned int            Height;
+
     Player                  *player;
     Renderer                *renderer;
+    b2World                 *world;
+    Camera2DSystem          *cameraMan;
    
     std::vector<GameObject*> gameObjects;
-    b2World                 *world;
 
     float timeStep = 1.0f / 60.0f;
     int32 velocityIterations = 8;
@@ -49,8 +51,6 @@ public:
 
     void initLevel(std::vector<GameObject*> level);
 
-    // TODO: implement below
-
     Animation* loadAnimation(const char* file, bool alpha, std::string name, int numFrames);
 
     // adds the game object to the level
@@ -63,7 +63,7 @@ public:
     void updateGameObject(int index, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 
     // Only allows for one player
-    void addPlayer(std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+    void addPlayer(Camera2DSystem* cameraMan, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 
     // Removes the player if it exists
     void removePlayer();

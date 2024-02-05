@@ -83,7 +83,7 @@ void Level::saveToJSON(const std::string& filename, std::vector<GameObject*> gam
 }
 
 
-std::vector<GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world) {
+std::vector<GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
     std::vector<GameObject*> gameObjects;
 
     std::string path = "Start-Your-Editor/Levels/" + filename;
@@ -118,8 +118,13 @@ std::vector<GameObject*> Level::loadFromJSON(const std::string& filename, b2Worl
 
             std::string type = objValue["type"].GetString();
 
-            GameObject* gameObject = new GameObject(position, size, color, animations, world, type, dynam);
-            gameObjects.push_back(gameObject);
+            if (type == "Player") {
+                Player* player = new Player(position, size, color, animations, world, cameraMan, type, dynam);
+                gameObjects.push_back(player);
+            } else {
+                GameObject* gameObject = new GameObject(position, size, color, animations, world, type, dynam);
+                gameObjects.push_back(gameObject);
+            }
         }
     }
 
