@@ -1,6 +1,16 @@
 // Made by Kaih White
 #include "level.h"
 
+std::vector<std::string> split(const std::string& s, char delimiter) {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+    while (std::getline(tokenStream, token, delimiter)) {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
 void Level::saveToJSON(const std::string& filename, std::vector<GameObject*> gameObjects) {
     rapidjson::Document doc;
     doc.SetObject();
@@ -34,7 +44,8 @@ void Level::saveToJSON(const std::string& filename, std::vector<GameObject*> gam
 
             //std::string name = anim.second->getSpriteSheetName();
             rapidjson::Value key;
-            key.SetString(anim.second->getSpriteSheetName().c_str(), allocator);
+            std::string combinedName = anim.second->getSpriteSheetName() + "," + anim.first;
+            key.SetString(combinedName.c_str(), allocator);
 
             // Convert the value (total frames) to a RapidJSON Value
             rapidjson::Value value;
@@ -106,11 +117,13 @@ std::vector<GameObject*> Level::loadFromJSON(const std::string& filename, b2Worl
 
             std::unordered_map<std::string, Animation*> animations;
             for (const auto& anim : objValue["animations"].GetObject()) {
+
                 const std::string name = anim.name.GetString();
-                //const std::string spriteSheetName = name + ".png";
+                std::vector<std::string> splitName = split(name, ',');
+
                 const int totalFrames = anim.value.GetInt();
-                const char* nameChar = name.c_str();
-                animations[name] = new Animation(name, totalFrames);
+
+                animations[splitName[1]] = new Animation(splitName[0], totalFrames);
             }
 
             std::string dynamCheck = "Dynamic";
@@ -130,4 +143,3 @@ std::vector<GameObject*> Level::loadFromJSON(const std::string& filename, b2Worl
 
     return gameObjects;
 }
-

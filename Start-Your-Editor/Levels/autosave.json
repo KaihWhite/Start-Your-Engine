@@ -4,9 +4,9 @@
             "type": "Player",
             "rigidBodyType": "Dynamic",
             "animations": {
-                "idle": 10,
-                "run": 8,
-                "jump": 3
+                "idle,idle": 10,
+                "run,run": 8,
+                "jump,jump": 3
             },
             "color": {
                 "x": 1.0,
@@ -26,7 +26,7 @@
             "type": "Object",
             "rigidBodyType": "Static",
             "animations": {
-                "awesomeface": 1
+                "awesomeface,idle": 1
             },
             "color": {
                 "x": 0.5,
@@ -46,7 +46,7 @@
             "type": "Object",
             "rigidBodyType": "Static",
             "animations": {
-                "awesomeface": 1
+                "awesomeface,idle": 1
             },
             "color": {
                 "x": 0.5,
