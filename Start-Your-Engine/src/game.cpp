@@ -25,7 +25,7 @@ void Game::Init(unsigned int width, unsigned int height)
 
     /* configure shaders with image and projection uniforms */
     //glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f, -1.0f, 1.0f);
-    Camera2DSystem* cameraMan = new Camera2DSystem(static_cast<float>(width), static_cast<float>(height));
+    this->cameraMan = new Camera2DSystem(static_cast<float>(width), static_cast<float>(height));
     ResourceManager::GetShader("anim").Use().SetInteger("image", 0);
     ResourceManager::GetShader("anim").SetMatrix4("projectionView", cameraMan->getCamera().getProjectionViewMatrix());
 

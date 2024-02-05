@@ -29,11 +29,13 @@ public:
     bool                    Keys[1024];
     unsigned int            Width; 
     unsigned int            Height;
+
     Player                  *player;
     Renderer                *renderer;
+    b2World                 *world;
+    Camera2DSystem          *cameraMan;
    
     std::vector<GameObject*> gameObjects;
-    b2World                 *world;
 
     float timeStep = 1.0f / 60.0f;
     int32 velocityIterations = 8;

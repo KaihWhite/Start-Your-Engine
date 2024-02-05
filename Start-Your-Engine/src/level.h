@@ -18,7 +18,7 @@ class Level {
 public:
 
     static void saveToJSON(const std::string& filename, std::vector<GameObject*> gameObjects);
-    static std::vector<GameObject*> loadFromJSON(const std::string& filename, b2World* world);
+    static std::vector<GameObject*> loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan);
 
 private:
     Level() { };
