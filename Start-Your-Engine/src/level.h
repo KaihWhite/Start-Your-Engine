@@ -11,7 +11,8 @@
 #include <string>
 #include <iostream>
 
-#include "GameObject.h" // Include your GameObject class
+#include "GameObject.h"
+#include "Player.h"
 
 class Level {
 public:

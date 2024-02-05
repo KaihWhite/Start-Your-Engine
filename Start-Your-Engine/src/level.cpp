@@ -118,8 +118,13 @@ std::vector<GameObject*> Level::loadFromJSON(const std::string& filename, b2Worl
 
             std::string type = objValue["type"].GetString();
 
-            GameObject* gameObject = new GameObject(position, size, color, animations, world, type, dynam);
-            gameObjects.push_back(gameObject);
+            if (type == "Player") {
+                Player* player = new Player(position, size, color, animations, world, type, dynam);
+                gameObjects.push_back(player);
+            } else {
+                GameObject* gameObject = new GameObject(position, size, color, animations, world, type, dynam);
+                gameObjects.push_back(gameObject);
+            }
         }
     }
 
