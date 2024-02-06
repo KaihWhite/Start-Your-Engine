@@ -34,7 +34,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         //glfwSetWindowShouldClose(window, true);
         In_Game = false;
     }
-
+	
+	
     if (key >= 0 && key < 1024)
     {
         if (action == GLFW_PRESS)
@@ -114,9 +115,10 @@ int main() {
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("File")) {
                 // Add items to the File menu here
-                if (ImGui::MenuItem("Open", "Ctrl+O")) {
-                }
-                if (ImGui::MenuItem("Save", "Ctrl+S")) {
+               
+                
+                if (ImGui::MenuItem("Exit rogram")) {
+                    glfwSetWindowShouldClose(window, true);
                 }
                 // More File menu items...
                 ImGui::EndMenu();
@@ -126,6 +128,17 @@ int main() {
                 if (ImGui::MenuItem("Undo", "Ctrl+Z")) {
                 }
                 if (ImGui::MenuItem("Redo", "Ctrl+Y")) {
+                }
+                if (ImGui::MenuItem("Play Level")) {
+                    In_Game = true;
+                }
+                if (ImGui::MenuItem("Exit Level")) {
+                    In_Game = false;
+                }
+                if (ImGui::MenuItem("load Level", "Ctrl+O")) {
+                    demo.initLevel(Level::loadFromJSON("test.json", demo.world, demo.cameraMan));
+                }
+                if (ImGui::MenuItem("Save level", "Ctrl+S")) {
                 }
                 // More File menu items...
                 ImGui::EndMenu();
