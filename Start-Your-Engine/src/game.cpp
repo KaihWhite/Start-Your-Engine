@@ -108,6 +108,14 @@ void Game::Render()
 void Game::initLevel(std::vector<GameObject*> level)
 {
 	this->gameObjects = level;
+    for (auto& gameObject : level)
+    {
+        if (gameObject->type == ObjectType::PLAYER)
+        {
+			this->player = (Player*)gameObject;
+            return;
+		}
+	}
 }
 
 void Game::addGameObject(ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
@@ -143,7 +151,17 @@ void Game::removePlayer()
 {
     // Need to find the index of the player in the gameObjects vector and erase it before deleting it
     // Possibly change from vector to map so that each object can have a name. Will make it easier to find objects and gives the user names to reference objects by
-	//delete this->player;
+    int index = 0;
+    for (auto& gameObject : this->gameObjects)
+    {
+        if (gameObject->type == ObjectType::PLAYER)
+        {
+            this->gameObjects.erase(this->gameObjects.begin() + index);
+            delete this->player;
+            return;
+        }
+        index++;
+    }
 }
 
 void Game::updatePlayer(std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
