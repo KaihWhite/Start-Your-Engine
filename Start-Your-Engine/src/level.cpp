@@ -23,6 +23,7 @@ void Level::saveToJSON(const std::string& filename, std::unordered_map<std::stri
         // Serialize GameObject data into objValue
 
         rapidjson::Value name;
+        // I could also use obj.first here
         name.SetString(obj.second->name.c_str(), allocator);
         objValue.AddMember("name", name, allocator);
         

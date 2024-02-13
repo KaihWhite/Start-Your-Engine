@@ -6,7 +6,7 @@
 
 
 Game::Game(unsigned int width, unsigned int height)
-    : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
+    : State(GAME_EDITOR), Keys(), Width(width), Height(height), player(nullptr), renderer(nullptr), world(nullptr), cameraMan(nullptr)
 {
 }
 
@@ -74,15 +74,21 @@ void Game::Update()
         This function moves the world objects according to physics */
     world->Step(this->timeStep, this->velocityIterations, this->positionIterations);
 
-    // Update player movement based on key inputs
-    this->player->move(this->Keys, this->timeStep);
-
-    for (auto& gameObject : gameObjects)
+    if (this->player != nullptr && State == GameState::GAME_ACTIVE)
     {
-		gameObject.second->update();
+        // Update player movement based on key inputs
+        this->player->move(this->Keys, this->timeStep);
+
+        this->player->updateCamera();
 	}
-    
-    this->player->updateCamera();
+
+    if (!gameObjects.empty())
+    {
+        for (auto& gameObject : gameObjects)
+        {
+            gameObject.second->update();
+        }
+	}
 }
 
 void Game::ProcessInput(float& dt)
