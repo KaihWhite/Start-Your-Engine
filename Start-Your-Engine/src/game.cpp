@@ -15,6 +15,11 @@ Game::~Game()
     delete this->player;
     delete this->renderer;
     delete this->world;
+    delete this->cameraMan;
+    for (auto& gameObject : gameObjects)
+    {
+		delete gameObject.second;
+	}
 }
 
 void Game::Init(unsigned int width, unsigned int height)
@@ -113,6 +118,10 @@ void Game::Render()
 
 void Game::initLevel(std::unordered_map<std::string, GameObject*> level)
 {
+    for (auto& gameObject : gameObjects)
+    {
+        delete gameObject.second;
+    }
 	this->gameObjects = level;
     for (auto& gameObject : level)
     {

@@ -16,7 +16,6 @@ Player::Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_ma
 
 Player::~Player()
 {
-	delete this->cameraMan;
 }
 
 
