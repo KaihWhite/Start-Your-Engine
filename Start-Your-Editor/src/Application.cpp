@@ -227,6 +227,7 @@ int main() {
     }
     imguiWindow->destroyWindow();
 
+    Level::saveToJSON("autosave.json", demo.gameObjects);
     ResourceManager::Clear();
     glfwTerminate();
 

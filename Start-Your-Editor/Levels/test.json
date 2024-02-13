@@ -1,6 +1,7 @@
 {
     "gameObjects": [
         {
+            "name": "player",
             "type": "Player",
             "rigidBodyType": "Dynamic",
             "animations": {
@@ -23,6 +24,7 @@
             }
         },
         {
+            "name": "platform1",
             "type": "Object",
             "rigidBodyType": "Static",
             "animations": {
@@ -43,6 +45,7 @@
             }
         },
         {
+            "name": "platform2",
             "type": "Object",
             "rigidBodyType": "Static",
             "animations": {

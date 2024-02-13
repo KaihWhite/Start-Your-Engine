@@ -79,7 +79,7 @@ void Game::Update()
 
     for (auto& gameObject : gameObjects)
     {
-		gameObject->update();
+		gameObject.second->update();
 	}
     
     this->player->updateCamera();
@@ -97,7 +97,7 @@ void Game::Render()
     */
     for (auto& gameObject : gameObjects)
     {
-        gameObject->draw(*renderer);
+        gameObject.second->draw(*renderer);
         
         
 
@@ -105,46 +105,47 @@ void Game::Render()
     
 }
 
-void Game::initLevel(std::vector<GameObject*> level)
+void Game::initLevel(std::unordered_map<std::string, GameObject*> level)
 {
 	this->gameObjects = level;
     for (auto& gameObject : level)
     {
-        if (gameObject->type == ObjectType::PLAYER)
+        if (gameObject.second->type == ObjectType::PLAYER)
         {
-			this->player = (Player*)gameObject;
+			this->player = (Player*)gameObject.second;
             return;
 		}
 	}
 }
 
-void Game::addGameObject(ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
+void Game::addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
 {
-    GameObject* gameObject = new GameObject(pos, size, color, animations, this->world, type == ObjectType::OBJECT ? "Object" : "Npc", rtype);
-	this->gameObjects.push_back(gameObject);
+    GameObject* gameObject = new GameObject(name, pos, size, color, animations, this->world, type == ObjectType::OBJECT ? "Object" : "Npc", rtype);
+    this->gameObjects[name] = gameObject;
 }
 
-void Game::removeGameObject(int index)
+void Game::removeGameObject(std::string name)
 {
-	delete this->gameObjects[index];
-	this->gameObjects.erase(this->gameObjects.begin() + index);
+	delete this->gameObjects[name];
+	this->gameObjects.erase(name);
 }
 
-void Game::updateGameObject(int index, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
+void Game::updateGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
 {
-	this->gameObjects[index]->animations = animations;
-    this->gameObjects[index]->color = color;
-    this->gameObjects[index]->size = size;
-    this->gameObjects[index]->rigidBodyType = rtype;
-    this->gameObjects[index]->body->SetTransform(b2Vec2(pos.x, pos.y), 0.0f);
-    this->gameObjects[index]->type = type;
+    this->gameObjects[name]->name = name;
+	this->gameObjects[name]->animations = animations;
+    this->gameObjects[name]->color = color;
+    this->gameObjects[name]->size = size;
+    this->gameObjects[name]->rigidBodyType = rtype;
+    this->gameObjects[name]->body->SetTransform(b2Vec2(pos.x, pos.y), 0.0f);
+    this->gameObjects[name]->type = type;
 }
 
 void Game::addPlayer(Camera2DSystem* cameraMan, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
 {
 	Player* player = new Player(pos, size, color, animations, this->world, cameraMan, "Player", true);
 	this->player = player;
-    this->gameObjects.push_back(player);
+    this->gameObjects["player"] = player;
 }
 
 void Game::removePlayer()
@@ -154,10 +155,11 @@ void Game::removePlayer()
     int index = 0;
     for (auto& gameObject : this->gameObjects)
     {
-        if (gameObject->type == ObjectType::PLAYER)
+        if (gameObject.second->type == ObjectType::PLAYER)
         {
-            this->gameObjects.erase(this->gameObjects.begin() + index);
-            delete this->player;
+            delete this->gameObjects["player"];
+            this->gameObjects.erase("player");
+            this->player = nullptr;
             return;
         }
         index++;

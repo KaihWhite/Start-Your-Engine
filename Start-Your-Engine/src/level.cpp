@@ -11,7 +11,7 @@ std::vector<std::string> split(const std::string& s, char delimiter) {
     return tokens;
 }
 
-void Level::saveToJSON(const std::string& filename, std::vector<GameObject*> gameObjects) {
+void Level::saveToJSON(const std::string& filename, std::unordered_map<std::string, GameObject*> gameObjects) {
     rapidjson::Document doc;
     doc.SetObject();
     rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
@@ -21,18 +21,22 @@ void Level::saveToJSON(const std::string& filename, std::vector<GameObject*> gam
     for (const auto& obj : gameObjects) {
         rapidjson::Value objValue(rapidjson::kObjectType);
         // Serialize GameObject data into objValue
+
+        rapidjson::Value name;
+        name.SetString(obj.second->name.c_str(), allocator);
+        objValue.AddMember("name", name, allocator);
         
-        if (obj->type == ObjectType::PLAYER) {
+        if (obj.second->type == ObjectType::PLAYER) {
 			objValue.AddMember("type", "Player", allocator);
 		}
-        else if (obj->type == ObjectType::OBJECT) {
+        else if (obj.second->type == ObjectType::OBJECT) {
 			objValue.AddMember("type", "Object", allocator);
 		}
         else {
 			objValue.AddMember("type", "NPC", allocator);
 		}
 
-        if (obj->rigidBodyType == RigidBodyType::DYNAMIC) {
+        if (obj.second->rigidBodyType == RigidBodyType::DYNAMIC) {
             objValue.AddMember("rigidBodyType", "Dynamic", allocator);
 		}
         else {
@@ -40,7 +44,7 @@ void Level::saveToJSON(const std::string& filename, std::vector<GameObject*> gam
 		}
 
         rapidjson::Value animations(rapidjson::kObjectType);
-        for (const auto& anim : obj->animations) {
+        for (const auto& anim : obj.second->animations) {
 
             //std::string name = anim.second->getSpriteSheetName();
             rapidjson::Value key;
@@ -56,19 +60,19 @@ void Level::saveToJSON(const std::string& filename, std::vector<GameObject*> gam
         objValue.AddMember("animations", animations, allocator);
 
         rapidjson::Value colorValue(rapidjson::kObjectType);
-        colorValue.AddMember("x", obj->color.x, allocator);
-        colorValue.AddMember("y", obj->color.y, allocator);
-        colorValue.AddMember("z", obj->color.z, allocator);
+        colorValue.AddMember("x", obj.second->color.x, allocator);
+        colorValue.AddMember("y", obj.second->color.y, allocator);
+        colorValue.AddMember("z", obj.second->color.z, allocator);
         objValue.AddMember("color", colorValue, allocator);
 
         rapidjson::Value sizeValue(rapidjson::kObjectType);
-        sizeValue.AddMember("x", obj->size.x, allocator);
-        sizeValue.AddMember("y", obj->size.y, allocator);
+        sizeValue.AddMember("x", obj.second->size.x, allocator);
+        sizeValue.AddMember("y", obj.second->size.y, allocator);
         objValue.AddMember("size", sizeValue, allocator);
 
         rapidjson::Value positionValue(rapidjson::kObjectType);
-        positionValue.AddMember("x", obj->getPosition().x, allocator);
-        positionValue.AddMember("y", obj->getPosition().y, allocator);
+        positionValue.AddMember("x", obj.second->getPosition().x, allocator);
+        positionValue.AddMember("y", obj.second->getPosition().y, allocator);
         objValue.AddMember("position", positionValue, allocator);
 
         // each objValue is a JSON object representing a GameObject
@@ -94,8 +98,8 @@ void Level::saveToJSON(const std::string& filename, std::vector<GameObject*> gam
 }
 
 
-std::vector<GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
-    std::vector<GameObject*> gameObjects;
+std::unordered_map<std::string, GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
+    std::unordered_map<std::string, GameObject*> gameObjects;
 
     std::string path = "Start-Your-Editor/Levels/" + filename;
 
@@ -131,12 +135,14 @@ std::vector<GameObject*> Level::loadFromJSON(const std::string& filename, b2Worl
 
             std::string type = objValue["type"].GetString();
 
+            std::string name = objValue["name"].GetString();
+
             if (type == "Player") {
                 Player* player = new Player(position, size, color, animations, world, cameraMan, type, dynam);
-                gameObjects.push_back(player);
+                gameObjects["player"] = player;
             } else {
-                GameObject* gameObject = new GameObject(position, size, color, animations, world, type, dynam);
-                gameObjects.push_back(gameObject);
+                GameObject* gameObject = new GameObject(name, position, size, color, animations, world, type, dynam);
+                gameObjects[name] = gameObject;
             }
         }
     }
