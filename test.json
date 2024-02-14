@@ -1,0 +1,66 @@
+{
+    "gameObjects": [
+        {
+            "type": "Player",
+            "rigidBodyType": "Dynamic",
+            "animations": {
+                "idle,idle": 10,
+                "run,run": 8,
+                "jump,jump": 3
+            },
+            "color": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "size": {
+                "x": 3.0,
+                "y": 4.0
+            },
+            "position": {
+                "x": 2.5,
+                "y": 2.0
+            }
+        },
+        {
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "awesomeface,idle": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 10.0,
+                "y": 0.10000000149011612
+            },
+            "position": {
+                "x": 0.0,
+                "y": 6.949999809265137
+            }
+        },
+        {
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "awesomeface,idle": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 1.0,
+                "y": 6.0
+            },
+            "position": {
+                "x": 11.5,
+                "y": 2.0
+            }
+        }
+    ]
+}
