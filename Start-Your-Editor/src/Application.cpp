@@ -4,6 +4,8 @@
 
 #include <iostream>
 #include <glad/glad.h>
+
+
 #include "GLFW/glfw3.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -16,9 +18,15 @@
 
 unsigned int SCR_WIDTH = 1600;
 unsigned int SCR_HEIGHT = 800;
+
 Game demo(SCR_WIDTH, SCR_HEIGHT);
 bool In_Game = false;
 
+
+static int counter = 0;
+bool selectObject = false; // Flag to control visibility of attributes tab
+std::string selectedObjectKey = ""; // Index of the currently selected object
+bool selectCamera = false;
 // Callback function for resizing the window
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -45,6 +53,121 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 }
 
+void showObjects() {
+    ImGui::Begin("Game Objects tab ");
+
+    // Optional: Add a button to add a new object
+    if (ImGui::Button("Add Object")) {
+       // Code to add a new object to the gameObjects vector
+       //addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+        std::string name = "object";
+        std::unordered_map<std::string, Animation*> animations;
+        animations["idle"] = new Animation("awesomeface", 1);
+        glm::vec3 color = glm::vec3(0.5,0.5,0.5);
+        glm::vec2 size = glm::vec2(5.0,5.0);
+		glm::vec2 position = glm::vec2(0.0,0.0);
+		// if the name key is not created yet
+        if (demo.gameObjects.find(name) == demo.gameObjects.end()) {
+            demo.addGameObject(name, OBJECT, STATIC, animations, color, size, position);
+        }
+        
+    }
+    // Start a scrolling region
+    ImGui::BeginChild("ObjectList", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+    if (ImGui::Selectable("Camera", false)) {
+        // Handle selection logic here
+        selectObject = false;
+		selectCamera = true;
+        selectedObjectKey = "";
+    }
+    for (const auto& pair : demo.gameObjects) {
+        if (ImGui::Selectable(pair.second->name.c_str(), false)) {
+            // Handle selection logic here
+            selectCamera = false;
+            selectObject = true;
+            selectedObjectKey = pair.first;
+        }
+    }
+   
+    std::ostringstream stream;
+    stream << "total objects: " << selectedObjectKey <<" ->" << demo.gameObjects.size();
+    std::string lengthText = stream.str();
+    ImGui::TextWrapped( lengthText.c_str());
+    // End the scrolling region
+    ImGui::EndChild();
+    ImGui::End();
+}
+
+void showAttributes() {
+    // 
+    if (selectCamera == false && selectObject == false && demo.gameObjects.find(selectedObjectKey) != demo.gameObjects.end()) {
+        ImGui::Begin("Game Object attributes tab ");
+        ImGui::TextWrapped("this is the attributes tab where the object's property is displayed and changed accordingly");
+        ImGui::End();
+    }
+    else if (selectCamera == true && selectObject == false && demo.gameObjects.find(selectedObjectKey) == demo.gameObjects.end()) {
+        ImGui::Begin("Game Object attributes tab ");
+        ImGui::TextWrapped("in camera setting");
+
+        if (ImGui::Button("move left")) {
+            demo.cameraMan->moveCamera(glm::vec2(-100, 0), 0.3);
+        };
+        if (ImGui::Button("move right")) {
+            demo.cameraMan->moveCamera(glm::vec2(100, 0), 0.3);
+        };
+        if (ImGui::Button("move up")) {
+            demo.cameraMan->moveCamera(glm::vec2(0, -100), 0.3);
+        };
+        if (ImGui::Button("move down")) {
+            demo.cameraMan->moveCamera(glm::vec2(10, 100), 0.3);
+        };
+        ImGui::Checkbox("follow player", &demo.cameraMan->following);
+
+        ImGui::End();
+    }
+    else if (selectCamera == false && selectObject == true && demo.gameObjects.find(selectedObjectKey) != demo.gameObjects.end()) {
+        ImGui::Begin("Game Object attributes tab ");
+        ImGui::TextWrapped("in object setting");
+       
+        if (ImGui::Button("gravity")) {
+            //demo.cameraMan->moveCamera(glm::vec2(-100, 0), ImGui::GetIO().DeltaTime);
+            demo.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(0.0);
+
+        };
+        if (ImGui::Button("move left")) {
+            //demo.cameraMan->moveCamera(glm::vec2(-100, 0), ImGui::GetIO().DeltaTime);
+            demo.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                demo.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                + b2Vec2(-0.5, 0), 0);
+           
+        };
+        if (ImGui::Button("move right")) {
+            demo.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                demo.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                + b2Vec2(0.5, 0), 0);
+        };
+        if (ImGui::Button("move up")) {
+            demo.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                demo.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                + b2Vec2(0, -0.5), 0);
+        };
+        if (ImGui::Button("move down")) {
+            demo.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                demo.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                + b2Vec2(0, 0.5), 0);
+            
+        };
+        ImGui::End();
+    }
+    else {
+        // nothing
+        ImGui::Begin("Game Object attributes tab ");
+        ImGui::TextWrapped("this is the attributes tab where the object's property is displayed and changed acco     rdingly");
+        ImGui::End();
+    }
+
+
+}
 int main() {
 
     std::cout << "welcome page" << std::endl;
@@ -103,6 +226,8 @@ int main() {
 
     demo.initLevel(Level::loadFromJSON("test.json", demo.world, demo.cameraMan));
 
+    
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -156,21 +281,20 @@ int main() {
             ImGui::EndMainMenuBar();
         }
         // Here you can add ImGui widgets
-       
-        ImGui::Begin("Game Objects tab ");
-        ImGui::TextWrapped("welcome to the UI/game editor, which uses an awesome 2d game engine called Start-Your-Engine ");
-        ImGui::End();
+        showObjects();
+        showAttributes();
+        
 
-
-        ImGui::Begin("Game Object attributes tab ");
+       /* ImGui::Begin("Game Object attributes tab ");
         ImGui::TextWrapped("this is the attributes tab where the object's property is displayed and changed accordingly");
-        ImGui::End();
+        ImGui::End();*/
 
         ImGui::Begin("Assets tab ");
         ImGui::TextWrapped("this is the asset's tab where the user can import and export assets into the level and outside the level");
         ImGui::End();
 
         if (!In_Game) {
+            demo.State = GameState::GAME_EDITOR;
             // Render title screen
             ImGui::Begin("scene tab ");
             
@@ -178,6 +302,8 @@ int main() {
             frameBuffer.startBind();
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
+			demo.Update();
+            demo.Render();
             // unbind the framebuffer that renders the scene
             frameBuffer.endBind();
             // gets the scene window size so it can resize the image per frame
@@ -189,7 +315,7 @@ int main() {
             ImGui::End();
         }
         else if (In_Game) {
-            
+            demo.State = GameState::GAME_ACTIVE;
             ImGui::Begin("scene tab ");
             // frame buffer rendering section
             frameBuffer.startBind();
@@ -198,6 +324,7 @@ int main() {
             // game is rendered here and updated
             demo.Update();
             demo.Render();
+            
             // unbind the framebuffer that renders the scene
             frameBuffer.endBind();
             // gets the scene window size so it can resize the image per frame
@@ -227,7 +354,6 @@ int main() {
     }
     imguiWindow->destroyWindow();
 
-    Level::saveToJSON("autosave.json", demo.gameObjects);
     ResourceManager::Clear();
     glfwTerminate();
 
