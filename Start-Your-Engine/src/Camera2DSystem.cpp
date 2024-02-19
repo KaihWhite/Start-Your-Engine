@@ -49,11 +49,14 @@ void Camera2DSystem::setBoundaries(float minX, float maxX, float minY, float max
 *	@param	deltaTime	the delta time 										type: float
 */ 
 void Camera2DSystem::follow(float targetX, float targetY, float followSpeed, float dt) {
-	this->targetPosition = glm::vec3(targetX, targetY, 0.0f);
-	glm::vec3 difference = this->targetPosition - this->camera.cameraPosition;
-	float interpolationfactor = followSpeed * dt;
+	if (following) {
+		this->targetPosition = glm::vec3(targetX, targetY, 0.0f);
+		glm::vec3 difference = this->targetPosition - this->camera.cameraPosition;
+		float interpolationfactor = followSpeed * dt;
+
+		this->camera.cameraPosition = this->camera.cameraPosition + difference * interpolationfactor;
+	}
 	
-	this->camera.cameraPosition = this->camera.cameraPosition + difference * interpolationfactor;
 	
 	//this->camera.cameraPosition = glm::mix(this->camera.cameraPosition, targetPosition, this->camera.cameraSpeed * dt);
 	camera.updateProjectionViewMatrix();

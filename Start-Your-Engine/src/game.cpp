@@ -81,7 +81,13 @@ void Game::Update()
 
         this->player->updateCamera();
 	}
+    if (this->player != nullptr && State == GameState::GAME_EDITOR)
+    {
+        // Update player movement based on key inputs
+        this->player->move(this->Keys, this->timeStep);
 
+        this->player->updateCamera();
+    }
     if (!gameObjects.empty())
     {
         for (auto& gameObject : gameObjects)
