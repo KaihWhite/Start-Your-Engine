@@ -374,6 +374,27 @@ int main() {
             ImGui::End();
 
         }
+        else {
+            ImGui::Begin("scene tab ");
+            ImGuiIO& io = ImGui::GetIO();
+
+            // frame buffer rendering section
+            frameBuffer.startBind();
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+			// render default scene
+
+
+            // unbind the framebuffer that renders the scene
+            frameBuffer.endBind();
+            // gets the scene window size so it can resize the image per frame
+            ImVec2 wSize = ImGui::GetWindowSize();
+
+            // renders the buffered texture from the frame buffer into the ImGui image scene
+            ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::End();
+        }
         // Rendering imgui elements
         imguiWindow->endRender();
 
