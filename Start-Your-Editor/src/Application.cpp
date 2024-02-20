@@ -107,13 +107,12 @@ void showAttributes() {
     }
     else if (selectCamera == true && selectObject == false && demo.gameObjects.find(selectedObjectKey) == demo.gameObjects.end()) {
         ImGui::Begin("Game Object attributes tab ");
-
-            ImGui::TextWrapped("in camera setting");
+        ImGui::TextWrapped("in camera setting");
+        if (ImGui::TreeNode("camera movement:")) {
             ImGui::Button("move left");
             if (ImGui::IsItemActive()) {
-                //std::cout << " df" << std::endl;
                 demo.cameraMan->moveCamera(glm::vec2(-1, 0), 0.3);
-            }
+                }
             ImGui::Button("move right");
             if (ImGui::IsItemActive()) {
                 demo.cameraMan->moveCamera(glm::vec2(1, 0), 0.3);
@@ -121,18 +120,25 @@ void showAttributes() {
             ImGui::Button("move up");
             if (ImGui::IsItemActive()) {
                 demo.cameraMan->moveCamera(glm::vec2(0, -1), 0.3);
-            }
-            ImGui::Button("move down");
-            if (ImGui::IsItemActive()) {
-                demo.cameraMan->moveCamera(glm::vec2(0, 1), 0.3);
-            }
-            ImGui::Checkbox("follow player", &demo.cameraMan->following);
+             }
+             ImGui::Button("move down");
+             if (ImGui::IsItemActive()) {
+                 demo.cameraMan->moveCamera(glm::vec2(0, 1), 0.3);
+             }
+             ImGui::TreePop();
+         }
+         
+        if (ImGui::TreeNode("player camera movement:")) {
+             ImGui::Checkbox("follow player", &demo.cameraMan->enableFollow);
+             ImGui::Checkbox("Look Ahead", &demo.cameraMan->enableLookahead);
+             ImGui::TreePop();
+        }
 
-        ImGui::End();
+        ImGui::End();            
     }
     else if (selectCamera == false && selectObject == true && demo.gameObjects.find(selectedObjectKey) != demo.gameObjects.end()) {
         ImGui::Begin("Game Object attributes tab ");
-
+        
             ImGui::TextWrapped("in object setting");
             if (ImGui::Button("gravity")) {
                 //demo.cameraMan->moveCamera(glm::vec2(-100, 0), ImGui::GetIO().DeltaTime);
@@ -301,17 +307,21 @@ int main() {
 
         ImGui::Begin("Assets tab ");
         ImGui::TextWrapped("this is the asset's tab where the user can import and export assets into the level and outside the level");
+        
+
         ImGui::End();
 
         if (!In_Game) {
             demo.State = GameState::GAME_EDITOR;
             // Render title screen
             ImGui::Begin("scene tab ");
+            ImGuiIO& io = ImGui::GetIO();
             
             // frame buffer rendering section
             frameBuffer.startBind();
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
+           
 			demo.Update();
             demo.Render();
             // unbind the framebuffer that renders the scene
@@ -321,7 +331,18 @@ int main() {
 
             // renders the buffered texture from the frame buffer into the ImGui image scene
             ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
+            if (ImGui::IsItemHovered())
+            {
+                if (ImGui::IsMouseDragging(0)) {
+                    //std::cout << " h" << std::endl;
+                    // Calculate movement based on mouse delta
+                    float deltaX = -io.MouseDelta.x / io.DeltaTime;
+                    float deltaY = -io.MouseDelta.y / io.DeltaTime;
 
+                    // Update camera position
+                    demo.cameraMan->moveCamera(glm::vec2(deltaX, deltaY), io.DeltaTime);
+                }
+            }
             ImGui::End();
         }
         else if (In_Game) {
