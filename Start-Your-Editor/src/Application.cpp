@@ -107,56 +107,66 @@ void showAttributes() {
     }
     else if (selectCamera == true && selectObject == false && demo.gameObjects.find(selectedObjectKey) == demo.gameObjects.end()) {
         ImGui::Begin("Game Object attributes tab ");
-        ImGui::TextWrapped("in camera setting");
 
-        if (ImGui::Button("move left")) {
-            demo.cameraMan->moveCamera(glm::vec2(-100, 0), 0.3);
-        };
-        if (ImGui::Button("move right")) {
-            demo.cameraMan->moveCamera(glm::vec2(100, 0), 0.3);
-        };
-        if (ImGui::Button("move up")) {
-            demo.cameraMan->moveCamera(glm::vec2(0, -100), 0.3);
-        };
-        if (ImGui::Button("move down")) {
-            demo.cameraMan->moveCamera(glm::vec2(10, 100), 0.3);
-        };
-        ImGui::Checkbox("follow player", &demo.cameraMan->following);
+            ImGui::TextWrapped("in camera setting");
+            ImGui::Button("move left");
+            if (ImGui::IsItemActive()) {
+                //std::cout << " df" << std::endl;
+                demo.cameraMan->moveCamera(glm::vec2(-1, 0), 0.3);
+            }
+            ImGui::Button("move right");
+            if (ImGui::IsItemActive()) {
+                demo.cameraMan->moveCamera(glm::vec2(1, 0), 0.3);
+            }
+            ImGui::Button("move up");
+            if (ImGui::IsItemActive()) {
+                demo.cameraMan->moveCamera(glm::vec2(0, -1), 0.3);
+            }
+            ImGui::Button("move down");
+            if (ImGui::IsItemActive()) {
+                demo.cameraMan->moveCamera(glm::vec2(0, 1), 0.3);
+            }
+            ImGui::Checkbox("follow player", &demo.cameraMan->following);
 
         ImGui::End();
     }
     else if (selectCamera == false && selectObject == true && demo.gameObjects.find(selectedObjectKey) != demo.gameObjects.end()) {
         ImGui::Begin("Game Object attributes tab ");
-        ImGui::TextWrapped("in object setting");
-       
-        if (ImGui::Button("gravity")) {
-            //demo.cameraMan->moveCamera(glm::vec2(-100, 0), ImGui::GetIO().DeltaTime);
-            demo.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(0.0);
 
-        };
-        if (ImGui::Button("move left")) {
-            //demo.cameraMan->moveCamera(glm::vec2(-100, 0), ImGui::GetIO().DeltaTime);
-            demo.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                demo.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                + b2Vec2(-0.5, 0), 0);
+            ImGui::TextWrapped("in object setting");
+            if (ImGui::Button("gravity")) {
+                //demo.cameraMan->moveCamera(glm::vec2(-100, 0), ImGui::GetIO().DeltaTime);
+                demo.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(0.0);
+
+            }
+            ImGui::Button("move left");
+            if (ImGui::IsItemActive()) {
+                //demo.cameraMan->moveCamera(glm::vec2(-100, 0), ImGui::GetIO().DeltaTime);
+                demo.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                    demo.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                    + b2Vec2(-0.005, 0), 0);
            
-        };
-        if (ImGui::Button("move right")) {
-            demo.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                demo.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                + b2Vec2(0.5, 0), 0);
-        };
-        if (ImGui::Button("move up")) {
-            demo.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                demo.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                + b2Vec2(0, -0.5), 0);
-        };
-        if (ImGui::Button("move down")) {
-            demo.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                demo.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                + b2Vec2(0, 0.5), 0);
+            }
+            ImGui::Button("move right");
+            if (ImGui::IsItemActive()) {
+                demo.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                    demo.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                    + b2Vec2(0.005, 0), 0);
+            }
+            ImGui::Button("move up");
+            if (ImGui::IsItemActive()) {
+                demo.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                    demo.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                    + b2Vec2(0, -0.005), 0);
+            }
+            ImGui::Button("move down");
+            if (ImGui::IsItemActive()) {
+                demo.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                    demo.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                    + b2Vec2(0, 0.005), 0);
             
-        };
+            };
+
         ImGui::End();
     }
     else {
