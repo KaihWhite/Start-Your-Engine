@@ -18,6 +18,8 @@ private:
 public:
 	// Constructor
 	Tile2D(int id, Texture2D texture, b2Body* body);
+	// Destructor
+	~Tile2D(); 
 	//getter/setter
 	void setTileId(int id);
 	int getTileId();
