@@ -15,6 +15,7 @@
 #include "ImGuiEditorWindow.h"
 #include "Framebuffer.h"
 #include "level.h"
+#include "ImGuiFileDialog.h"
 
 unsigned int SCR_WIDTH = 1600;
 unsigned int SCR_HEIGHT = 800;
@@ -240,7 +241,7 @@ int main() {
     /* Init game */
     demo.Init(SCR_WIDTH, SCR_HEIGHT);
 
-    demo.initLevel(Level::loadFromJSON("test.json", demo.world, demo.cameraMan));
+    //demo.initLevel(Level::loadFromJSON("test.json", demo.world, demo.cameraMan));
 
     
 
@@ -271,15 +272,26 @@ int main() {
                 if (ImGui::MenuItem("Redo", "Ctrl+Y")) {
                 }
                 if (ImGui::MenuItem("Play Level")) {
-                    In_Game = true;
+                    if (demo.gameObjects.empty()) {
+                        // No level loaded, show a popup window
+                        ImGui::OpenPopup("NoLevelLoaded");
+                    }
+                    else {
+                        In_Game = true;  // Proceed to play the level
+                    }
                 }
                 if (ImGui::MenuItem("Exit Level")) {
                     In_Game = false;
                 }
                 if (ImGui::MenuItem("load Level", "Ctrl+O")) {
-                    demo.initLevel(Level::loadFromJSON("test.json", demo.world, demo.cameraMan));
+                    //demo.initLevel(Level::loadFromJSON("test.json", demo.world, demo.cameraMan));
+                    IGFD::FileDialogConfig config; config.path = ".";
+                    ImGuiFileDialog::Instance()->OpenDialog("ChooseLevelDlgKey", "Choose Level", ".json", config);
                 }
                 if (ImGui::MenuItem("Save level", "Ctrl+S")) {
+                    IGFD::FileDialogConfig config; config.path = ".";
+                    ImGuiFileDialog::Instance()->OpenDialog("SaveLevelDlgKey", "Save Level", ".json", config);
+                    //Level::saveToJSON("test.json", demo.gameObjects);
                 }
                 // More File menu items...
                 ImGui::EndMenu();
@@ -373,8 +385,7 @@ int main() {
             ImGui::TextWrapped(" Press the 'SPACE' key respectively to jump ");
             ImGui::End();
 
-        }
-        else {
+        } else {
             ImGui::Begin("scene tab ");
             ImGuiIO& io = ImGui::GetIO();
 
@@ -395,6 +406,38 @@ int main() {
             ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
             ImGui::End();
         }
+
+        // Modal popup for warning if no level is loaded
+        if (ImGui::BeginPopupModal("NoLevelLoaded")) {
+            ImGui::Text("No level loaded. Please load a level before playing.");
+            if (ImGui::Button("OK")) {
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+
+        // Dialogs for loading and saving levels
+        if (ImGuiFileDialog::Instance()->Display("ChooseLevelDlgKey")) {
+            if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+                std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+                std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+                // action
+                demo.initLevel(Level::loadFromJSON(filePathName, demo.world, demo.cameraMan));
+            }
+            // close
+            ImGuiFileDialog::Instance()->Close();
+        }
+
+        if (ImGuiFileDialog::Instance()->Display("SaveLevelDlgKey")) {
+            if (ImGuiFileDialog::Instance()->IsOk()) {
+                std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+                std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+                // action
+                Level::saveToJSON(filePathName, demo.gameObjects);
+            }
+            ImGuiFileDialog::Instance()->Close();
+        }
+
         // Rendering imgui elements
         imguiWindow->endRender();
 
