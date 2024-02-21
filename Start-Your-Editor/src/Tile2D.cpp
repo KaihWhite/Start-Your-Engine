@@ -10,6 +10,10 @@ Tile2D::Tile2D(int id, Texture2D texture, b2Body* body):
 {
 
 }
+Tile2D::~Tile2D() {
+	this->tileBody->GetWorld()->DestroyBody(tileBody);
+}
+
 
 // tile id functions
 void Tile2D::setTileId(int id) {
