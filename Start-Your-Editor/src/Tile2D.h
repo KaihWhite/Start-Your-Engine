@@ -16,6 +16,8 @@ private:
 
 	// functions
 public:
+	// default
+	Tile2D();
 	// Constructor
 	Tile2D(int id, Texture2D texture, b2Body* body);
 	// Destructor

@@ -4,8 +4,12 @@
 */
 
 #include "Tile2D.h"
-
-Tile2D::Tile2D(int id, Texture2D texture, b2Body* body):
+Tile2D::Tile2D() {
+	TileId = -1;
+	tileTexture = Texture2D();
+	tileBody = NULL;
+}
+Tile2D::Tile2D(int id, Texture2D texture , b2Body* body) :
 	TileId(id), tileTexture(texture), tileBody(body)
 {
 
