@@ -17,6 +17,7 @@ private:
 	GLFWwindow* window;
 
 public:
+	
 	// constructor
 	ImGuiEditorWindow(GLFWwindow* wind) { window = wind; };
 	//destructor
