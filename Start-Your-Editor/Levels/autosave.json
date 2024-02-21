@@ -1,6 +1,28 @@
 {
     "gameObjects": [
         {
+            "name": "platform2",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "awesomeface,idle": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 1.0,
+                "y": 6.0
+            },
+            "position": {
+                "x": 11.0,
+                "y": -1.0
+            }
+        },
+        {
+            "name": "player",
             "type": "Player",
             "rigidBodyType": "Dynamic",
             "animations": {
@@ -23,6 +45,7 @@
             }
         },
         {
+            "name": "platform1",
             "type": "Object",
             "rigidBodyType": "Static",
             "animations": {
@@ -40,26 +63,6 @@
             "position": {
                 "x": -5.0,
                 "y": 6.899999618530273
-            }
-        },
-        {
-            "type": "Object",
-            "rigidBodyType": "Static",
-            "animations": {
-                "awesomeface,idle": 1
-            },
-            "color": {
-                "x": 0.5,
-                "y": 0.5,
-                "z": 0.5
-            },
-            "size": {
-                "x": 1.0,
-                "y": 6.0
-            },
-            "position": {
-                "x": 11.0,
-                "y": -1.0
             }
         }
     ]

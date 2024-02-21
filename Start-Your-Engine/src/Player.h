@@ -26,7 +26,3 @@ public:
 	float maxJumpTime; // Duration of the jump in seconds
 	
 };
-
-
-//TODO: I need to allow the player object to have an array of animations/sprites that it can switch between
-// currently the player class only takes one Texture2D object
