@@ -150,6 +150,7 @@ int main() {
                 if (ImGui::MenuItem("Save level", "Ctrl+S")) {
                     IGFD::FileDialogConfig config; config.path = ".";
                     ImGuiFileDialog::Instance()->OpenDialog("SaveLevelDlgKey", "Save Level", ".json", config);
+                    //Level::saveToJSON("test.json", demo.gameObjects);
                 }
                 // More File menu items...
                 ImGui::EndMenu();
@@ -254,7 +255,7 @@ int main() {
                 std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
                 std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
                 // action
-                //Level::saveToJSON(filePath, demo.gameObjects);
+                Level::saveToJSON(filePathName, demo.gameObjects);
             }
             ImGuiFileDialog::Instance()->Close();
         }
