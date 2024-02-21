@@ -22,7 +22,7 @@ project "Start-Your-Editor"
    targetdir "bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
    objdir "bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
 
-   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c", "Dependencies/imgui/src/*.cpp" }
+   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c", "Dependencies/imgui/src/*.cpp", "Dependencies/ImGuiFileDialog/*.cpp","Dependencies/ImGuiFileDialog/*.h" }
 
    -- Windows specific settings
    filter "system:windows"
