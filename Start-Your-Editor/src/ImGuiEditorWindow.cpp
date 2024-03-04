@@ -8,10 +8,10 @@
 #include "ImGuiEditorWindow.h"
 
 
-ImGuiEditorWindow::ImGuiEditorWindow(GLFWwindow* wind, Game& engine, unsigned int width, unsigned  int height)
-    : window(wind), engine(engine), SCR_WIDTH(width), SCR_HEIGHT(height), context(ImGui::CreateContext()), io(ImGui::GetIO())
+ImGuiEditorWindow::ImGuiEditorWindow(GLFWwindow* wind,Game& engine, unsigned int width, unsigned  int height)
+    : window(wind),engine(engine), SCR_WIDTH(width), SCR_HEIGHT(height), context(ImGui::CreateContext()), io(ImGui::GetIO())
 {
-
+    
     // this is for the interativity for the object selection and its attributes section
     counter = 0;
     selectCamera = false;
@@ -35,7 +35,7 @@ ImGuiEditorWindow::~ImGuiEditorWindow()
 }
 
 void ImGuiEditorWindow::createWindow() {
-
+   
 
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -43,7 +43,7 @@ void ImGuiEditorWindow::createWindow() {
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 400");
-
+    
 }
 
 void ImGuiEditorWindow::startRender() {
@@ -52,7 +52,7 @@ void ImGuiEditorWindow::startRender() {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     // starts the feature of docking the widgets
-    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()); 
 }
 
 void ImGuiEditorWindow::onRender() {
@@ -99,18 +99,19 @@ void ImGuiEditorWindow::toolBarSection()
                     ImGui::OpenPopup("NoLevelLoaded");
                 }
                 else {
-                    engine.State = GAME_ACTIVE;  // Proceed to play the level
+                    engine.State =GAME_ACTIVE;  // Proceed to play the level
                 }
             }
             if (ImGui::MenuItem("load Level", "Ctrl+O")) {
                 //demo.initLevel(Level::loadFromJSON("test.json", demo.world, demo.cameraMan));
                 IGFD::FileDialogConfig config; config.path = ".";
                 ImGuiFileDialog::Instance()->OpenDialog("ChooseLevelDlgKey", "Choose Level", ".json", config);
+                engine.State = GAME_EDITOR;
             }
             if (ImGui::MenuItem("Save level", "Ctrl+S")) {
                 IGFD::FileDialogConfig config; config.path = ".";
                 ImGuiFileDialog::Instance()->OpenDialog("SaveLevelDlgKey", "Save Level", ".json", config);
-
+              
             }
             if (ImGui::MenuItem("Exit Level")) {
                 engine.State = GAME_EDITOR;
@@ -255,40 +256,79 @@ void ImGuiEditorWindow::attributeSection()
 
         }
         else if (selectCamera == false && selectObject == true && engine.gameObjects.find(selectedObjectKey) != engine.gameObjects.end()) {
-
             ImGui::TextWrapped("in object setting");
+            if (ImGui::TreeNode("object data")) {
+                static char buffer[256];
+                strncpy(buffer, engine.gameObjects.find(selectedObjectKey)->second->name.c_str(), sizeof(buffer));
+                ImGui::Separator();
+                // change name
+                ImGui::TextWrapped("Name:");
+                ImGui::SameLine();
+                if (ImGui::InputText("", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+                    // Update the std::string with the modified buffer
+                    engine.gameObjects.find(selectedObjectKey)->second->name= buffer;
+                }
+                ImGui::Separator();
+                //change color
+                ImGui::TextWrapped("color:");
+                float rgb[3] = { engine.gameObjects.find(selectedObjectKey)->second->color.x,
+                    engine.gameObjects.find(selectedObjectKey)->second->color.y,
+                    engine.gameObjects.find(selectedObjectKey)->second->color.z };
+                if (ImGui::ColorEdit3("object color", rgb)) {
+                    engine.gameObjects.find(selectedObjectKey)->second->color.x = rgb[0];
+                    engine.gameObjects.find(selectedObjectKey)->second->color.y = rgb[1];
+                    engine.gameObjects.find(selectedObjectKey)->second->color.z = rgb[2];
+                }
+                ImGui::Separator();
+                //change size
+                ImGui::TextWrapped("Object Size: ");
+                ImGui::Indent();
+                if (ImGui::InputFloat("Width", &engine.gameObjects.find(selectedObjectKey)->second->size.x, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
+                    engine.gameObjects.find(selectedObjectKey)->second->resize();
+                }
+                if (ImGui::InputFloat("Height", &engine.gameObjects.find(selectedObjectKey)->second->size.y, 0.1f, 1.0f, "%.2f")) {
+                    engine.gameObjects.find(selectedObjectKey)->second->resize();
+                }
+                ImGui::Unindent();
+                ImGui::Separator();
+                //ImGui::TextWrapped(std::string(engine.gameObjects.find(selectedObjectKey)->second->type).c_str() );
+                ImGui::TreePop();
+            }  
+            if (ImGui::TreeNode("movement:")) {
+                ImGui::Button("move left");
+                if (ImGui::IsItemActive()) {
+                    engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                        engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                        + b2Vec2(-0.005, 0), 0);
+                }
+                ImGui::Button("move right");
+                if (ImGui::IsItemActive()) {
+                    engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                        engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                        + b2Vec2(0.005, 0), 0);
+                }
+                ImGui::Button("move up");
+                if (ImGui::IsItemActive()) {
+                    engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                        engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                        + b2Vec2(0, -0.005), 0);
+                }
+                ImGui::Button("move down");
+                if (ImGui::IsItemActive()) {
+                    engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                        engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                        + b2Vec2(0, 0.005), 0);
+                }
+                ImGui::TreePop();
+            }
+
+
+
             if (ImGui::Button("gravity")) {
                 //demo.cameraMan->moveCamera(glm::vec2(-100, 0), ImGui::GetIO().DeltaTime);
                 engine.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(0.0);
 
             }
-            ImGui::Button("move left");
-            if (ImGui::IsItemActive()) {
-                //demo.cameraMan->moveCamera(glm::vec2(-100, 0), ImGui::GetIO().DeltaTime);
-                engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                    engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                    + b2Vec2(-0.005, 0), 0);
-
-            }
-            ImGui::Button("move right");
-            if (ImGui::IsItemActive()) {
-                engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                    engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                    + b2Vec2(0.005, 0), 0);
-            }
-            ImGui::Button("move up");
-            if (ImGui::IsItemActive()) {
-                engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                    engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                    + b2Vec2(0, -0.005), 0);
-            }
-            ImGui::Button("move down");
-            if (ImGui::IsItemActive()) {
-                engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                    engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                    + b2Vec2(0, 0.005), 0);
-
-            };
 
         }
         else {
@@ -299,7 +339,7 @@ void ImGuiEditorWindow::attributeSection()
     ImGui::End();
 
 }
-void ImGuiEditorWindow::sceneSection()
+void ImGuiEditorWindow::sceneSection()   
 {
     // scene render section
     if (engine.State == GameState::GAME_EDITOR) {
@@ -311,7 +351,6 @@ void ImGuiEditorWindow::sceneSection()
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        engine.Update();
         engine.Render();
         // unbind the framebuffer that renders the scene
         frameBuffer.endBind();
@@ -328,9 +367,12 @@ void ImGuiEditorWindow::sceneSection()
                 float deltaX = -io.MouseDelta.x / io.DeltaTime;
                 float deltaY = -io.MouseDelta.y / io.DeltaTime;
 
-                // Update camera position
+                // Update camera position 
                 engine.cameraMan->moveCamera(glm::vec2(deltaX, deltaY), io.DeltaTime);
+                //shows that update in the scene
+                engine.player->updateCamera();
             }
+
         }
         ImGui::End();
     }

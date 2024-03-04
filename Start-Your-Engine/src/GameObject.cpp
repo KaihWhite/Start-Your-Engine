@@ -61,6 +61,23 @@ void GameObject::update()
 
 }
 
+void GameObject::resize()
+{
+	// destroy the one and only fixture of the body
+	for (b2Fixture* fixture = body->GetFixtureList(); fixture != nullptr; fixture = fixture->GetNext()) {
+		body->DestroyFixture(fixture);
+		break;
+	}
+	// this creates a new fixture for the body when it is resizes
+
+	b2PolygonShape dynamicBox;
+	dynamicBox.SetAsBox(size.x / 2.0f, size.y / 2.0f);
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &dynamicBox;
+	fixtureDef.density = 1.0f;
+	body->CreateFixture(&fixtureDef);
+}
+
 glm::vec2 GameObject::getPosition() {
 
 	/*
