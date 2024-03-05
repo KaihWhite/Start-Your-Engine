@@ -385,8 +385,81 @@ void ImGuiEditorWindow::assetSection()
 
     ImGui::Begin("Assets tab ");
     ImGui::TextWrapped("this is the asset's tab where the user can import and export assets into the level and outside the level");
-    // future assets funtions here
-    //..........
-    //....
+
+
+    if (ImGui::Button("Load New Asset")) {
+        // open a file dialog to select a PNG file
+        IGFD::FileDialogConfig config;
+        config.path = ".";
+        ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".png", config);
+    }
+
+    // handle file selection
+    if (ImGuiFileDialog::Instance()->Display("ChooseAssetDlgKey")) {
+        if (ImGuiFileDialog::Instance()->IsOk()) {
+            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+            std::string fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
+            // load the selected asset using LoadTexture
+            ResourceManager::LoadTexture(filePathName.c_str(), true, fileName);
+            ImGui::Text("Loaded: %s", fileName.c_str());
+        }
+        ImGuiFileDialog::Instance()->Close();
+    }
+
+    // display loaded assets
+    ImGui::Text("Loaded Assets:");
+    ImGui::Separator();
+    ImGui::BeginChild("AssetsScrolling", ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+    for (auto& texture : ResourceManager::Textures) {
+        ImGui::PushID(&texture.second); // ensure unique ID for ImGui elements
+
+        // display asset thumbnail
+        if (ImGui::ImageButton((void*)(intptr_t)texture.second.ID, ImVec2(80, 80))) {
+            selectedAssetForPreview = texture.first; // set the asset for preview
+        }
+        ImGui::PopID();
+
+        // context menu for asset removal
+        if (ImGui::BeginPopupContextItem()) {
+            if (ImGui::MenuItem("Remove")) {
+                glDeleteTextures(1, &texture.second.ID); // delete OpenGL texture
+                ResourceManager::Textures.erase(texture.first); // remove from ResourceManager
+            }
+            ImGui::EndPopup();
+        }
+
+        ImGui::SameLine(); // display assets in the same line (horizontally)
+    }
+    ImGui::EndChild();
+
+    // asset preview
+    if (!selectedAssetForPreview.empty()) {
+        showAssetPreviewWindow();
+    }
+
     ImGui::End();
+}
+
+void ImGuiEditorWindow::showAssetPreviewWindow() {
+    if (selectedAssetForPreview.empty()) return; // check if an asset is selected
+
+    // start a new ImGui window for preview
+    bool open = true; // Variable to control the open state of the window
+    ImGui::Begin(("Preview: " + selectedAssetForPreview).c_str(), &open, ImGuiWindowFlags_AlwaysAutoResize);
+
+    // retrieve the texture for the selected asset
+    Texture2D& texture = ResourceManager::GetTexture(selectedAssetForPreview);
+
+    // calculate the window size based on the texture size
+    ImVec2 windowSize(static_cast<float>(texture.Width), static_cast<float>(texture.Height));
+
+    // display the texture
+    ImGui::Image((void*)(intptr_t)texture.ID, windowSize);
+    ImGui::End();
+
+    // If the window is closed clear the selection
+    if (!open) {
+        selectedAssetForPreview.clear();
+    }
 }
