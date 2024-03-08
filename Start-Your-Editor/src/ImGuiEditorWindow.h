@@ -30,7 +30,7 @@ private:
 	FrameBuffer frameBuffer;
 	int counter;
 	bool selectObject; // Flag to control visibility of attributes tab
-	std::string selectedObjectKey; // Index of the currently selected object
+	int selectedObjectKey; // Index of the currently selected object
 	bool selectCamera;
 public:
 
