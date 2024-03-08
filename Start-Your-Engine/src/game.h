@@ -10,6 +10,7 @@
 #include "box2d/box2d.h"
 
 #include <vector>
+#include <random>
 
 // Represents the current state of the game
 enum GameState {
@@ -36,7 +37,7 @@ public:
     b2World                 *world;
     Camera2DSystem          *cameraMan;
    
-    std::unordered_map<std::string, GameObject*> gameObjects;
+    std::unordered_map<int, GameObject*> gameObjects;
 
     float timeStep = 1.0f / 60.0f;
     int32 velocityIterations = 8;
@@ -50,7 +51,7 @@ public:
     // initialize game state (load all shaders/textures/levels)
     void Init(unsigned int width, unsigned int height);
 
-    void initLevel(std::unordered_map<std::string, GameObject*> level);
+    void initLevel(std::unordered_map<int, GameObject*> level);
 
     Animation* loadAnimation(const char* file, bool alpha, std::string name, int numFrames);
 
@@ -58,18 +59,17 @@ public:
     void addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
     
     // removes the game object from the level
-    void removeGameObject(std::string name);
+    void removeGameObject(int key);
 
     // updates a game object in the level
-    void updateGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+    void updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 
     // Only allows for one player
     void addPlayer(Camera2DSystem* cameraMan, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 
-    // Removes the player if it exists
-    void removePlayer();
-
     void updatePlayer(std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+
+    static int generateUniqueKey(std::unordered_map<int, GameObject*> map);
 
     // game loop
     void ProcessInput(float& dt);

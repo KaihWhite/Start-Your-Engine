@@ -11,7 +11,7 @@ std::vector<std::string> split(const std::string& s, char delimiter) {
     return tokens;
 }
 
-void Level::saveToJSON(const std::string& filename, std::unordered_map<std::string, GameObject*> gameObjects) {
+void Level::saveToJSON(const std::string& filename, std::unordered_map<int, GameObject*> gameObjects) {
     rapidjson::Document doc;
     doc.SetObject();
     rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
@@ -99,8 +99,8 @@ void Level::saveToJSON(const std::string& filename, std::unordered_map<std::stri
 }
 
 
-std::unordered_map<std::string, GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
-    std::unordered_map<std::string, GameObject*> gameObjects;
+std::unordered_map<int, GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
+    std::unordered_map<int, GameObject*> gameObjects;
 
     std::string path = "Start-Your-Editor/Levels/" + filename;
 
@@ -138,12 +138,26 @@ std::unordered_map<std::string, GameObject*> Level::loadFromJSON(const std::stri
 
             std::string name = objValue["name"].GetString();
 
+            // Set up random number generation
+            std::random_device rd;
+
+            std::mt19937 gen(rd());
+
+            std::uniform_int_distribution<> distr(1, 100);
+
+            // generate unique key
+            int unique_key = distr(gen);
+
+            while (gameObjects.find(unique_key) != gameObjects.end()) {
+                unique_key = distr(gen);
+			}
+
             if (type == "Player") {
                 Player* player = new Player(position, size, color, animations, world, cameraMan, type, dynam);
-                gameObjects["player"] = player;
+                gameObjects[unique_key] = player;
             } else {
                 GameObject* gameObject = new GameObject(name, position, size, color, animations, world, type, dynam);
-                gameObjects[name] = gameObject;
+                gameObjects[unique_key] = gameObject;
             }
         }
     }
