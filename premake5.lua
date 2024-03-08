@@ -11,6 +11,7 @@ workspace "Start-Your-Engine"
    IncludeDir["Start-Your-Engine"] = "Start-Your-Engine/src"
    IncludeDir["imgui"] = "Dependencies/imgui/include"
    IncludeDir["rapidjson"] = "Dependencies/rapidjson"
+   IncludeDir["ImGuiFileDialog"] = "Dependencies/ImGuiFileDialog"
 
 project "Start-Your-Editor"
    kind "ConsoleApp"
@@ -21,11 +22,11 @@ project "Start-Your-Editor"
    targetdir "bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
    objdir "bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
 
-   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c", "Dependencies/imgui/src/*.cpp" }
+   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c", "Dependencies/imgui/src/*.cpp", "Dependencies/ImGuiFileDialog/*.cpp","Dependencies/ImGuiFileDialog/*.h" }
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { IncludeDir["Glad"], IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["imgui"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"], IncludeDir["Start-Your-Engine"] }
+      includedirs { IncludeDir["Glad"], IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["imgui"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"], IncludeDir["Start-Your-Engine"], IncludeDir["ImGuiFileDialog"] }
       libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] }
       architecture "x64"
       systemversion "latest"
@@ -69,7 +70,7 @@ project "Start-Your-Engine"
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"] }
+      includedirs { IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"], IncludeDir["ImGuiFileDialog"] }
       libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] }
       architecture "x64"
       systemversion "latest"
