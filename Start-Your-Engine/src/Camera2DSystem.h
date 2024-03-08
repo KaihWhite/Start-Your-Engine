@@ -4,6 +4,10 @@
 class Camera2DSystem
 {
 	//	*	CLASS VARIABLES 
+
+public: 
+	bool			enableFollow;
+	bool			enableLookahead;
 private:
 	Camera2D		camera;
 	glm::vec3		targetPosition;

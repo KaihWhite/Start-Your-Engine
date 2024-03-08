@@ -11,7 +11,7 @@
 *
 */
 Camera2DSystem::Camera2DSystem(float width, float height)
-	: camera(-width, width, height, -height), targetPosition(glm::vec3(0.0f, 0.0f, 0.0f))
+	: enableFollow(false),enableLookahead(false), camera(-width, width, height, -height), targetPosition(glm::vec3(0.0f, 0.0f, 0.0f))
 {
 	this->minX = -width * 0.75;
 	this->maxX = width * 0.75;
@@ -49,11 +49,14 @@ void Camera2DSystem::setBoundaries(float minX, float maxX, float minY, float max
 *	@param	deltaTime	the delta time 										type: float
 */ 
 void Camera2DSystem::follow(float targetX, float targetY, float followSpeed, float dt) {
-	this->targetPosition = glm::vec3(targetX, targetY, 0.0f);
-	glm::vec3 difference = this->targetPosition - this->camera.cameraPosition;
-	float interpolationfactor = followSpeed * dt;
+	if (enableFollow) {
+		this->targetPosition = glm::vec3(targetX, targetY, 0.0f);
+		glm::vec3 difference = this->targetPosition - this->camera.cameraPosition;
+		float interpolationfactor = followSpeed * dt;
+
+		this->camera.cameraPosition = this->camera.cameraPosition + difference * interpolationfactor;
+	}
 	
-	this->camera.cameraPosition = this->camera.cameraPosition + difference * interpolationfactor;
 	
 	//this->camera.cameraPosition = glm::mix(this->camera.cameraPosition, targetPosition, this->camera.cameraSpeed * dt);
 	camera.updateProjectionViewMatrix();
@@ -81,11 +84,12 @@ void Camera2DSystem::transitionTo(float positionX, float positionY, float transi
 *	@param    dt       the delta time 										type: float
 */
 void Camera2DSystem::lookAheadCameraMovement(float offsetX, float offsetY, float offsetSpeed, float dt) {
-	
-	glm::vec3 targetOffset = glm::vec3(offsetX, offsetY, 0.0f);
-	glm::vec3 difference = targetOffset - this->camera.offset;
-	glm::vec3 interpolatedCameraPosition = this->camera.offset + difference * offsetSpeed * dt;
-	this->camera.offset = interpolatedCameraPosition;
+	if (enableLookahead) {
+		glm::vec3 targetOffset = glm::vec3(offsetX, offsetY, 0.0f);
+		glm::vec3 difference = targetOffset - this->camera.offset;
+		glm::vec3 interpolatedCameraPosition = this->camera.offset + difference * offsetSpeed * dt;
+		this->camera.offset = interpolatedCameraPosition;
+	}
 	camera.updateProjectionViewMatrix();
 }
 

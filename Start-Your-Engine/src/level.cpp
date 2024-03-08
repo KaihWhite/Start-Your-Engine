@@ -83,7 +83,7 @@ void Level::saveToJSON(const std::string& filename, std::unordered_map<std::stri
 
     doc.AddMember("gameObjects", objects, allocator);
 
-    std::string path = "Start-Your-Editor/Levels/" + filename;
+    std::string path = filename;
 
     // Write to file
     FILE* fp = fopen(path.c_str(), "w");
@@ -102,7 +102,7 @@ void Level::saveToJSON(const std::string& filename, std::unordered_map<std::stri
 std::unordered_map<std::string, GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
     std::unordered_map<std::string, GameObject*> gameObjects;
 
-    std::string path = "Start-Your-Editor/Levels/" + filename;
+    std::string path = filename;
 
     FILE* fp = fopen(path.c_str(), "rb");
     char readBuffer[65536];
