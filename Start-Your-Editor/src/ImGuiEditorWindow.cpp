@@ -411,22 +411,31 @@ void ImGuiEditorWindow::assetSection()
     ImGui::Separator();
     ImGui::BeginChild("AssetsScrolling", ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
 
-    for (auto& texture : ResourceManager::Textures) {
-        ImGui::PushID(&texture.second); // ensure unique ID for ImGui elements
+    for (auto it = ResourceManager::Textures.begin(); it != ResourceManager::Textures.end();) {
+        ImGui::PushID(it->second.ID); // use the texture ID to push the ID
 
         // display asset thumbnail
-        if (ImGui::ImageButton((void*)(intptr_t)texture.second.ID, ImVec2(80, 80))) {
-            selectedAssetForPreview = texture.first; // set the asset for preview
+        if (ImGui::ImageButton((void*)(intptr_t)it->second.ID, ImVec2(80, 80))) {
+            selectedAssetForPreview = it->first; // set the asset for preview
         }
         ImGui::PopID();
+
+        bool remove_item = false; // flag to determine if the item should be removed
 
         // context menu for asset removal
         if (ImGui::BeginPopupContextItem()) {
             if (ImGui::MenuItem("Remove")) {
-                glDeleteTextures(1, &texture.second.ID); // delete OpenGL texture
-                ResourceManager::Textures.erase(texture.first); // remove from ResourceManager
+                remove_item = true;
             }
             ImGui::EndPopup();
+        }
+
+        if (remove_item) {
+            glDeleteTextures(1, &it->second.ID); // delete OpenGL texture
+            it = ResourceManager::Textures.erase(it); // remove from ResourceManager and safely increment the iterator
+        }
+        else {
+            it++; // only increment the iterator if no item was removed
         }
 
         ImGui::SameLine(); // display assets in the same line (horizontally)
@@ -445,7 +454,7 @@ void ImGuiEditorWindow::showAssetPreviewWindow() {
     if (selectedAssetForPreview.empty()) return; // check if an asset is selected
 
     // start a new ImGui window for preview
-    bool open = true; // Variable to control the open state of the window
+    bool open = true; // variable to control the open state of the window
     ImGui::Begin(("Preview: " + selectedAssetForPreview).c_str(), &open, ImGuiWindowFlags_AlwaysAutoResize);
 
     // retrieve the texture for the selected asset
@@ -458,7 +467,7 @@ void ImGuiEditorWindow::showAssetPreviewWindow() {
     ImGui::Image((void*)(intptr_t)texture.ID, windowSize);
     ImGui::End();
 
-    // If the window is closed clear the selection
+    // if the window is closed clear the selection
     if (!open) {
         selectedAssetForPreview.clear();
     }
