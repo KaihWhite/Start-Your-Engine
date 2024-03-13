@@ -32,6 +32,8 @@ private:
 	bool selectObject; // Flag to control visibility of attributes tab
 	std::string selectedObjectKey; // Index of the currently selected object
 	bool selectCamera;
+
+	std::string selectedAssetForPreview; // Declare the member variable
 public:
 
 	// constructor
@@ -44,6 +46,8 @@ public:
 	void onRender();
 	void endRender();
 	void destroyWindow();
+
+	void showAssetPreviewWindow(); // Declare the method
 private:
 	// content funtions for on render
 	void toolBarSection();
