@@ -385,8 +385,90 @@ void ImGuiEditorWindow::assetSection()
 
     ImGui::Begin("Assets tab ");
     ImGui::TextWrapped("this is the asset's tab where the user can import and export assets into the level and outside the level");
-    // future assets funtions here
-    //..........
-    //....
+
+
+    if (ImGui::Button("Load New Asset")) {
+        // open a file dialog to select a PNG file
+        IGFD::FileDialogConfig config;
+        config.path = ".";
+        ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".png", config);
+    }
+
+    // handle file selection
+    if (ImGuiFileDialog::Instance()->Display("ChooseAssetDlgKey")) {
+        if (ImGuiFileDialog::Instance()->IsOk()) {
+            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+            std::string fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
+            // load the selected asset using LoadTexture
+            ResourceManager::LoadTexture(filePathName.c_str(), true, fileName);
+            ImGui::Text("Loaded: %s", fileName.c_str());
+        }
+        ImGuiFileDialog::Instance()->Close();
+    }
+
+    // display loaded assets
+    ImGui::Text("Loaded Assets:");
+    ImGui::Separator();
+    ImGui::BeginChild("AssetsScrolling", ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+    for (auto it = ResourceManager::Textures.begin(); it != ResourceManager::Textures.end();) {
+        ImGui::PushID(it->second.ID); // use the texture ID to push the ID
+
+        // display asset thumbnail
+        if (ImGui::ImageButton((void*)(intptr_t)it->second.ID, ImVec2(80, 80))) {
+            selectedAssetForPreview = it->first; // set the asset for preview
+        }
+        ImGui::PopID();
+
+        bool remove_item = false; // flag to determine if the item should be removed
+
+        // context menu for asset removal
+        if (ImGui::BeginPopupContextItem()) {
+            if (ImGui::MenuItem("Remove")) {
+                remove_item = true;
+            }
+            ImGui::EndPopup();
+        }
+
+        if (remove_item) {
+            glDeleteTextures(1, &it->second.ID); // delete OpenGL texture
+            it = ResourceManager::Textures.erase(it); // remove from ResourceManager and safely increment the iterator
+        }
+        else {
+            it++; // only increment the iterator if no item was removed
+        }
+
+        ImGui::SameLine(); // display assets in the same line (horizontally)
+    }
+    ImGui::EndChild();
+
+    // asset preview
+    if (!selectedAssetForPreview.empty()) {
+        showAssetPreviewWindow();
+    }
+
     ImGui::End();
+}
+
+void ImGuiEditorWindow::showAssetPreviewWindow() {
+    if (selectedAssetForPreview.empty()) return; // check if an asset is selected
+
+    // start a new ImGui window for preview
+    bool open = true; // variable to control the open state of the window
+    ImGui::Begin(("Preview: " + selectedAssetForPreview).c_str(), &open, ImGuiWindowFlags_AlwaysAutoResize);
+
+    // retrieve the texture for the selected asset
+    Texture2D& texture = ResourceManager::GetTexture(selectedAssetForPreview);
+
+    // calculate the window size based on the texture size
+    ImVec2 windowSize(static_cast<float>(texture.Width), static_cast<float>(texture.Height));
+
+    // display the texture
+    ImGui::Image((void*)(intptr_t)texture.ID, windowSize);
+    ImGui::End();
+
+    // if the window is closed clear the selection
+    if (!open) {
+        selectedAssetForPreview.clear();
+    }
 }
