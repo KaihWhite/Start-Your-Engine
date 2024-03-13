@@ -31,13 +31,15 @@ GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec
 
 GameObject::~GameObject()
 {
+	/*
 	for (auto& animation : this->animations)
 	{
 		delete animation.second;
 	}
 	this->animations.clear();
+	*/
 
-	this->body->GetWorld()->DestroyBody(body);
+	//this->body->GetWorld()->DestroyBody(body);
 	//delete reinterpret_cast<BodyUserData*>(body->GetUserData().pointer);
 }
 
