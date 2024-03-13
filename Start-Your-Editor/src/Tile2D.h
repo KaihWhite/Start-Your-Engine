@@ -11,6 +11,8 @@ class Tile2D
 	// variables
 private:
 	int TileId;
+	int TileSize;
+	bool renderit;
 	Texture2D tileTexture;
 	b2Body* tileBody;
 
@@ -22,6 +24,9 @@ public:
 	Tile2D(int id, Texture2D texture, b2Body* body);
 	// Destructor
 	~Tile2D(); 
+
+	//funtions
+
 	//getter/setter
 	void setTileId(int id);
 	int getTileId();
