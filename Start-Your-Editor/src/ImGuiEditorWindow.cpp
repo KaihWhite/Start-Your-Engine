@@ -16,7 +16,7 @@ ImGuiEditorWindow::ImGuiEditorWindow(GLFWwindow* wind,Game& engine, unsigned int
     counter = 0;
     selectCamera = false;
     selectObject = false;
-    selectedObjectKey = "";
+    selectedObjectKey = NULL;
     // this initialised the setup for the framebuffer for the scene
     frameBuffer = FrameBuffer();
     frameBuffer.setupConfig(SCR_WIDTH, SCR_HEIGHT);
@@ -185,28 +185,33 @@ void ImGuiEditorWindow::objectSection()
             glm::vec3 color = glm::vec3(0.5, 0.5, 0.5);
             glm::vec2 size = glm::vec2(5.0, 5.0);
             glm::vec2 position = glm::vec2(0.0, 0.0);
-            // if the name key is not created yet
+    
+        // This will only be able to handle static, non-player/npc objects
+        engine.addGameObject(name, ObjectType::OBJECT, RigidBodyType::STATIC, animations, color, size, position);
+        // Below not necesary with unique key generation
+        /*
             if (engine.gameObjects.find(name) == engine.gameObjects.end()) {
                 engine.addGameObject(name, OBJECT, STATIC, animations, color, size, position);
             }
+        */
 
-        }
-        // Start a scrolling region
-        ImGui::BeginChild("ObjectList", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-        if (ImGui::Selectable("Camera", false)) {
+    }
+    // Start a scrolling region
+    ImGui::BeginChild("ObjectList", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+    if (ImGui::Selectable("Camera", false)) {
+        // Handle selection logic here
+        selectObject = false;
+        selectCamera = true;
+        selectedObjectKey = NULL;
+    }
+    for (const auto& pair : engine.gameObjects) {
+        if (ImGui::Selectable(pair.second->name.c_str(), false)) {
             // Handle selection logic here
-            selectObject = false;
-            selectCamera = true;
-            selectedObjectKey = "";
+            selectCamera = false;
+            selectObject = true;
+            selectedObjectKey = pair.first;
         }
-        for (const auto& pair : engine.gameObjects) {
-            if (ImGui::Selectable(pair.second->name.c_str(), false)) {
-                // Handle selection logic here
-                selectCamera = false;
-                selectObject = true;
-                selectedObjectKey = pair.first;
-            }
-        }
+    }
 
         std::ostringstream stream;
         stream << "total objects: " << selectedObjectKey << " ->" << engine.gameObjects.size();
@@ -214,7 +219,7 @@ void ImGuiEditorWindow::objectSection()
         ImGui::TextWrapped(lengthText.c_str());
         // End the scrolling region
         ImGui::EndChild();
-    }
+    
     ImGui::End();
 }
 

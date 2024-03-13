@@ -1,7 +1,7 @@
 {
     "gameObjects": [
         {
-            "name": "platform2",
+            "name": "platform1",
             "type": "Object",
             "rigidBodyType": "Static",
             "animations": {
@@ -13,12 +13,12 @@
                 "z": 0.5
             },
             "size": {
-                "x": 1.0,
-                "y": 6.0
+                "x": 10.0,
+                "y": 0.10000000149011612
             },
             "position": {
-                "x": 11.0,
-                "y": -1.0
+                "x": -5.0,
+                "y": 6.899999618530273
             }
         },
         {
@@ -45,7 +45,7 @@
             }
         },
         {
-            "name": "platform1",
+            "name": "platform2",
             "type": "Object",
             "rigidBodyType": "Static",
             "animations": {
@@ -57,12 +57,12 @@
                 "z": 0.5
             },
             "size": {
-                "x": 10.0,
-                "y": 0.10000000149011612
+                "x": 1.0,
+                "y": 6.0
             },
             "position": {
-                "x": -5.0,
-                "y": 6.899999618530273
+                "x": 11.0,
+                "y": -1.0
             }
         }
     ]
