@@ -15,6 +15,13 @@ Game::~Game()
     delete this->player;
     delete this->renderer;
     delete this->world;
+    delete this->cameraMan;
+    /*
+    for (auto& gameObject : gameObjects)
+    {
+		delete gameObject.second;
+	}
+    */
 }
 
 void Game::Init(unsigned int width, unsigned int height)
@@ -110,15 +117,16 @@ void Game::Render()
     for (auto& gameObject : gameObjects)
     {
         gameObject.second->draw(*renderer);
-        
-        
-
     }
     
 }
 
-void Game::initLevel(std::unordered_map<std::string, GameObject*> level)
+void Game::initLevel(std::unordered_map<int, GameObject*> level)
 {
+    for (auto& gameObject : gameObjects)
+    {
+        delete gameObject.second;
+    }
 	this->gameObjects = level;
     for (auto& gameObject : level)
     {
@@ -133,49 +141,39 @@ void Game::initLevel(std::unordered_map<std::string, GameObject*> level)
 void Game::addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
 {
     GameObject* gameObject = new GameObject(name, pos, size, color, animations, this->world, type == ObjectType::OBJECT ? "Object" : "Npc", rtype);
-    this->gameObjects[name] = gameObject;
+    int key = Game::generateUniqueKey(this->gameObjects);
+    // update the object name to a unique name so it can be queried by name
+    gameObject->name = gameObject->name + std::to_string(key*0.1235*43);
+    this->gameObjects[key] = gameObject;
 }
 
-void Game::removeGameObject(std::string name)
+void Game::removeGameObject(int key)
 {
-	delete this->gameObjects[name];
-	this->gameObjects.erase(name);
+    if (this->gameObjects[key]->type == ObjectType::PLAYER)
+    {
+		this->player = nullptr;
+	}
+	delete this->gameObjects[key];
+	this->gameObjects.erase(key);
 }
 
-void Game::updateGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
+void Game::updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
 {
-    this->gameObjects[name]->name = name;
-	this->gameObjects[name]->animations = animations;
-    this->gameObjects[name]->color = color;
-    this->gameObjects[name]->size = size;
-    this->gameObjects[name]->rigidBodyType = rtype;
-    this->gameObjects[name]->body->SetTransform(b2Vec2(pos.x, pos.y), 0.0f);
-    this->gameObjects[name]->type = type;
+    this->gameObjects[key]->name = name;
+	this->gameObjects[key]->animations = animations;
+	this->gameObjects[key]->color = color;
+	this->gameObjects[key]->size = size;
+	this->gameObjects[key]->rigidBodyType = rtype;
+	this->gameObjects[key]->body->SetTransform(b2Vec2(pos.x, pos.y), 0.0f);
+	this->gameObjects[key]->type = type;
 }
 
 void Game::addPlayer(Camera2DSystem* cameraMan, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
 {
 	Player* player = new Player(pos, size, color, animations, this->world, cameraMan, "Player", true);
 	this->player = player;
-    this->gameObjects["player"] = player;
-}
-
-void Game::removePlayer()
-{
-    // Need to find the index of the player in the gameObjects vector and erase it before deleting it
-    // Possibly change from vector to map so that each object can have a name. Will make it easier to find objects and gives the user names to reference objects by
-    int index = 0;
-    for (auto& gameObject : this->gameObjects)
-    {
-        if (gameObject.second->type == ObjectType::PLAYER)
-        {
-            delete this->gameObjects["player"];
-            this->gameObjects.erase("player");
-            this->player = nullptr;
-            return;
-        }
-        index++;
-    }
+    int key = Game::generateUniqueKey(this->gameObjects);
+    this->gameObjects[key] = player;
 }
 
 void Game::updatePlayer(std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
@@ -190,4 +188,16 @@ Animation* Game::loadAnimation(const char* file, bool alpha, std::string name, i
 {
     ResourceManager::LoadTexture(file, alpha, name);
 	return new Animation(name, numFrames);
+}
+
+int Game::generateUniqueKey(std::unordered_map<int, GameObject*> map)
+{
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> distr(1, 100);
+	int unique_key = distr(gen);
+    while (map.find(unique_key) != map.end()) {
+		unique_key = distr(gen);
+	}
+    return unique_key;
 }

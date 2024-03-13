@@ -16,15 +16,15 @@ ImGuiEditorWindow::ImGuiEditorWindow(GLFWwindow* wind,Game& engine, unsigned int
     counter = 0;
     selectCamera = false;
     selectObject = false;
-    selectedObjectKey = "";
+    selectedObjectKey = NULL;
     // this initialised the setup for the framebuffer for the scene
     frameBuffer = FrameBuffer();
     frameBuffer.setupConfig(SCR_WIDTH, SCR_HEIGHT);
     /* Init game */
     engine.Init(SCR_WIDTH, SCR_HEIGHT);
     IMGUI_CHECKVERSION();
-    
     (void)io;
+    engine.State = GAME_MENU;
 }
 
 
@@ -43,6 +43,7 @@ void ImGuiEditorWindow::createWindow() {
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 400");
+    
 }
 
 void ImGuiEditorWindow::startRender() {
@@ -90,12 +91,8 @@ void ImGuiEditorWindow::toolBarSection()
             // More File menu items...
             ImGui::EndMenu();
         }
-        if (ImGui::BeginMenu("Edit")) {
+        if (ImGui::BeginMenu("LEVEL")) {
             // Add items to the Edit menu here
-            if (ImGui::MenuItem("Undo", "Ctrl+Z")) {
-            }
-            if (ImGui::MenuItem("Redo", "Ctrl+Y")) {
-            }
             if (ImGui::MenuItem("Play Level")) {
                 if (engine.gameObjects.empty()) {
                     // No level loaded, show a popup window
@@ -105,18 +102,33 @@ void ImGuiEditorWindow::toolBarSection()
                     engine.State =GAME_ACTIVE;  // Proceed to play the level
                 }
             }
-            if (ImGui::MenuItem("Exit Level")) {
-                engine.State = GAME_EDITOR;
-            }
             if (ImGui::MenuItem("load Level", "Ctrl+O")) {
                 //demo.initLevel(Level::loadFromJSON("test.json", demo.world, demo.cameraMan));
                 IGFD::FileDialogConfig config; config.path = ".";
                 ImGuiFileDialog::Instance()->OpenDialog("ChooseLevelDlgKey", "Choose Level", ".json", config);
+                engine.State = GAME_EDITOR;
             }
             if (ImGui::MenuItem("Save level", "Ctrl+S")) {
                 IGFD::FileDialogConfig config; config.path = ".";
                 ImGuiFileDialog::Instance()->OpenDialog("SaveLevelDlgKey", "Save Level", ".json", config);
-                //Level::saveToJSON("test.json", demo.gameObjects);
+              
+            }
+            if (ImGui::MenuItem("Exit Level")) {
+                engine.State = GAME_EDITOR;
+            }
+            // More File menu items...
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("MODE")) {
+            // Add items to the Insert menu here
+            if (ImGui::MenuItem("EDITOR MODE", "?")) {
+                engine.State = GAME_EDITOR;
+            }
+            if (ImGui::MenuItem("GAME MODE", "?")) {
+                engine.State = GAME_ACTIVE;
+            }
+            if (ImGui::MenuItem("GAME MENU", "?")) {
+                engine.State = GAME_MENU;
             }
             // More File menu items...
             ImGui::EndMenu();
@@ -162,222 +174,282 @@ void ImGuiEditorWindow::toolBarSection()
 void ImGuiEditorWindow::objectSection()
 {
     ImGui::Begin("Game Objects tab ");
+    if (engine.State == GAME_EDITOR) {
+        // Optional: Add a button to add a new object
+        if (ImGui::Button("Add Object")) {
+            // Code to add a new object to the gameObjects vector
+            //addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+            std::string name = "object";
+            std::unordered_map<std::string, Animation*> animations;
+            animations["idle"] = new Animation("awesomeface", 1);
+            glm::vec3 color = glm::vec3(0.5, 0.5, 0.5);
+            glm::vec2 size = glm::vec2(5.0, 5.0);
+            glm::vec2 position = glm::vec2(0.0, 0.0);
 
-    // Optional: Add a button to add a new object
-    if (ImGui::Button("Add Object")) {
-        // Code to add a new object to the gameObjects vector
-        //addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
-        std::string name = "object";
-        std::unordered_map<std::string, Animation*> animations;
-        animations["idle"] = new Animation("awesomeface", 1);
-        glm::vec3 color = glm::vec3(0.5, 0.5, 0.5);
-        glm::vec2 size = glm::vec2(5.0, 5.0);
-        glm::vec2 position = glm::vec2(0.0, 0.0);
-        // if the name key is not created yet
-        if (engine.gameObjects.find(name) == engine.gameObjects.end()) {
-            engine.addGameObject(name, OBJECT, STATIC, animations, color, size, position);
+            // This will only be able to handle static, non-player/npc objects
+            engine.addGameObject(name, ObjectType::OBJECT, RigidBodyType::STATIC, animations, color, size, position);
+            // Below not necesary with unique key generation
+            /*
+                if (engine.gameObjects.find(name) == engine.gameObjects.end()) {
+                    engine.addGameObject(name, OBJECT, STATIC, animations, color, size, position);
+                }
+            */
+
         }
-
-    }
-    // Start a scrolling region
-    ImGui::BeginChild("ObjectList", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-    if (ImGui::Selectable("Camera", false)) {
-        // Handle selection logic here
-        selectObject = false;
-        selectCamera = true;
-        selectedObjectKey = "";
-    }
-    for (const auto& pair : engine.gameObjects) {
-        if (ImGui::Selectable(pair.second->name.c_str(), false)) {
+        // Start a scrolling region
+        ImGui::BeginChild("ObjectList", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+        if (ImGui::Selectable("Camera", false)) {
             // Handle selection logic here
-            selectCamera = false;
-            selectObject = true;
-            selectedObjectKey = pair.first;
+            selectObject = false;
+            selectCamera = true;
+            selectedObjectKey = NULL;
         }
-    }
+        for (const auto& pair : engine.gameObjects) {
+            if (ImGui::Selectable(pair.second->name.c_str(), false)) {
+                // Handle selection logic here
+                selectCamera = false;
+                selectObject = true;
+                selectedObjectKey = pair.first;
+            }
+        }
 
-    std::ostringstream stream;
-    stream << "total objects: " << selectedObjectKey << " ->" << engine.gameObjects.size();
-    std::string lengthText = stream.str();
-    ImGui::TextWrapped(lengthText.c_str());
-    // End the scrolling region
-    ImGui::EndChild();
+        std::ostringstream stream;
+        stream << "total objects: " << " ->" << engine.gameObjects.size();
+        std::string lengthText = stream.str();
+        ImGui::TextWrapped(lengthText.c_str());
+        // End the scrolling region
+        ImGui::EndChild();
+    }
     ImGui::End();
 }
 
 void ImGuiEditorWindow::attributeSection()
 {
-    // 
-    if (selectCamera == false && selectObject == false && engine.gameObjects.find(selectedObjectKey) != engine.gameObjects.end()) {
-        ImGui::Begin("Game Object attributes tab ");
-        ImGui::TextWrapped("this is the attributes tab where the object's property is displayed and changed accordingly");
-        ImGui::End();
-    }
-    else if (selectCamera == true && selectObject == false && engine.gameObjects.find(selectedObjectKey) == engine.gameObjects.end()) {
-        ImGui::Begin("Game Object attributes tab ");
-        ImGui::TextWrapped("in camera setting");
-        if (ImGui::TreeNode("camera movement:")) {
-            ImGui::Button("move left");
-            if (ImGui::IsItemActive()) {
-                engine.cameraMan->moveCamera(glm::vec2(-1, 0), 0.3);
+    ImGui::Begin("Game Object attributes tab ");
+    if (engine.State == GAME_EDITOR) {
+        if (selectCamera == false && selectObject == false && engine.gameObjects.find(selectedObjectKey) != engine.gameObjects.end()) {
+
+            ImGui::TextWrapped("this is the attributes tab where the object's property is displayed and changed accordingly");
+        }
+        else if (selectCamera == true && selectObject == false && engine.gameObjects.find(selectedObjectKey) == engine.gameObjects.end()) {
+            ImGui::TextWrapped("in camera setting");
+            if (ImGui::TreeNode("camera movement:")) {
+                ImGui::Button("move left");
+                if (ImGui::IsItemActive()) {
+                    engine.cameraMan->moveCamera(glm::vec2(-1, 0), 0.3);
+                }
+                ImGui::Button("move right");
+                if (ImGui::IsItemActive()) {
+                    engine.cameraMan->moveCamera(glm::vec2(1, 0), 0.3);
+                }
+                ImGui::Button("move up");
+                if (ImGui::IsItemActive()) {
+                    engine.cameraMan->moveCamera(glm::vec2(0, -1), 0.3);
+                }
+                ImGui::Button("move down");
+                if (ImGui::IsItemActive()) {
+                    engine.cameraMan->moveCamera(glm::vec2(0, 1), 0.3);
+                }
+                ImGui::TreePop();
             }
-            ImGui::Button("move right");
-            if (ImGui::IsItemActive()) {
-                engine.cameraMan->moveCamera(glm::vec2(1, 0), 0.3);
+
+            if (ImGui::TreeNode("player camera movement:")) {
+                ImGui::Checkbox("follow player", &engine.cameraMan->enableFollow);
+                ImGui::Checkbox("Look Ahead", &engine.cameraMan->enableLookahead);
+                ImGui::TreePop();
             }
-            ImGui::Button("move up");
-            if (ImGui::IsItemActive()) {
-                engine.cameraMan->moveCamera(glm::vec2(0, -1), 0.3);
+
+        }
+        else if (selectCamera == false && selectObject == true && engine.gameObjects.find(selectedObjectKey) != engine.gameObjects.end()) {
+            ImGui::TextWrapped("in object setting");
+            if (ImGui::TreeNode("object data")) {
+                static char buffer[256];
+                strncpy(buffer, engine.gameObjects.find(selectedObjectKey)->second->name.c_str(), sizeof(buffer));
+                
+                ImGui::Separator();
+                // change name
+                ImGui::TextWrapped("Name:");
+                ImGui::SameLine();
+                if (ImGui::InputText("", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+                    // Update the std::string with the modified buffer
+                    engine.gameObjects.find(selectedObjectKey)->second->name= buffer;
+                }
+                ImGui::Separator();
+                //change color
+                ImGui::TextWrapped("color:");
+                float rgb[3] = { engine.gameObjects.find(selectedObjectKey)->second->color.x,
+                    engine.gameObjects.find(selectedObjectKey)->second->color.y,
+                    engine.gameObjects.find(selectedObjectKey)->second->color.z };
+                if (ImGui::ColorEdit3("object color", rgb)) {
+                    engine.gameObjects.find(selectedObjectKey)->second->color.x = rgb[0];
+                    engine.gameObjects.find(selectedObjectKey)->second->color.y = rgb[1];
+                    engine.gameObjects.find(selectedObjectKey)->second->color.z = rgb[2];
+                }
+                ImGui::Separator();
+                //change pos
+                ImGui::TextWrapped("Object Position: ");
+                ImGui::Indent();
+                ImGui::TextWrapped("x = %f", engine.gameObjects.find(selectedObjectKey)->second->getPosition().x);
+                ImGui::SameLine();
+                ImGui::Button("move left");
+                if (ImGui::IsItemActive()) {
+                    engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                        engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                        + b2Vec2(-0.005, 0), 0);
+                }
+                ImGui::SameLine();
+                ImGui::Button("move right");
+                if (ImGui::IsItemActive()) {
+                    engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                        engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                        + b2Vec2(0.005, 0), 0);
+                }
+                ImGui::TextWrapped("y = %f", engine.gameObjects.find(selectedObjectKey)->second->getPosition().y);
+                ImGui::SameLine();
+                ImGui::Button("move up");
+                if (ImGui::IsItemActive()) {
+                    engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                        engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                        + b2Vec2(0, -0.005), 0);
+                }
+                ImGui::SameLine();
+                ImGui::Button("move down");
+                if (ImGui::IsItemActive()) {
+                    engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                        engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                        + b2Vec2(0, 0.005), 0);
+                }
+                ImGui::Unindent();
+                //change size
+                ImGui::TextWrapped("Object Size: ");
+                ImGui::Indent();
+                if (ImGui::InputFloat("Width", &engine.gameObjects.find(selectedObjectKey)->second->size.x, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
+                    engine.gameObjects.find(selectedObjectKey)->second->resize();
+                }
+                if (ImGui::InputFloat("Height", &engine.gameObjects.find(selectedObjectKey)->second->size.y, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
+                    engine.gameObjects.find(selectedObjectKey)->second->resize();
+                }
+                ImGui::Unindent();
+                ImGui::Separator();
+                //ImGui::TextWrapped(std::string(engine.gameObjects.find(selectedObjectKey)->second->type).c_str() );
+                ImGui::TreePop();
+            }  
+            if (ImGui::TreeNode("Gavity:")) {
+               ImGui::Indent();
+               ImGui::TextWrapped("Object gravity: %f", engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale());
+                ImGui::SameLine();
+                ImGui::Button("-");
+                if (ImGui::IsItemActive()) {
+                    engine.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale() - 0.001);
+                }
+                ImGui::SameLine();
+                ImGui::Button("+");
+                if (ImGui::IsItemActive()) {
+                    engine.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale() + 0.001);
+                }
+               ImGui::Unindent();
+                ImGui::TreePop();
             }
-            ImGui::Button("move down");
-            if (ImGui::IsItemActive()) {
-                engine.cameraMan->moveCamera(glm::vec2(0, 1), 0.3);
-            }
-            ImGui::TreePop();
-        }
 
-        if (ImGui::TreeNode("player camera movement:")) {
-            ImGui::Checkbox("follow player", &engine.cameraMan->enableFollow);
-            ImGui::Checkbox("Look Ahead", &engine.cameraMan->enableLookahead);
-            ImGui::TreePop();
-        }
 
-        ImGui::End();
+
+            
+
+        }
+        else {
+            // nothing
+            ImGui::TextWrapped("this is the attributes tab where the object's property is displayed and changed accordingly");
+        }
     }
-    else if (selectCamera == false && selectObject == true && engine.gameObjects.find(selectedObjectKey) != engine.gameObjects.end()) {
-        ImGui::Begin("Game Object attributes tab ");
-
-        ImGui::TextWrapped("in object setting");
-        if (ImGui::Button("gravity")) {
-            //demo.cameraMan->moveCamera(glm::vec2(-100, 0), ImGui::GetIO().DeltaTime);
-            engine.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(0.0);
-
-        }
-        ImGui::Button("move left");
-        if (ImGui::IsItemActive()) {
-            //demo.cameraMan->moveCamera(glm::vec2(-100, 0), ImGui::GetIO().DeltaTime);
-            engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                + b2Vec2(-0.005, 0), 0);
-
-        }
-        ImGui::Button("move right");
-        if (ImGui::IsItemActive()) {
-            engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                + b2Vec2(0.005, 0), 0);
-        }
-        ImGui::Button("move up");
-        if (ImGui::IsItemActive()) {
-            engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                + b2Vec2(0, -0.005), 0);
-        }
-        ImGui::Button("move down");
-        if (ImGui::IsItemActive()) {
-            engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                + b2Vec2(0, 0.005), 0);
-
-        };
-
-        ImGui::End();
-    }
-    else {
-        // nothing
-        ImGui::Begin("Game Object attributes tab ");
-        ImGui::TextWrapped("this is the attributes tab where the object's property is displayed and changed acco     rdingly");
-        ImGui::End();
-    }
+    ImGui::End();
 
 }
-void ImGuiEditorWindow::sceneSection()
+void ImGuiEditorWindow::sceneSection()   
 {
-    // scene render section
-    if (engine.State == GameState::GAME_EDITOR) {
-        // Render title screen
-        ImGui::Begin("scene tab ");
-        ImGuiIO& io = ImGui::GetIO();
+    ImGui::Begin("edit display ");
+    
+        if (ImGui::BeginTabBar("MyTabBar")) {
+            // Add the first tab
+            if (ImGui::BeginTabItem("scene tab")) {
+                ImVec2 wSize = ImGui::GetWindowSize();
+                // scene render section
+                if (engine.State == GameState::GAME_EDITOR) {
+                    // Render title screen
+                        // frame buffer rendering section
+                        frameBuffer.startBind();
+                        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+                        glClear(GL_COLOR_BUFFER_BIT);
 
-        // frame buffer rendering section
-        frameBuffer.startBind();
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+                        engine.Render();
+                        // unbind the framebuffer that renders the scene
+                        frameBuffer.endBind();
+                        // gets the scene window size so it can resize the image per frame
+                        ImVec2 wSize = ImGui::GetWindowSize();
 
-        engine.Update();
-        engine.Render();
-        // unbind the framebuffer that renders the scene
-        frameBuffer.endBind();
-        // gets the scene window size so it can resize the image per frame
-        ImVec2 wSize = ImGui::GetWindowSize();
+                        // renders the buffered texture from the frame buffer into the ImGui image scene
+                        ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
+                        if (ImGui::IsItemHovered())
+                        {
+                            if (ImGui::IsMouseDragging(0)) {
+                                //std::cout << " h" << std::endl;
+                                // Calculate movement based on mouse delta
+                                float deltaX = -io.MouseDelta.x / io.DeltaTime;
+                                float deltaY = -io.MouseDelta.y / io.DeltaTime;
 
-        // renders the buffered texture from the frame buffer into the ImGui image scene
-        ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
-        if (ImGui::IsItemHovered())
-        {
-            if (ImGui::IsMouseDragging(0)) {
-                //std::cout << " h" << std::endl;
-                // Calculate movement based on mouse delta
-                float deltaX = -io.MouseDelta.x / io.DeltaTime;
-                float deltaY = -io.MouseDelta.y / io.DeltaTime;
+                                // Update camera position 
+                                engine.cameraMan->moveCamera(glm::vec2(deltaX, deltaY), io.DeltaTime);
+                                //shows that update in the scene
+                                engine.player->updateCamera();
+                            }
+                        }
+                }
+                else if (engine.State == GameState::GAME_ACTIVE) {
+                    // frame buffer rendering section
+                    frameBuffer.startBind();
+                    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+                    glClear(GL_COLOR_BUFFER_BIT);
+                    // game is rendered here and updated
+                    engine.Update();
+                    engine.Render();
 
-                // Update camera position
-                engine.cameraMan->moveCamera(glm::vec2(deltaX, deltaY), io.DeltaTime);
+                    // unbind the framebuffer that renders the scene
+                    frameBuffer.endBind();
+                    // gets the scene window size so it can resize the image per frame
+                    ImVec2 wSize = ImGui::GetWindowSize();
+
+                    // renders the buffered texture from the frame buffer into the ImGui image scene
+                    ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
+                }
+                else {
+                    
+
+                    // frame buffer rendering section
+                    frameBuffer.startBind();
+                    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+                    glClear(GL_COLOR_BUFFER_BIT);
+
+                    // render default scene
+
+
+                    // unbind the framebuffer that renders the scene
+                    frameBuffer.endBind();
+                    // gets the scene window size so it can resize the image per frame
+                    //ImVec2 wSize = ImGui::GetWindowSize();
+
+                    // renders the buffered texture from the frame buffer into the ImGui image scene
+                    ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
+                }
+                ImGui::EndTabItem();
             }
+            // Add the second tab
+            if (ImGui::BeginTabItem("tile edit tab")) {
+                ImGui::Text("Content of Tab 2");
+                ImGui::EndTabItem(); // End of Tab 2
+            }
+
+            ImGui::EndTabBar(); // End of the tab bar
         }
         ImGui::End();
-    }
-    else if (engine.State == GameState::GAME_ACTIVE) {
-        
-        ImGui::Begin("scene tab ");
-        // frame buffer rendering section
-        frameBuffer.startBind();
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        // game is rendered here and updated
-        engine.Update();
-        engine.Render();
-
-        // unbind the framebuffer that renders the scene
-        frameBuffer.endBind();
-        // gets the scene window size so it can resize the image per frame
-        ImVec2 wSize = ImGui::GetWindowSize();
-
-        // renders the buffered texture from the frame buffer into the ImGui image scene
-        ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
-
-        ImGui::End();
-
-        ImGui::Begin("controller tab ");
-        ImGui::TextWrapped(" Press the esc key to go back to the main menu");
-        ImGui::TextWrapped(" Press the 'A' and 'D' keys respectively to go left and right  ");
-        ImGui::TextWrapped(" Press the 'W' and 'S' keys respectively to look up and down  ");
-        ImGui::TextWrapped(" Press the 'SPACE' key respectively to jump ");
-        ImGui::End();
-
-    }
-    else {
-        ImGui::Begin("scene tab ");
-        ImGuiIO& io = ImGui::GetIO();
-
-        // frame buffer rendering section
-        frameBuffer.startBind();
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // render default scene
-
-
-        // unbind the framebuffer that renders the scene
-        frameBuffer.endBind();
-        // gets the scene window size so it can resize the image per frame
-        ImVec2 wSize = ImGui::GetWindowSize();
-
-        // renders the buffered texture from the frame buffer into the ImGui image scene
-        ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
-        ImGui::End();
-    }
-
 }
 
 void ImGuiEditorWindow::assetSection()

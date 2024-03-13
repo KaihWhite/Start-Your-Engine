@@ -11,12 +11,14 @@
 enum ObjectType {
 	PLAYER,
 	OBJECT,
-	NPC
+	NPC,
+	TILEMAP 
 };
 
 enum RigidBodyType {
 	STATIC,
 	DYNAMIC
+
 };
 
 class GameObject
@@ -41,6 +43,7 @@ public:
 
 	void update();
 
+	void resize();
 	void physics(float dt);
 
 	void draw(Renderer& renderer);
