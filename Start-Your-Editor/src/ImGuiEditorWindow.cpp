@@ -214,7 +214,7 @@ void ImGuiEditorWindow::objectSection()
         }
 
         std::ostringstream stream;
-        stream << "total objects: " << selectedObjectKey << " ->" << engine.gameObjects.size();
+        stream << "total objects: " << " ->" << engine.gameObjects.size();
         std::string lengthText = stream.str();
         ImGui::TextWrapped(lengthText.c_str());
         // End the scrolling region
@@ -265,6 +265,7 @@ void ImGuiEditorWindow::attributeSection()
             if (ImGui::TreeNode("object data")) {
                 static char buffer[256];
                 strncpy(buffer, engine.gameObjects.find(selectedObjectKey)->second->name.c_str(), sizeof(buffer));
+                
                 ImGui::Separator();
                 // change name
                 ImGui::TextWrapped("Name:");
