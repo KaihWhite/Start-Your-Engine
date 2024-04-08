@@ -42,7 +42,7 @@ public:
 	~GameObject();
 
 	void update();
-
+	void destroyBodyFixture();
 	void resize();
 	void physics(float dt);
 

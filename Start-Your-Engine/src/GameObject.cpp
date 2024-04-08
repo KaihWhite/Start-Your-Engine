@@ -31,6 +31,8 @@ GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec
 
 GameObject::~GameObject()
 {
+	// destroy the body fixthre 
+	this->destroyBodyFixture();
 	/*
 	for (auto& animation : this->animations)
 	{
@@ -63,13 +65,18 @@ void GameObject::update()
 
 }
 
-void GameObject::resize()
+void GameObject::destroyBodyFixture()
 {
 	// destroy the one and only fixture of the body
 	for (b2Fixture* fixture = body->GetFixtureList(); fixture != nullptr; fixture = fixture->GetNext()) {
 		body->DestroyFixture(fixture);
 		break;
 	}
+}
+
+void GameObject::resize()
+{
+	destroyBodyFixture();
 	// this creates a new fixture for the body when it is resizes
 
 	b2PolygonShape dynamicBox;

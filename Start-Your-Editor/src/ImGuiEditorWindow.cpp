@@ -262,6 +262,11 @@ void ImGuiEditorWindow::attributeSection()
         }
         else if (selectCamera == false && selectObject == true && engine.gameObjects.find(selectedObjectKey) != engine.gameObjects.end()) {
             ImGui::TextWrapped("in object setting");
+            ImGui::Button("delete game object");
+            if (ImGui::IsItemActive()) {
+                engine.removeGameObject(selectedObjectKey);
+            }
+            ImGui::Separator();
             if (ImGui::TreeNode("object data")) {
                 static char buffer[256];
                 strncpy(buffer, engine.gameObjects.find(selectedObjectKey)->second->name.c_str(), sizeof(buffer));
