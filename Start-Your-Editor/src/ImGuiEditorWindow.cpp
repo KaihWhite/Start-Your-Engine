@@ -150,6 +150,7 @@ void ImGuiEditorWindow::toolBarSection()
     // Dialogs for loading and saving levels
     if (ImGuiFileDialog::Instance()->Display("ChooseLevelDlgKey")) {
         if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+            engine.removeAllGameObject();
             std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
             std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
             // action

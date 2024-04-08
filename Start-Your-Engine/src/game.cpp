@@ -12,16 +12,13 @@ Game::Game(unsigned int width, unsigned int height)
 
 Game::~Game()
 {
-    delete this->player;
+    //dereference the player pointer
+    this->player == NULL;
+    // delete all the gameobjects from the game object map
+    this->removeAllGameObject();
     delete this->renderer;
     delete this->world;
     delete this->cameraMan;
-    /*
-    for (auto& gameObject : gameObjects)
-    {
-		delete gameObject.second;
-	}
-    */
 }
 
 void Game::Init(unsigned int width, unsigned int height)
@@ -157,6 +154,11 @@ void Game::removeGameObject(int key)
     this->gameObjects[key]->destroyBodyFixture();
 	delete this->gameObjects[key];
 	this->gameObjects.erase(key);
+}
+
+void Game::removeAllGameObject()
+{
+    gameObjects.clear();
 }
 
 void Game::updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
