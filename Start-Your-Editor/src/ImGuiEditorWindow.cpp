@@ -173,9 +173,11 @@ void ImGuiEditorWindow::objectSection()
         glm::vec3 color = glm::vec3(0.5, 0.5, 0.5);
         glm::vec2 size = glm::vec2(5.0, 5.0);
         glm::vec2 position = glm::vec2(0.0, 0.0);
+        std::unordered_set<std::string> sounds;
 
         // This will only be able to handle static, non-player/npc objects
-        engine.addGameObject(name, ObjectType::OBJECT, RigidBodyType::STATIC, animations, color, size, position);
+        // How will animations and sounds be updated?
+        engine.addGameObject(name, ObjectType::OBJECT, RigidBodyType::STATIC, animations, sounds, color, size, position);
         // Below not necesary with unique key generation
         /*
         if (engine.gameObjects.find(name) == engine.gameObjects.end()) {

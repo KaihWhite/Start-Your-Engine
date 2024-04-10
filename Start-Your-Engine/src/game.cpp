@@ -16,6 +16,8 @@ Game::~Game()
     delete this->renderer;
     delete this->world;
     delete this->cameraMan;
+    Game::soundEngine->deinit();
+    delete Game::soundEngine;
     /*
     for (auto& gameObject : gameObjects)
     {
@@ -39,6 +41,10 @@ void Game::Init(unsigned int width, unsigned int height)
 
     /* create renderer */
     renderer = new Renderer(ResourceManager::GetShader("anim"));
+
+    /* create sound engine */
+    soundEngine = new SoLoud::Soloud;
+    soundEngine->init(); // Initialize SoLoud engine
 
 
     /* load textures */
@@ -138,9 +144,9 @@ void Game::initLevel(std::unordered_map<int, GameObject*> level)
 	}
 }
 
-void Game::addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
+void Game::addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
 {
-    GameObject* gameObject = new GameObject(name, pos, size, color, animations, this->world, type == ObjectType::OBJECT ? "Object" : "Npc", rtype);
+    GameObject* gameObject = new GameObject(name, pos, size, color, animations, this->world, type == ObjectType::OBJECT ? "Object" : "Npc", sounds, rtype);
     int key = Game::generateUniqueKey(this->gameObjects);
     this->gameObjects[key] = gameObject;
 }
@@ -155,7 +161,7 @@ void Game::removeGameObject(int key)
 	this->gameObjects.erase(key);
 }
 
-void Game::updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
+void Game::updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
 {
     this->gameObjects[key]->name = name;
 	this->gameObjects[key]->animations = animations;
@@ -164,19 +170,21 @@ void Game::updateGameObject(int key, std::string name, ObjectType type, RigidBod
 	this->gameObjects[key]->rigidBodyType = rtype;
 	this->gameObjects[key]->body->SetTransform(b2Vec2(pos.x, pos.y), 0.0f);
 	this->gameObjects[key]->type = type;
+    this->gameObjects[key]->sounds = sounds;
 }
 
-void Game::addPlayer(Camera2DSystem* cameraMan, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
+void Game::addPlayer(Camera2DSystem* cameraMan, std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
 {
-	Player* player = new Player(pos, size, color, animations, this->world, cameraMan, "Player", true);
+	Player* player = new Player(pos, size, color, animations, this->world, cameraMan, "Player", sounds, true);
 	this->player = player;
     int key = Game::generateUniqueKey(this->gameObjects);
     this->gameObjects[key] = player;
 }
 
-void Game::updatePlayer(std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
+void Game::updatePlayer(std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
 {
 	this->player->animations = animations;
+    this->player->sounds = sounds;
 	this->player->color = color;
 	this->player->size = size;
 	this->player->body->SetTransform(b2Vec2(pos.x, pos.y), 0.0f);
@@ -198,4 +206,8 @@ int Game::generateUniqueKey(std::unordered_map<int, GameObject*> map)
 		unique_key = distr(gen);
 	}
     return unique_key;
+}
+
+void Game::playSound(std::string sound) {
+    Game::soundEngine->play(ResourceManager::GetSound(sound));
 }

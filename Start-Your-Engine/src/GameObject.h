@@ -6,6 +6,7 @@
 #include "Animation.h"
 #include "GLFW/glfw3.h"
 #include <unordered_map>
+#include <unordered_set>
 #include "box2d/box2d.h"
 
 enum ObjectType {
@@ -29,6 +30,8 @@ public:
 	std::unordered_map<std::string, Animation*> animations;
 	std::string currentAnimation = "idle";
 
+	std::unordered_set<std::string> sounds;
+
 	glm::vec3 color;
 	glm::vec2 size;
 
@@ -36,7 +39,7 @@ public:
 
 	b2Body* body;
 
-	GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, bool dynam = false);
+	GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, std::unordered_set<std::string> sounds, bool dynam = false);
 	~GameObject();
 
 	void update();
@@ -49,5 +52,4 @@ public:
 	glm::vec2 getPosition();
 	glm::vec2 metersToPixels(glm::vec2 v);
 	glm::vec2 pixelsToMeters(glm::vec2 v);
-
 };

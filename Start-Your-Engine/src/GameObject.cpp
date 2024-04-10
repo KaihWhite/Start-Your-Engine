@@ -2,10 +2,11 @@
 #include "GameObject.h"
 #include <iostream>
 #include "game.h"
+
 //#include "ContactListener.h"
 
-GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, bool dynam)
-	: name(name), color(color), animations(animations), size(size), rigidBodyType(dynam ? RigidBodyType::DYNAMIC : RigidBodyType::STATIC), type(type == "Player" ? ObjectType::PLAYER : type == "Object" ? ObjectType::OBJECT : ObjectType::NPC)
+GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, std::unordered_set<std::string> sounds, bool dynam)
+	: name(name), color(color), animations(animations), size(size), rigidBodyType(dynam ? RigidBodyType::DYNAMIC : RigidBodyType::STATIC), type(type == "Player" ? ObjectType::PLAYER : type == "Object" ? ObjectType::OBJECT : ObjectType::NPC), sounds(sounds)
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = dynam ? b2_dynamicBody : b2_staticBody;

@@ -1,6 +1,8 @@
 /*
-  by kunga ngochetsang
+  by Kunga Ngochetsang and Kaih White
 */
+
+#define WITH_WINMM
 
 #include <iostream>
 #include <glad/glad.h>
@@ -21,6 +23,7 @@ unsigned int SCR_WIDTH = 1600;
 unsigned int SCR_HEIGHT = 800;
 
 Game* demo = new Game(SCR_WIDTH, SCR_HEIGHT);
+
 // Callback function for resizing the window
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {

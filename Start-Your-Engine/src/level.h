@@ -1,5 +1,6 @@
 // Made by Kaih White
 #pragma once
+
 #include "document.h"
 #include "prettywriter.h" // for stringify JSON
 #include "filereadstream.h"

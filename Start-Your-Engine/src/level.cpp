@@ -1,4 +1,5 @@
 // Made by Kaih White
+
 #include "level.h"
 
 std::vector<std::string> split(const std::string& s, char delimiter) {
@@ -59,6 +60,13 @@ void Level::saveToJSON(const std::string& filename, std::unordered_map<int, Game
             animations.AddMember(key, value, allocator);
 		}
         objValue.AddMember("animations", animations, allocator);
+
+        rapidjson::Value sounds(rapidjson::kArrayType);
+        for (const auto& sound : obj.second->sounds) {
+			rapidjson::Value soundValue;
+			soundValue.SetString(sound.c_str(), allocator);
+			sounds.PushBack(soundValue, allocator);
+        }
 
         rapidjson::Value colorValue(rapidjson::kObjectType);
         colorValue.AddMember("x", obj.second->color.x, allocator);
@@ -121,7 +129,7 @@ std::unordered_map<int, GameObject*> Level::loadFromJSON(const std::string& file
             glm::vec3 color = glm::vec3(objValue["color"]["x"].GetFloat(), objValue["color"]["y"].GetFloat(), objValue["color"]["z"].GetFloat());
 
             std::unordered_map<std::string, Animation*> animations;
-            for (const auto& anim : objValue["animations"].GetObject()) {
+            for (const auto& anim : objValue["animations"].GetObj()) {
 
                 const std::string name = anim.name.GetString();
                 std::vector<std::string> splitName = split(name, ',');
@@ -130,6 +138,11 @@ std::unordered_map<int, GameObject*> Level::loadFromJSON(const std::string& file
 
                 animations[splitName[1]] = new Animation(splitName[0], totalFrames);
             }
+
+            std::unordered_set<std::string> sounds;
+            for (const auto& sound : objValue["sounds"].GetArray()) {
+				sounds.insert(sound.GetString());
+			}
 
             std::string dynamCheck = "Dynamic";
             bool dynam = objValue["rigidBodyType"].GetString() == dynamCheck;
@@ -153,10 +166,10 @@ std::unordered_map<int, GameObject*> Level::loadFromJSON(const std::string& file
 			}
 
             if (type == "Player") {
-                Player* player = new Player(position, size, color, animations, world, cameraMan, type, dynam);
+                Player* player = new Player(position, size, color, animations, world, cameraMan, type, sounds, dynam);
                 gameObjects[unique_key] = player;
             } else {
-                GameObject* gameObject = new GameObject(name, position, size, color, animations, world, type, dynam);
+                GameObject* gameObject = new GameObject(name, position, size, color, animations, world, type, sounds, dynam);
                 gameObjects[unique_key] = gameObject;
             }
         }

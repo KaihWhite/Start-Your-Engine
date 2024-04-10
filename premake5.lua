@@ -12,6 +12,7 @@ workspace "Start-Your-Engine"
    IncludeDir["imgui"] = "Dependencies/imgui/include"
    IncludeDir["rapidjson"] = "Dependencies/rapidjson"
    IncludeDir["ImGuiFileDialog"] = "Dependencies/ImGuiFileDialog"
+   IncludeDir["soloud"] = "Dependencies/soloud/include"
 
 project "Start-Your-Editor"
    kind "ConsoleApp"
@@ -22,11 +23,11 @@ project "Start-Your-Editor"
    targetdir "bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
    objdir "bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
 
-   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c", "Dependencies/imgui/src/*.cpp", "Dependencies/ImGuiFileDialog/*.cpp","Dependencies/ImGuiFileDialog/*.h" }
+   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c", "Dependencies/imgui/src/*.cpp", "Dependencies/ImGuiFileDialog/*.cpp", "Dependencies/ImGuiFileDialog/*.h", "Dependencies/soloud/src/c_api/*.cpp", "Dependencies/soloud/src/backend/winmm/*.cpp", "Dependencies/soloud/src/audiosource/wav/*", "Dependencies/soloud/src/core/*"}
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { IncludeDir["Glad"], IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["imgui"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"], IncludeDir["Start-Your-Engine"], IncludeDir["ImGuiFileDialog"] }
+      includedirs { IncludeDir["Glad"], IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["imgui"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"], IncludeDir["Start-Your-Engine"], IncludeDir["ImGuiFileDialog"], IncludeDir["soloud"], "Dependencies/soloud/src/c_api/*.cpp", "Dependencies/soloud/src/backend/winmm/*.cpp", "Dependencies/soloud/src/audiosource/wav/*", "Dependencies/soloud/src/core/*"}
       libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] }
       architecture "x64"
       systemversion "latest"
@@ -70,7 +71,7 @@ project "Start-Your-Engine"
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"], IncludeDir["ImGuiFileDialog"] }
+      includedirs { IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"], IncludeDir["ImGuiFileDialog"], IncludeDir["soloud"]}
       libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] }
       architecture "x64"
       systemversion "latest"

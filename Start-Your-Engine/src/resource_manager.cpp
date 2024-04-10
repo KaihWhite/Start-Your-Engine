@@ -116,3 +116,15 @@ Texture2D ResourceManager::loadTextureFromFile(const char* file, bool alpha)
     stbi_image_free(data);
     return texture;
 }
+
+void ResourceManager::LoadSound(const char* file, std::string name)
+{
+	SoLoud::Wav wav;
+	wav.load(file);
+	ResourceManager::Sounds[name] = wav;
+}
+
+SoLoud::Wav& ResourceManager::GetSound(std::string name)
+{
+	return ResourceManager::Sounds[name];
+}

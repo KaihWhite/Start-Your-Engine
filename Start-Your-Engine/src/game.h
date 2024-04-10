@@ -9,6 +9,9 @@
 #include "Animation.h"
 #include "box2d/box2d.h"
 
+#include "soloud.h"
+#include "soloud_wav.h"
+
 #include <vector>
 #include <random>
 
@@ -34,6 +37,7 @@ public:
 
     Player                  *player;
     Renderer                *renderer;
+    static SoLoud::Soloud   *soundEngine;
     b2World                 *world;
     Camera2DSystem          *cameraMan;
    
@@ -56,20 +60,23 @@ public:
     Animation* loadAnimation(const char* file, bool alpha, std::string name, int numFrames);
 
     // adds the game object to the level
-    void addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+    void addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
     
     // removes the game object from the level
     void removeGameObject(int key);
 
     // updates a game object in the level
-    void updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+    void updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 
     // Only allows for one player
-    void addPlayer(Camera2DSystem* cameraMan, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+    void addPlayer(Camera2DSystem* cameraMan, std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 
-    void updatePlayer(std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+    void updatePlayer(std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 
     static int generateUniqueKey(std::unordered_map<int, GameObject*> map);
+
+    // plays a sound
+    static void playSound(std::string sound);
 
     // game loop
     void ProcessInput(float& dt);
