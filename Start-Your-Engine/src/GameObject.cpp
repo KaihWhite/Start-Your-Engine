@@ -60,6 +60,11 @@ void GameObject::draw(Renderer& renderer)
     renderer.RenderSprite(sprite, this->metersToPixels(this->getPosition()), this->metersToPixels(this->size), this->body->GetAngle(), this->color);
 }
  
+Texture2D GameObject::getCurrentTexture2D()
+{
+	return this->animations[currentAnimation]->getSpriteSheet();
+}
+
 void GameObject::update()
 {
 
