@@ -105,7 +105,13 @@ glm::vec2 GameObject::getPosition() {
 	std::cout << "\n" << std::endl;
 	*/
 	
-	return glm::vec2(this->body->GetPosition().x - ((this->size.x) / 2), this->body->GetPosition().y - ((this->size.y) / 2));
+	return glm::vec2(this->body->GetPosition().x - ((this->size.x) / 2)
+		, this->body->GetPosition().y - ((this->size.y) / 2));
+}
+
+glm::vec2 GameObject::getLocation()
+{
+	return glm::vec2(this->body->GetPosition().x , this->body->GetPosition().y);
 }
 
 glm::vec2 GameObject::metersToPixels(glm::vec2 v) {

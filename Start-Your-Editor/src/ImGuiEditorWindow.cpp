@@ -294,9 +294,9 @@ void ImGuiEditorWindow::attributeSection()
                     }
                     ImGui::Separator();
                     //change pos
-                    ImGui::TextWrapped("Object Position: ");
+                    ImGui::TextWrapped("Object location: ");
                     ImGui::Indent();
-                    ImGui::TextWrapped("x = %f", engine.gameObjects.find(selectedObjectKey)->second->getPosition().x);
+                    ImGui::TextWrapped("x = %f", engine.gameObjects.find(selectedObjectKey)->second->getLocation().x);
                     ImGui::SameLine();
                     ImGui::Button("move left");
                     if (ImGui::IsItemActive()) {
@@ -311,7 +311,7 @@ void ImGuiEditorWindow::attributeSection()
                             engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
                             + b2Vec2(0.005, 0), 0);
                     }
-                    ImGui::TextWrapped("y = %f", engine.gameObjects.find(selectedObjectKey)->second->getPosition().y);
+                    ImGui::TextWrapped("y = %f", engine.gameObjects.find(selectedObjectKey)->second->getLocation().y);
                     ImGui::SameLine();
                     ImGui::Button("move up");
                     if (ImGui::IsItemActive()) {
