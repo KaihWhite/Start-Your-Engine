@@ -41,8 +41,9 @@ public:
 	GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, bool dynam = false);
 	~GameObject();
 
+	Texture2D getCurrentTexture2D();
 	void update();
-
+	void destroyBodyFixture();
 	void resize();
 	void physics(float dt);
 
@@ -50,6 +51,7 @@ public:
 
 	/* converts physics body's position to renderer coordinates */
 	glm::vec2 getPosition();
+	glm::vec2 getLocation();
 	glm::vec2 metersToPixels(glm::vec2 v);
 	glm::vec2 pixelsToMeters(glm::vec2 v);
 

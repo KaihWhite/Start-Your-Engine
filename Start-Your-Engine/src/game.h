@@ -61,6 +61,7 @@ public:
     // removes the game object from the level
     void removeGameObject(int key);
 
+    void removeAllGameObject();
     // updates a game object in the level
     void updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 

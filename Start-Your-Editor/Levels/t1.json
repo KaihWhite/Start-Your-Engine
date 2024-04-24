@@ -1,0 +1,90 @@
+{
+    "gameObjects": [
+        {
+            "name": "player",
+            "type": "Player",
+            "rigidBodyType": "Dynamic",
+            "animations": {
+                "idle,idle": 10,
+                "run,run": 8,
+                "jump,jump": 3
+            },
+            "color": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "size": {
+                "x": 3.0,
+                "y": 4.0
+            },
+            "position": {
+                "x": 8.120231628417969,
+                "y": 3.539978265762329
+            }
+        },
+        {
+            "name": "platform1",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "awesomeface,idle": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 29.400074005126953,
+                "y": 0.8000000715255737
+            },
+            "position": {
+                "x": 4.335118293762207,
+                "y": 5.954977989196777
+            }
+        },
+        {
+            "name": "object31.863000",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "awesomeface,idle": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 5.0,
+                "y": 5.0
+            },
+            "position": {
+                "x": 20.09463119506836,
+                "y": 5.680082321166992
+            }
+        },
+        {
+            "name": "platform2",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "awesomeface,idle": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 1.0,
+                "y": 6.0
+            },
+            "position": {
+                "x": 6.049886703491211,
+                "y": 5.490077018737793
+            }
+        }
+    ]
+}

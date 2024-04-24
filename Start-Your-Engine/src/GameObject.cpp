@@ -31,6 +31,8 @@ GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec
 
 GameObject::~GameObject()
 {
+	// destroy the body fixthre 
+	this->destroyBodyFixture();
 	/*
 	for (auto& animation : this->animations)
 	{
@@ -58,18 +60,28 @@ void GameObject::draw(Renderer& renderer)
     renderer.RenderSprite(sprite, this->metersToPixels(this->getPosition()), this->metersToPixels(this->size), this->body->GetAngle(), this->color);
 }
  
+Texture2D GameObject::getCurrentTexture2D()
+{
+	return this->animations[currentAnimation]->getSpriteSheet();
+}
+
 void GameObject::update()
 {
 
 }
 
-void GameObject::resize()
+void GameObject::destroyBodyFixture()
 {
 	// destroy the one and only fixture of the body
 	for (b2Fixture* fixture = body->GetFixtureList(); fixture != nullptr; fixture = fixture->GetNext()) {
 		body->DestroyFixture(fixture);
 		break;
 	}
+}
+
+void GameObject::resize()
+{
+	destroyBodyFixture();
 	// this creates a new fixture for the body when it is resizes
 
 	b2PolygonShape dynamicBox;
@@ -93,7 +105,13 @@ glm::vec2 GameObject::getPosition() {
 	std::cout << "\n" << std::endl;
 	*/
 	
-	return glm::vec2(this->body->GetPosition().x - ((this->size.x) / 2), this->body->GetPosition().y - ((this->size.y) / 2));
+	return glm::vec2(this->body->GetPosition().x - ((this->size.x) / 2)
+		, this->body->GetPosition().y - ((this->size.y) / 2));
+}
+
+glm::vec2 GameObject::getLocation()
+{
+	return glm::vec2(this->body->GetPosition().x , this->body->GetPosition().y);
 }
 
 glm::vec2 GameObject::metersToPixels(glm::vec2 v) {

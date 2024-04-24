@@ -47,7 +47,7 @@ public:
 	void endRender();
 	void destroyWindow();
 
-	void showAssetPreviewWindow(); // Declare the method
+	
 private:
 	// content funtions for on render
 	void toolBarSection();
@@ -55,4 +55,8 @@ private:
 	void attributeSection();
 	void sceneSection();
 	void assetSection();
+
+	// helper methods
+	void showAssetPreviewWindow(); // Declare the method
+	//void selectAnimation();
 };

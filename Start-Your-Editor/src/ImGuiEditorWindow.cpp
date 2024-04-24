@@ -150,6 +150,7 @@ void ImGuiEditorWindow::toolBarSection()
     // Dialogs for loading and saving levels
     if (ImGuiFileDialog::Instance()->Display("ChooseLevelDlgKey")) {
         if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+            engine.removeAllGameObject();
             std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
             std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
             // action
@@ -262,103 +263,118 @@ void ImGuiEditorWindow::attributeSection()
         }
         else if (selectCamera == false && selectObject == true && engine.gameObjects.find(selectedObjectKey) != engine.gameObjects.end()) {
             ImGui::TextWrapped("in object setting");
-            if (ImGui::TreeNode("object data")) {
-                static char buffer[256];
-                strncpy(buffer, engine.gameObjects.find(selectedObjectKey)->second->name.c_str(), sizeof(buffer));
-                
-                ImGui::Separator();
-                // change name
-                ImGui::TextWrapped("Name:");
-                ImGui::SameLine();
-                if (ImGui::InputText("", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
-                    // Update the std::string with the modified buffer
-                    engine.gameObjects.find(selectedObjectKey)->second->name= buffer;
-                }
-                ImGui::Separator();
-                //change color
-                ImGui::TextWrapped("color:");
-                float rgb[3] = { engine.gameObjects.find(selectedObjectKey)->second->color.x,
-                    engine.gameObjects.find(selectedObjectKey)->second->color.y,
-                    engine.gameObjects.find(selectedObjectKey)->second->color.z };
-                if (ImGui::ColorEdit3("object color", rgb)) {
-                    engine.gameObjects.find(selectedObjectKey)->second->color.x = rgb[0];
-                    engine.gameObjects.find(selectedObjectKey)->second->color.y = rgb[1];
-                    engine.gameObjects.find(selectedObjectKey)->second->color.z = rgb[2];
-                }
-                ImGui::Separator();
-                //change pos
-                ImGui::TextWrapped("Object Position: ");
-                ImGui::Indent();
-                ImGui::TextWrapped("x = %f", engine.gameObjects.find(selectedObjectKey)->second->getPosition().x);
-                ImGui::SameLine();
-                ImGui::Button("move left");
-                if (ImGui::IsItemActive()) {
-                    engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                        engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                        + b2Vec2(-0.005, 0), 0);
-                }
-                ImGui::SameLine();
-                ImGui::Button("move right");
-                if (ImGui::IsItemActive()) {
-                    engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                        engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                        + b2Vec2(0.005, 0), 0);
-                }
-                ImGui::TextWrapped("y = %f", engine.gameObjects.find(selectedObjectKey)->second->getPosition().y);
-                ImGui::SameLine();
-                ImGui::Button("move up");
-                if (ImGui::IsItemActive()) {
-                    engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                        engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                        + b2Vec2(0, -0.005), 0);
-                }
-                ImGui::SameLine();
-                ImGui::Button("move down");
-                if (ImGui::IsItemActive()) {
-                    engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-                        engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-                        + b2Vec2(0, 0.005), 0);
-                }
-                ImGui::Unindent();
-                //change size
-                ImGui::TextWrapped("Object Size: ");
-                ImGui::Indent();
-                if (ImGui::InputFloat("Width", &engine.gameObjects.find(selectedObjectKey)->second->size.x, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
-                    engine.gameObjects.find(selectedObjectKey)->second->resize();
-                }
-                if (ImGui::InputFloat("Height", &engine.gameObjects.find(selectedObjectKey)->second->size.y, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
-                    engine.gameObjects.find(selectedObjectKey)->second->resize();
-                }
-                ImGui::Unindent();
-                ImGui::Separator();
-                //ImGui::TextWrapped(std::string(engine.gameObjects.find(selectedObjectKey)->second->type).c_str() );
-                ImGui::TreePop();
-            }  
-            if (ImGui::TreeNode("Gavity:")) {
-               ImGui::Indent();
-               ImGui::TextWrapped("Object gravity: %f", engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale());
-                ImGui::SameLine();
-                ImGui::Button("-");
-                if (ImGui::IsItemActive()) {
-                    engine.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale() - 0.001);
-                }
-                ImGui::SameLine();
-                ImGui::Button("+");
-                if (ImGui::IsItemActive()) {
-                    engine.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale() + 0.001);
-                }
-               ImGui::Unindent();
-                ImGui::TreePop();
+            ImGui::Button("delete game object");
+            if (ImGui::IsItemActive()) {
+                engine.removeGameObject(selectedObjectKey);
             }
+            ImGui::Separator();
+            if (engine.gameObjects.find(selectedObjectKey) != engine.gameObjects.end()) {
+                if (ImGui::TreeNode("object data")) {
+                    static char buffer[256];
 
-
-
-            
-
-        }
-        else {
-            // nothing
-            ImGui::TextWrapped("this is the attributes tab where the object's property is displayed and changed accordingly");
+                    strncpy(buffer, engine.gameObjects.find(selectedObjectKey)->second->name.c_str(), sizeof(buffer));
+                    ImGui::Separator();
+                    // change name
+                    ImGui::TextWrapped("Name:");
+                    ImGui::SameLine();
+                    if (ImGui::InputText("", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+                        // Update the std::string with the modified buffer
+                        engine.gameObjects.find(selectedObjectKey)->second->name = buffer;
+                    }
+                    ImGui::Separator();
+                    //change color
+                    ImGui::TextWrapped("color:");
+                    float rgb[3] = { engine.gameObjects.find(selectedObjectKey)->second->color.x,
+                        engine.gameObjects.find(selectedObjectKey)->second->color.y,
+                        engine.gameObjects.find(selectedObjectKey)->second->color.z };
+                    if (ImGui::ColorEdit3("object color", rgb)) {
+                        engine.gameObjects.find(selectedObjectKey)->second->color.x = rgb[0];
+                        engine.gameObjects.find(selectedObjectKey)->second->color.y = rgb[1];
+                        engine.gameObjects.find(selectedObjectKey)->second->color.z = rgb[2];
+                    }
+                    ImGui::Separator();
+                    //change pos
+                    ImGui::TextWrapped("Object location: ");
+                    ImGui::Indent();
+                    ImGui::TextWrapped("x = %f", engine.gameObjects.find(selectedObjectKey)->second->getLocation().x);
+                    ImGui::SameLine();
+                    ImGui::Button("move left");
+                    if (ImGui::IsItemActive()) {
+                        engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                            engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                            + b2Vec2(-0.005, 0), 0);
+                    }
+                    ImGui::SameLine();
+                    ImGui::Button("move right");
+                    if (ImGui::IsItemActive()) {
+                        engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                            engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                            + b2Vec2(0.005, 0), 0);
+                    }
+                    ImGui::TextWrapped("y = %f", engine.gameObjects.find(selectedObjectKey)->second->getLocation().y);
+                    ImGui::SameLine();
+                    ImGui::Button("move up");
+                    if (ImGui::IsItemActive()) {
+                        engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                            engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                            + b2Vec2(0, -0.005), 0);
+                    }
+                    ImGui::SameLine();
+                    ImGui::Button("move down");
+                    if (ImGui::IsItemActive()) {
+                        engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+                            engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+                            + b2Vec2(0, 0.005), 0);
+                    }
+                    ImGui::Unindent();
+                    //change size
+                    ImGui::TextWrapped("Object Size: ");
+                    ImGui::Indent();
+                    if (ImGui::InputFloat("Width", &engine.gameObjects.find(selectedObjectKey)->second->size.x, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
+                        engine.gameObjects.find(selectedObjectKey)->second->resize();
+                    }
+                    if (ImGui::InputFloat("Height", &engine.gameObjects.find(selectedObjectKey)->second->size.y, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
+                        engine.gameObjects.find(selectedObjectKey)->second->resize();
+                    }
+                    ImGui::Unindent();
+                    ImGui::Separator();
+                    //ImGui::TextWrapped(std::string(engine.gameObjects.find(selectedObjectKey)->second->type).c_str() );
+                    ImGui::TreePop();
+                }
+                if (ImGui::TreeNode("Gavity:")) {
+                    ImGui::Indent();
+                    ImGui::TextWrapped("Object gravity: %f", engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale());
+                    ImGui::SameLine();
+                    ImGui::Button("-");
+                    if (ImGui::IsItemActive()) {
+                        engine.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale() - 0.001);
+                    }
+                    ImGui::SameLine();
+                    ImGui::Button("+");
+                    if (ImGui::IsItemActive()) {
+                        engine.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale() + 0.001);
+                    }
+                    ImGui::Unindent();
+                    ImGui::TreePop();
+                }
+                if (ImGui::TreeNode("Object animation")) {
+                    ImGui::Indent();
+                    ImGui::TextWrapped("current animation preview:");
+                    Texture2D& texture = engine.gameObjects.find(selectedObjectKey)->second->getCurrentTexture2D();
+                    ImGui::Image((void*)(intptr_t)texture.ID, ImVec2(80, 80));
+                    ImGui::Unindent();
+                    ImGui::TextWrapped("change current animation:");
+                    ImGui::Indent();
+                    //selectAnimation();
+                    ImGui::Unindent();
+                    ImGui::TreePop();
+                }
+            }
+            else {
+                // nothing
+                ImGui::TextWrapped("this is the attributes tab where the object's property is displayed and changed accordingly");
+            }
+  
         }
     }
     ImGui::End();
@@ -399,7 +415,10 @@ void ImGuiEditorWindow::sceneSection()
                                 // Update camera position 
                                 engine.cameraMan->moveCamera(glm::vec2(deltaX, deltaY), io.DeltaTime);
                                 //shows that update in the scene
-                                engine.player->updateCamera();
+                                if (engine.player != NULL)
+                                    engine.player->updateCamera();
+                                else
+                                    engine.cameraMan->updateCamera();
                             }
                         }
                 }
@@ -522,6 +541,8 @@ void ImGuiEditorWindow::assetSection()
     ImGui::End();
 }
 
+
+
 void ImGuiEditorWindow::showAssetPreviewWindow() {
     if (selectedAssetForPreview.empty()) return; // check if an asset is selected
 
@@ -544,3 +565,25 @@ void ImGuiEditorWindow::showAssetPreviewWindow() {
         selectedAssetForPreview.clear();
     }
 }
+
+//void ImGuiEditorWindow::selectAnimation()
+//{
+//
+//    ImGui::BeginChild("AssetsScrolling", ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
+//
+//    for (auto it = ResourceManager::Textures.begin(); it != ResourceManager::Textures.end();) {
+//        ImGui::PushID(it->second.ID); // use the texture ID to push the ID
+//
+//        // display asset thumbnail
+//        if (ImGui::ImageButton((void*)(intptr_t)it->second.ID, ImVec2(80, 80))) {
+//            Animation* anime = new Animation(it->first, 1);
+//
+//            engine.gameObjects.find(selectedObjectKey)->second->currentAnimation = it->first; // set the asset for preview
+//        }
+//        else {
+//            it++; // only increment the iterator if no item was removed
+//        }
+//        ImGui::PopID();
+//    }
+//    ImGui::EndChild();
+//}
