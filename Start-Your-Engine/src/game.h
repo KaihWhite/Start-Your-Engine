@@ -72,9 +72,11 @@ public:
 
     static int generateUniqueKey(std::unordered_map<int, GameObject*> map);
 
+    //void addAnimationToGameObject(string );
     // game loop
     void ProcessInput(float& dt);
     void Update();
+    void updateWorldCamera();
     void Render();
 };
 

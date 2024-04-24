@@ -418,7 +418,7 @@ void ImGuiEditorWindow::sceneSection()
                                 if (engine.player != NULL)
                                     engine.player->updateCamera();
                                 else
-                                    engine.cameraMan->updateCamera();
+                                    engine.updateWorldCamera();
                             }
                         }
                 }

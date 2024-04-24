@@ -101,6 +101,11 @@ void Game::Update()
 	}
 }
 
+void Game::updateWorldCamera()
+{
+    ResourceManager::GetShader("anim").SetMatrix4("projectionView", cameraMan->getCamera().getProjectionViewMatrix());
+}
+
 void Game::ProcessInput(float& dt)
 {
 
