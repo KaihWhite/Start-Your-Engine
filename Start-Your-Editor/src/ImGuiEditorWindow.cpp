@@ -576,6 +576,8 @@ void ImGuiEditorWindow::showAssetPreviewWindow() {
 //
 //        // display asset thumbnail
 //        if (ImGui::ImageButton((void*)(intptr_t)it->second.ID, ImVec2(80, 80))) {
+//            Animation* anime = new Animation(it->first, 1);
+//
 //            engine.gameObjects.find(selectedObjectKey)->second->currentAnimation = it->first; // set the asset for preview
 //        }
 //        else {

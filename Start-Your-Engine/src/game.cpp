@@ -158,6 +158,16 @@ void Game::removeGameObject(int key)
 
 void Game::removeAllGameObject()
 {
+   
+    for (auto& gameobject : this->gameObjects) {
+        if (this->gameObjects[gameobject.first]->type == ObjectType::PLAYER)
+        {
+            this->player = nullptr;
+        }
+        //destroy the fixture in the heap before deleting the gameobject
+        this->gameObjects[gameobject.first]->destroyBodyFixture();
+        delete this->gameObjects[gameobject.first];
+    }
     gameObjects.clear();
 }
 
