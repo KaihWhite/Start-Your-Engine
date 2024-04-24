@@ -104,12 +104,14 @@ void ImGuiEditorWindow::toolBarSection()
             }
             if (ImGui::MenuItem("load Level", "Ctrl+O")) {
                 //demo.initLevel(Level::loadFromJSON("test.json", demo.world, demo.cameraMan));
-                IGFD::FileDialogConfig config; config.path = ".";
+                IGFD::FileDialogConfig config;
+                config.path = "./Start-Your-Editor/Levels";
                 ImGuiFileDialog::Instance()->OpenDialog("ChooseLevelDlgKey", "Choose Level", ".json", config);
                 engine.State = GAME_EDITOR;
             }
             if (ImGui::MenuItem("Save level", "Ctrl+S")) {
-                IGFD::FileDialogConfig config; config.path = ".";
+                IGFD::FileDialogConfig config; 
+                config.path = "./Start-Your-Editor/Levels";
                 ImGuiFileDialog::Instance()->OpenDialog("SaveLevelDlgKey", "Save Level", ".json", config);
               
             }
@@ -481,7 +483,7 @@ void ImGuiEditorWindow::assetSection()
     if (ImGui::Button("Load New Asset")) {
         // open a file dialog to select a PNG file
         IGFD::FileDialogConfig config;
-        config.path = ".";
+        config.path = "./Start-Your-Engine/textures";  
         ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".png", config);
     }
 
