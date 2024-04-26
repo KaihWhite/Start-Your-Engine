@@ -145,7 +145,7 @@ void Game::addGameObject(std::string name, ObjectType type, RigidBodyType rtype,
     GameObject* gameObject = new GameObject(name, pos, size, color, animations, this->world, type == ObjectType::OBJECT ? "Object" : "Npc", rtype);
     int key = Game::generateUniqueKey(this->gameObjects);
     // update the object name to a unique name so it can be queried by name
-    gameObject->name = gameObject->name + std::to_string(key*0.1235*43);
+    gameObject->name = "object";
     this->gameObjects[key] = gameObject;
 }
 
@@ -157,7 +157,7 @@ void Game::removeGameObject(int key)
 	}
     //destroy the fixture in the heap before deleting the gameobject
     this->gameObjects[key]->destroyBodyFixture();
-	delete this->gameObjects[key];
+	this->gameObjects[key]->~GameObject();
 	this->gameObjects.erase(key);
 }
 
@@ -214,7 +214,7 @@ int Game::generateUniqueKey(std::unordered_map<int, GameObject*> map)
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> distr(1, 100);
-	int unique_key = distr(gen);
+    int unique_key = distr(gen);
     while (map.find(unique_key) != map.end()) {
 		unique_key = distr(gen);
 	}
