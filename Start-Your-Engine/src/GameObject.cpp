@@ -28,23 +28,81 @@ GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec
 	fixtureDef.density = 1.0f;
 	body->CreateFixture(&fixtureDef);
 }
-
+    
 GameObject::~GameObject()
 {
 	// destroy the body fixthre 
 	this->destroyBodyFixture();
-	/*
-	for (auto& animation : this->animations)
-	{
-		delete animation.second;
-	}
-	this->animations.clear();
-	*/
+	this->deleteAllAnimation();
+	
 
 	//this->body->GetWorld()->DestroyBody(body);
 	//delete reinterpret_cast<BodyUserData*>(body->GetUserData().pointer);
 }
 
+
+void GameObject::addAnimation(std::string spriteSheet, int totalFrames)
+{	//set the the newly added animation as the current if the map is empty
+	if (this->animations.empty()) {
+		animations.insert(std::make_pair(spriteSheet, new Animation(spriteSheet, totalFrames)));
+		this->setAsCurrentAnimation(spriteSheet);
+	}
+	else {
+		//other wise it just adds 
+		animations.insert(std::make_pair(spriteSheet, new Animation(spriteSheet, totalFrames)));
+	}
+	
+}
+
+void GameObject::deleteAnimation(const std::string spriteSheet)
+{	//check if its not empty
+	if (!animations.empty()) {
+		for (const auto& pair : this->animations) {
+			//in case of more than one animations
+			if (pair.second->getSpriteSheetName() != spriteSheet) {
+				this->setAsCurrentAnimation(pair.first);
+				delete animations[spriteSheet];
+				animations.erase(spriteSheet);
+				break;
+			}
+			//in case of the one spritesheet
+			else {
+				delete animations[spriteSheet];
+				animations.erase(spriteSheet);
+				this->setAsCurrentAnimation("");
+				break;
+			}
+		}
+	}
+}
+	
+
+void GameObject::setAsCurrentAnimation(const std::string spriteSheet)
+{
+	if (animations.find(spriteSheet) != animations.end()) {
+		this->currentAnimation = spriteSheet;
+	}
+}
+
+std::string GameObject::getCurrentAnimation()
+{
+	return this->currentAnimation;
+}
+
+
+
+std::unordered_map<std::string, Animation*>  GameObject::retrieveAllAnimations()
+{
+	return this->animations;
+}
+
+void GameObject::deleteAllAnimation()
+{
+	for (auto pair:this->animations) {
+		delete animations[pair.first];
+	}
+	animations.clear();
+}
 
 void GameObject::draw(Renderer& renderer)
 {
@@ -52,12 +110,15 @@ void GameObject::draw(Renderer& renderer)
 		Set current frame for animations by texture sampling with the fragment shader.
 		Check shaders/fragAnim.fs
 	*/
+	if (!this->animations.empty()) {
 
-	ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * glfwGetTime()) % animations[currentAnimation]->getTotalFrames());
+		ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * glfwGetTime()) % animations[currentAnimation]->getTotalFrames());
 
-	Texture2D sprite = animations[currentAnimation]->getSpriteSheet();
-	//bool flip = dynamic_cast<Player*>(this) ? !dynamic_cast<Player*>(this)->facingRight : false;
-    renderer.RenderSprite(sprite, this->metersToPixels(this->getPosition()), this->metersToPixels(this->size), this->body->GetAngle(), this->color);
+		Texture2D sprite = animations[currentAnimation]->getSpriteSheet();
+		//bool flip = dynamic_cast<Player*>(this) ? !dynamic_cast<Player*>(this)->facingRight : false;
+		renderer.RenderSprite(sprite, this->metersToPixels(this->getPosition()), this->metersToPixels(this->size), this->body->GetAngle(), this->color);
+	}
+	
 }
  
 Texture2D GameObject::getCurrentTexture2D()
