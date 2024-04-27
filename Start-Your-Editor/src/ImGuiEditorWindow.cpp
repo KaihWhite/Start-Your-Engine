@@ -226,6 +226,76 @@ void ImGuiEditorWindow::objectSection()
 	ImGui::End();
 }
 
+void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
+    if (ImGui::Checkbox("Has Collision Box", &showCollisionBoxControls)) {
+        if (!showCollisionBoxControls) {
+            // If user unchecks the collision box, we remove the fixture from the body
+            if (gameObject->body->GetFixtureList()) {
+                gameObject->body->DestroyFixture(gameObject->body->GetFixtureList());
+            }
+        }
+    }
+
+    if (showCollisionBoxControls) {
+        const char* shapes[] = { "Rectangle", "Circle", "Triangle" };
+        ImGui::Combo("Shape", &collisionBoxShape, shapes, IM_ARRAYSIZE(shapes));
+
+        switch (collisionBoxShape) {
+        case 0: // Rectangle
+            ImGui::SliderFloat("Width", &collisionBoxWidth, 0.1f, 20.0f);
+            ImGui::SliderFloat("Height", &collisionBoxHeight, 0.1f, 20.0f);
+            break;
+        case 1: // Circle
+            ImGui::SliderFloat("Radius", &collisionBoxWidth, 0.1f, 20.0f); // Use Width as Radius
+            break;
+        case 2: // Triangle
+            ImGui::SliderFloat("Base", &collisionBoxWidth, 0.1f, 20.0f);
+            ImGui::SliderFloat("Height", &collisionBoxHeight, 0.1f, 20.0f);
+            break;
+        }
+
+        if (ImGui::Button("Apply Collision Box")) {
+            // First remove any existing fixture
+            if (gameObject->body->GetFixtureList()) {
+                gameObject->body->DestroyFixture(gameObject->body->GetFixtureList());
+            }
+
+            // Now create a new fixture based on selected shape and size
+            b2FixtureDef fixtureDef;
+            fixtureDef.density = 1.0f; // Set the fixture density
+            // More properties like friction and restitution can be set here as needed
+
+            switch (collisionBoxShape) {
+                case 0: { // Rectangle
+                    b2PolygonShape boxShape;
+                    boxShape.SetAsBox(collisionBoxWidth / 2.0f, collisionBoxHeight / 2.0f);
+                    fixtureDef.shape = &boxShape;
+                    gameObject->body->CreateFixture(&fixtureDef);
+                    break;
+                }
+                case 1: { // Circle
+                    b2CircleShape circleShape;
+                    circleShape.m_radius = collisionBoxWidth / 2.0f; // Use Width as Radius
+                    fixtureDef.shape = &circleShape;
+                    gameObject->body->CreateFixture(&fixtureDef);
+                    break;
+                }
+                case 2: { // Triangle
+                    b2PolygonShape polygonShape;
+                    b2Vec2 vertices[3];
+                    vertices[0].Set(0.0f, -collisionBoxHeight / 2.0f); // Top vertex
+                    vertices[1].Set(-collisionBoxWidth / 2.0f, collisionBoxHeight / 2.0f); // Bottom left
+                    vertices[2].Set(collisionBoxWidth / 2.0f, collisionBoxHeight / 2.0f); // Bottom right
+                    polygonShape.Set(vertices, 3);
+                    fixtureDef.shape = &polygonShape;
+                    gameObject->body->CreateFixture(&fixtureDef);
+                    break;
+                }
+            }
+        }
+    }
+}
+
 void ImGuiEditorWindow::attributeSection()
 {
 	ImGui::Begin("Game Object attributes tab ");
@@ -342,6 +412,10 @@ void ImGuiEditorWindow::attributeSection()
 				ImGui::Unindent();
 				ImGui::Separator();
 				//ImGui::TextWrapped(std::string(engine.gameObjects.find(selectedObjectKey)->second->type).c_str() );
+        
+        // Call the function to draw collision box controls
+        collisionBoxControls(engine.gameObjects[selectedObjectKey]);
+        
 				ImGui::TreePop();
 			}
 			if (ImGui::TreeNode("Gavity:")) {

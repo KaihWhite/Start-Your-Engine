@@ -46,8 +46,13 @@ public:
 	void onRender();
 	void endRender();
 	void destroyWindow();
-
 	
+	// Collision box
+	bool showCollisionBoxControls;
+	float collisionBoxWidth;
+	float collisionBoxHeight;
+	int collisionBoxShape; // 0 = Rectangle, 1 = Circle, 2 = Triangle
+	void collisionBoxControls(GameObject* gameObject);
 private:
 	// content funtions for on render
 	void toolBarSection();
