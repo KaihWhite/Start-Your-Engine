@@ -238,6 +238,8 @@ void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
 
 	if (showCollisionBoxControls) {
 		const char* shapes[] = { "Rectangle", "Circle", "Triangle" };
+		ImGui::TextWrapped("Colision Shape: ");
+		ImGui::Indent();
 		ImGui::Combo("Shape", &collisionBoxShape, shapes, IM_ARRAYSIZE(shapes));
 
 		switch (collisionBoxShape) {
@@ -291,9 +293,25 @@ void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
 				gameObject->body->CreateFixture(&fixtureDef);
 				break;
 			}
-			}
+			// end of the colision shape  feature
+			ImGui::Separator();
+			ImGui::Unindent();
+			
 		}
+			//end of the "has colision box" feature
+		ImGui::Separator();
+		ImGui::Unindent();
+		}
+		// further colision features here:
+		//........
+		ImGui::TextWrapped("further other colision features here:");
+		
+		
+
 	}
+	//end of the colision features
+	ImGui::Separator();
+	ImGui::Unindent();
 }
 
 void ImGuiEditorWindow::attributeSection()
@@ -427,14 +445,14 @@ void ImGuiEditorWindow::attributeSection()
 					ImGui::Separator();
 					//ImGui::TextWrapped(std::string(engine.gameObjects.find(selectedObjectKey)->second->type).c_str() );
 
-			// Call the function to draw collision box controls
-					collisionBoxControls(engine.gameObjects[selectedObjectKey]);
+					
 
 					ImGui::TreePop();
 				}
-				if (ImGui::TreeNode("Gavity:")) {
+				if (ImGui::TreeNode("Physics:")) {
+					ImGui::TextWrapped("Object gravity: ");
 					ImGui::Indent();
-					ImGui::TextWrapped("Object gravity: %f", engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale());
+					ImGui::TextWrapped(" %f", engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale());
 					ImGui::SameLine();
 					ImGui::Button("-");
 					if (ImGui::IsItemActive()) {
@@ -446,40 +464,55 @@ void ImGuiEditorWindow::attributeSection()
 						engine.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale() + 0.001);
 					}
 					ImGui::Unindent();
+					ImGui::Separator();
+					ImGui::TextWrapped("Object Collision: ");
+					ImGui::Indent();
+					// Call the function to draw collision box controls
+					collisionBoxControls(engine.gameObjects[selectedObjectKey]);
+					ImGui::Unindent();
+					ImGui::Separator();
+					// further physics features here:
+					//........
+					ImGui::TextWrapped("further physics features here:");
+					ImGui::Separator();
 					ImGui::TreePop();
 				}
-				if (ImGui::TreeNode("current animation preview:")) {
-					ImGui::Indent();
+				if (ImGui::TreeNode("current animation:")) {
+					ImGui::Separator();
+					ImGui::TextWrapped("current animation Total Frames :");
+					static int frames = engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->getTotalFrames();
+					ImGui::InputInt("total Frames ", &frames);
+					//if the user inputs negative number then it reset to its default value
+					if (frames < 1) {
+						frames = 1;
+					}
+					engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->setTotalFrames(frames);
+
+					ImGui::Separator();
 					ImGui::TextWrapped("current animation preview:");
+					ImGui::Indent();
 					Texture2D& texture = engine.gameObjects.find(selectedObjectKey)->second->getCurrentTexture2D();
 					ImGui::Image((void*)(intptr_t)texture.ID, ImVec2(80, 80));
 					ImGui::Unindent();
-
+					ImGui::Separator();
 					ImGui::TreePop();
 				}
 				if (ImGui::TreeNode("change current animation:")) {
-
-					ImGui::Indent();
+					ImGui::Separator();
 					selectCurrentAnimation();
-					ImGui::Unindent();
-
+					ImGui::Separator();
 					ImGui::TreePop();
 				}
 				if (ImGui::TreeNode("Add animation:")) {
-
-					ImGui::Indent();
-
+					ImGui::Separator();
 					addNewAnimation();
-					ImGui::Unindent();
-
+					ImGui::Separator();
 					ImGui::TreePop();
 				}
 				if (ImGui::TreeNode("delete animation:")) {
-
-					ImGui::Indent();
+					ImGui::Separator();
 					deleteExistingAnimation();
-					ImGui::Unindent();
-
+					ImGui::Separator();
 					ImGui::TreePop();
 				}
 
@@ -683,6 +716,7 @@ void ImGuiEditorWindow::addNewAnimation()
 	static int frames = 1;
 	ImGui::TextWrapped("input total frames [ as 1 or more]: ");
 	ImGui::InputInt("total Frames ", &frames);
+	ImGui::Separator();
 	//if the user inputs negative number then it reset to its default value
 	if (frames < 1) {
 		frames = 1;
