@@ -61,7 +61,10 @@ private:
 	void sceneSection();
 	void assetSection();
 
-	// helper methods
-	void showAssetPreviewWindow(); // Declare the method
-	//void selectAnimation();
+	// helper methods for assetSection
+	void showAssetPreviewWindow(); 
+	// helper methods attributeSection
+	void addNewAnimation();
+	void deleteExistingAnimation();
+	void selectCurrentAnimation();
 };

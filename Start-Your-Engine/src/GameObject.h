@@ -41,13 +41,24 @@ public:
 	GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, bool dynam = false);
 	~GameObject();
 
-	Texture2D getCurrentTexture2D();
+	
 	void update();
 	void destroyBodyFixture();
 	void resize();
 	void physics(float dt);
 
+	/* Graphic functions	*/
+	Texture2D getCurrentTexture2D();
+	void addAnimation(std::string spriteSheet, int totalFrames);
+	void deleteAnimation(const std::string spriteSheet);
+	void setAsCurrentAnimation(const std::string spriteSheet);
+	std::string getCurrentAnimation();
+	std::unordered_map<std::string, Animation*>  retrieveAllAnimations();
+	void deleteAllAnimation();
 	void draw(Renderer& renderer);
+
+	/* animation functions that manages the animations of the  */
+	 
 
 	/* converts physics body's position to renderer coordinates */
 	glm::vec2 getPosition();
