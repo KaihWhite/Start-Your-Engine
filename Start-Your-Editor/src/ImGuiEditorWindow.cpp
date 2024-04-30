@@ -92,6 +92,10 @@ void ImGuiEditorWindow::toolBarSection()
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("LEVEL")) {
+			if (ImGui::MenuItem("create Level")) {
+				engine.removeAllGameObject();
+				engine.State = GAME_EDITOR;
+			}
 			// Add items to the Edit menu here
 			if (ImGui::MenuItem("Play Level")) {
 				if (engine.gameObjects.empty()) {
