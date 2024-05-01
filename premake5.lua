@@ -25,7 +25,17 @@ project "Start-Your-Editor"
 
    files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c",
    "Dependencies/imgui/src/*.cpp", "Dependencies/ImGuiFileDialog/*.cpp",
-   "Dependencies/ImGuiFileDialog/*.h" }
+   "Dependencies/ImGuiFileDialog/*.h", "Dependencies/soloud/src/c_api/*.cpp",
+   "Dependencies/soloud/src/backend/winmm/*.cpp", "Dependencies/soloud/src/audiosource/wav/*.h",
+   "Dependencies/soloud/src/core/*.cpp", IncludeDir["soloud"], "Dependencies/soloud/src/audiosource/wav/*.c",
+   "Dependencies/soloud/src/audiosource/vic/*.cpp", "Dependencies/soloud/src/audiosource/wav/*.cpp",
+   "Dependencies/soloud/src/audiosource/monotone/*.cpp", "Dependencies/soloud/src/audiosource/openmpt/*.cpp",
+   "Dependencies/soloud/src/audiosource/speech/*.cpp", "Dependencies/soloud/src/audiosource/sfxr/*.cpp",
+   "Dependencies/soloud/src/audiosource/speech/*.cpp", "Dependencies/soloud/src/audiosource/speech/*.h",
+   "Dependencies/soloud/src/audiosource/tedsid/*.cpp", "Dependencies/soloud/src/audiosource/tedsid/*.h",
+   "Dependencies/soloud/src/audiosource/noise/*.cpp", "Dependencies/soloud/src/audiosource/vizsn/*.cpp",
+   "Dependencies/soloud/src/audiosource/openmpt/*.c"
+   }
 
    -- Windows specific settings
    filter "system:windows"
@@ -35,7 +45,7 @@ project "Start-Your-Editor"
       architecture "x64"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
-      links { "glfw3_mt", "opengl32", "box2d", "Start-Your-Engine", "soloud" }
+      links { "glfw3_mt", "opengl32", "box2d", "Start-Your-Engine", "soloud"}
 
       
    -- MacOS specific settings
@@ -70,7 +80,19 @@ project "Start-Your-Engine"
    targetdir "bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
    objdir "bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
 
-   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c"}
+   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c",
+   "Dependencies/soloud/src/c_api/*.cpp", "Dependencies/soloud/src/backend/winmm/*.cpp",
+   "Dependencies/soloud/src/audiosource/wav/*.c", "Dependencies/soloud/src/audiosource/wav/*.h", 
+   "Dependencies/soloud/src/audiosource/wav/*.cpp", "Dependencies/soloud/src/core/*.cpp",
+   IncludeDir["soloud"], "Dependencies/soloud/src/audiosource/vic/*.cpp",
+   "Dependencies/soloud/src/backend/*.cpp", "Dependencies/soloud/src/filter/*.cpp",
+   "Dependencies/soloud/src/audiosource/monotone/*.cpp", "Dependencies/soloud/src/audiosource/openmpt/*.cpp",
+   "Dependencies/soloud/src/audiosource/speech/*.cpp", "Dependencies/soloud/src/audiosource/sfxr/*.cpp",
+   "Dependencies/soloud/src/audiosource/speech/*.cpp", "Dependencies/soloud/src/audiosource/speech/*.h",
+   "Dependencies/soloud/src/audiosource/tedsid/*.cpp", "Dependencies/soloud/src/audiosource/tedsid/*.h",
+   "Dependencies/soloud/src/audiosource/noise/*.cpp", "Dependencies/soloud/src/audiosource/vizsn/*.cpp",
+   "Dependencies/soloud/src/audiosource/openmpt/*.c"
+   }
 
    -- Windows specific settings
    filter "system:windows"
@@ -81,7 +103,7 @@ project "Start-Your-Engine"
       architecture "x64"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
-      links { "glfw3_mt", "opengl32", "box2d", "soloud" }
+      links { "glfw3_mt", "opengl32", "box2d", "soloud"}
 
    -- MacOS specific settings
    -- filter "system:macosx"
