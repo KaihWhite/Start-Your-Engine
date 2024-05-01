@@ -362,6 +362,7 @@ void ImGuiEditorWindow::attributeSection()
 				engine.removeGameObject(selectedObjectKey);
 
 			}
+			ImGui::Separator();
 			/* together with checking if the key is in the gameobject map
 				or not and checking if the animation is empty successfully
 				gives enough time padding for the game object to be deleted while
@@ -375,8 +376,7 @@ void ImGuiEditorWindow::attributeSection()
 					deleted.  */
 			}
 			else {
-
-				ImGui::Separator();
+				
 				if (ImGui::TreeNode("object data")) {
 
 					ImGui::Separator();
@@ -481,26 +481,36 @@ void ImGuiEditorWindow::attributeSection()
 					ImGui::Separator();
 					ImGui::TreePop();
 				}
+				
 				if (ImGui::TreeNode("current animation:")) {
 					ImGui::Separator();
-					ImGui::TextWrapped("current animation Total Frames :");
-					static int frames = engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->getTotalFrames();
-					ImGui::InputInt("total Frames ", &frames);
-					//if the user inputs negative number then it reset to its default value
-					if (frames < 1) {
-						frames = 1;
-					}
-					engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->setTotalFrames(frames);
+					if (engine.gameObjects[selectedObjectKey]->animations.empty()) {
+						ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
+						ImGui::TextWrapped("it has no animations in the list. Please add an animation to choose.");
+						ImGui::PopStyleColor();
 
-					ImGui::Separator();
-					ImGui::TextWrapped("current animation preview:");
-					ImGui::Indent();
-					Texture2D& texture = engine.gameObjects.find(selectedObjectKey)->second->getCurrentTexture2D();
-					ImGui::Image((void*)(intptr_t)texture.ID, ImVec2(80, 80));
-					ImGui::Unindent();
-					ImGui::Separator();
+					}
+					else {
+						ImGui::TextWrapped("current animation Total Frames :");
+						static int frames = engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->getTotalFrames();
+						ImGui::InputInt("total Frames ", &frames);
+						//if the user inputs negative number then it reset to its default value
+						if (frames < 1) {
+							frames = 1;
+						}
+						engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->setTotalFrames(frames);
+
+						ImGui::Separator();
+						ImGui::TextWrapped("current animation preview:");
+						ImGui::Indent();
+						Texture2D& texture = engine.gameObjects.find(selectedObjectKey)->second->getCurrentTexture2D();
+						ImGui::Image((void*)(intptr_t)texture.ID, ImVec2(80, 80));
+						ImGui::Unindent();
+						ImGui::Separator();
+					}
 					ImGui::TreePop();
 				}
+					
 				if (ImGui::TreeNode("change current animation:")) {
 					ImGui::Separator();
 					selectCurrentAnimation();
