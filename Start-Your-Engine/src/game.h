@@ -2,6 +2,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#define WITH_WINMM
+
 #include "Player.h"
 #include "renderer.h"
 #include "resource_manager.h"

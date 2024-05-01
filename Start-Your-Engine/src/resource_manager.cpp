@@ -14,6 +14,7 @@ Credit to the author of LearnOpenGL.com Joey de Vries for boilerplate code
 // Instantiate static variables
 std::unordered_map<std::string, Texture2D>    ResourceManager::Textures;
 std::unordered_map<std::string, Shader>       ResourceManager::Shaders;
+std::unordered_map<std::string, SoLoud::Wav>  ResourceManager::Sounds;
 
 
 Shader ResourceManager::LoadShader(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile, std::string name)

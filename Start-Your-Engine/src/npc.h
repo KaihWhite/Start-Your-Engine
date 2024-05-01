@@ -11,7 +11,8 @@ class NPC : public GameObject
 	int maxDistanceToPlayer;
 	bool playerInRange;
 	glm::vec2 playerPos;
-	glm::vec2[2] path;
+	glm::vec2 position;
+	glm::vec2 path;
 	bool direction;
 
 	float pathfind(glm::vec2 point);
@@ -22,5 +23,5 @@ public:
 	void move();
 	void setMaxDistanceToPlayer(int distance);
 	void checkPlayer(glm::vec2 pos);
-	void setPath(glm::vec2 start, glm::vec2 end);
+	void setPath(float start, float end);
 };

@@ -22,11 +22,10 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-#include <stdlib.h>
 
 #include "soloud.h"
 #include "soloud_speech.h"
-#include "soloud_thread.h"
+
 
 // Entry point
 int main(int argc, char *argv[])

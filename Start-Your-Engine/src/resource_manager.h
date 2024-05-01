@@ -15,7 +15,6 @@ Credit to the author of LearnOpenGL.com Joey de Vries for boilerplate code
 #include "soloud.h"
 #include "soloud_wav.h"
 
-
 // A static singleton ResourceManager class that hosts several
 // functions to load Textures and Shaders. Each loaded texture
 // and/or shader is also stored for future reference by string
@@ -37,7 +36,7 @@ public:
     // retrieves a stored texture
     static Texture2D& GetTexture(std::string name);
     // loads a sound
-    static void LoadSound(const char* file, std::string name);
+    static void         LoadSound(const char* file, std::string name);
     // retrieves a stored sound
     static SoLoud::Wav& GetSound(std::string name);
     // properly de-allocates all loaded resources

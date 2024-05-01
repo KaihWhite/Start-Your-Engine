@@ -26,9 +26,10 @@ freely, subject to the following restrictions:
 #include <stdlib.h>
 #include <math.h> // sin
 #include <float.h> // _controlfp
-#include "soloud_internal.h"
-#include "soloud_thread.h"
-#include "soloud_fft.h"
+#include "../../include/soloud_internal.h"
+#include "../../include/soloud_thread.h"
+#include "../../include/soloud_fft.h"
+#include "../../include/soloud.h"
 
 
 #ifdef SOLOUD_SSE_INTRINSICS
@@ -40,6 +41,7 @@ freely, subject to the following restrictions:
 
 //#define FLOATING_POINT_DEBUG
 
+#define WITH_WINMM
 
 #if !defined(WITH_SDL2) && !defined(WITH_SDL1) && !defined(WITH_PORTAUDIO) && \
    !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && \

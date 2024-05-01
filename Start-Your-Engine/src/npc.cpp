@@ -2,7 +2,7 @@
 #include "npc.h"
 
 NPC::NPC(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, bool dynam)
-	: GameObject(name, pos, size, color, animations, world, type, dynam)
+	: GameObject(name, pos, size, color, animations, world, type, sounds, dynam)
 {
 }
 
@@ -14,7 +14,7 @@ NPC::~NPC()
 void NPC::move()
 {
 	b2Vec2 velocity = this->body->GetLinearVelocity();
-	float desiredVelocity = 0.0f;
+	float desiredVelocity;
 	float jumpImpulse = 0.0f;
 	this->currentAnimation = "idle";
 
@@ -22,29 +22,29 @@ void NPC::move()
 	{
 		desiredVelocity = pathfind(this->playerPos);
 	}
-	if else (this->path.size() > 0)
+	else if (this->path.length() > 0)
 	{
 		// move towards the first point in the path
 		if (direction) {
-			if (glm::distance(this->position, this->path[0]) < 0.1f)
+			if (glm::distance(this->position, this->path) < 0.1f)
 			{
 				this->direction = false;
 			}
 			else
 			{
 				// move towards the first point in the path
-				desiredVelocity = pathfind(this->path[0]);
+				desiredVelocity = pathfind(this->path);
 			}
 		}
 		else {
-			if (glm::distance(this->position, this->path[1]) < 0.1f)
+			if (glm::distance(this->position, this->path) < 0.1f)
 			{
 				this->direction = true;
 			}
 			else
 			{
 				// move towards the second point in the path
-				desiredVelocity = pathfind(this->path[1]);
+				desiredVelocity = pathfind(this->path);
 			}
 		}
 	}
@@ -81,7 +81,7 @@ void NPC::setMaxDistanceToPlayer(int distance)
 	this->maxDistanceToPlayer = distance;
 }
 
-void NPC::setPath(glm::vec2 start, glm::vec2 end)
+void NPC::setPath(float start, float end)
 {
 	this->path[0] = start;
 	this->path[1] = end;

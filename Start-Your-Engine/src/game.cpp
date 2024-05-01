@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include "ContactListener.h"
 
-
+SoLoud::Soloud* Game::soundEngine = nullptr;
 
 Game::Game(unsigned int width, unsigned int height)
     : State(GAME_EDITOR), Keys(), Width(width), Height(height), player(nullptr), renderer(nullptr), world(nullptr), cameraMan(nullptr)
@@ -43,8 +43,8 @@ void Game::Init(unsigned int width, unsigned int height)
     renderer = new Renderer(ResourceManager::GetShader("anim"));
 
     /* create sound engine */
-    soundEngine = new SoLoud::Soloud;
-    soundEngine->init(); // Initialize SoLoud engine
+    Game::soundEngine = new SoLoud::Soloud;
+    Game::soundEngine->init(); // Initialize SoLoud engine
 
 
     /* load textures */

@@ -2,8 +2,6 @@
   by Kunga Ngochetsang and Kaih White
 */
 
-#define WITH_WINMM
-
 #include <iostream>
 #include <glad/glad.h>
 
