@@ -49,9 +49,11 @@ public:
 	
 	// Collision box
 	bool showCollisionBoxControls;
-	float collisionBoxWidth;
-	float collisionBoxHeight;
-	int collisionBoxShape; // 0 = Rectangle, 1 = Circle, 2 = Triangle
+	int collisionBoxShape = 0;
+	std::vector<float> sideLengths;
+	float rotationDegrees = 0.0f;
+	float circleRadius = 0.0f;
+	int numSides = 3;
 	void collisionBoxControls(GameObject* gameObject);
 private:
 	// content funtions for on render
