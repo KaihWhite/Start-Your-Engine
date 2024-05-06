@@ -145,7 +145,7 @@ void Game::addGameObject(std::string name, ObjectType type, RigidBodyType rtype,
     GameObject* gameObject = new GameObject(name, pos, size, color, animations, this->world, type == ObjectType::OBJECT ? "Object" : "Npc", rtype);
     int key = Game::generateUniqueKey(this->gameObjects);
     // update the object name to a unique name so it can be queried by name
-    gameObject->name = "object";
+    gameObject->name = "Object[" + std::to_string(key^1234) + "]";
     this->gameObjects[key] = gameObject;
 }
 

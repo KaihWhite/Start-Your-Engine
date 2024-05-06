@@ -195,12 +195,6 @@ void ImGuiEditorWindow::objectSection()
 
 			// This will only be able to handle static, non-player/npc objects
 			engine.addGameObject(name, ObjectType::OBJECT, RigidBodyType::STATIC, animations, color, size, position);
-			// Below not necesary with unique key generation
-			/*
-				if (engine.gameObjects.find(name) == engine.gameObjects.end()) {
-					engine.addGameObject(name, OBJECT, STATIC, animations, color, size, position);
-				}
-			*/
 
 		}
 		// Start a scrolling region
