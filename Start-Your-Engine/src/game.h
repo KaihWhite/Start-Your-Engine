@@ -28,7 +28,7 @@ class Game
 public:
     // game state
     GameState               State;
-    bool                    Keys[1024];
+    bool                    Keys[1024]; 
     unsigned int            Width; 
     unsigned int            Height;
 
