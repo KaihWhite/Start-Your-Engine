@@ -14,7 +14,7 @@ public:
 	~Animation();
 
 	Texture2D getSpriteSheet();
-
+	void setTotalFrames(unsigned int totalFrames);
 	unsigned int getTotalFrames();
 	std::string getSpriteSheetName();
 };

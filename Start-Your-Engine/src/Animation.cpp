@@ -15,6 +15,11 @@ Texture2D Animation::getSpriteSheet() {
 	return ResourceManager::GetTexture(spriteSheet);
 }
 
+void Animation::setTotalFrames(unsigned int totalFrames)
+{
+	this->totalFrames = totalFrames;
+}
+
 unsigned int Animation::getTotalFrames() {
 	return totalFrames;
 }

@@ -66,6 +66,11 @@ private:
 	// helper methods for assetSection
 	void showAssetPreviewWindow(); 
 	// helper methods attributeSection
+	void objectDataSubsectionOfAttributeSection();
+	void physicsSubsectionOfAttributeSection();
+	void animationSubsectionOfAttributeSection();
+
+	//helper methods for animationSubsectionOfAttributeSection
 	void addNewAnimation();
 	void deleteExistingAnimation();
 	void selectCurrentAnimation();

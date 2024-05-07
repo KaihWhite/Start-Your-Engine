@@ -92,6 +92,10 @@ void ImGuiEditorWindow::toolBarSection()
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("LEVEL")) {
+			if (ImGui::MenuItem("create Level")) {
+				engine.removeAllGameObject();
+				engine.State = GAME_EDITOR;
+			}
 			// Add items to the Edit menu here
 			if (ImGui::MenuItem("Play Level")) {
 				if (engine.gameObjects.empty()) {
@@ -179,6 +183,7 @@ void ImGuiEditorWindow::objectSection()
 	ImGui::Begin("Game Objects tab ");
 	if (engine.State == GAME_EDITOR) {
 		// Optional: Add a button to add a new object
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 1.0f, 1.0f)); // red color
 		if (ImGui::Button("Add Object")) {
 			// Code to add a new object to the gameObjects vector
 			//addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
@@ -191,14 +196,9 @@ void ImGuiEditorWindow::objectSection()
 
 			// This will only be able to handle static, non-player/npc objects
 			engine.addGameObject(name, ObjectType::OBJECT, RigidBodyType::STATIC, animations, color, size, position);
-			// Below not necesary with unique key generation
-			/*
-				if (engine.gameObjects.find(name) == engine.gameObjects.end()) {
-					engine.addGameObject(name, OBJECT, STATIC, animations, color, size, position);
-				}
-			*/
 
 		}
+		ImGui::PopStyleColor(1);
 		// Start a scrolling region
 		ImGui::BeginChild("ObjectList", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 		if (ImGui::Selectable("Camera", false)) {
@@ -229,7 +229,7 @@ void ImGuiEditorWindow::objectSection()
 void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
 	if (ImGui::Checkbox("Has Collision Box", &showCollisionBoxControls)) {
 		if (!showCollisionBoxControls) {
-            // If user unchecks the collision box, we remove the fixture from the body
+			// If user unchecks the collision box, we remove the fixture from the body
 			if (gameObject->body->GetFixtureList()) {
 				gameObject->body->DestroyFixture(gameObject->body->GetFixtureList());
 			}
@@ -237,23 +237,23 @@ void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
 	}
 
 	if (showCollisionBoxControls) {
-		const char* shapes[] = {"Polygon", "Circle"};
+		const char* shapes[] = { "Rectangle", "Circle", "Triangle" };
+		ImGui::TextWrapped("Colision Shape: ");
+		ImGui::Indent();
 		ImGui::Combo("Shape", &collisionBoxShape, shapes, IM_ARRAYSIZE(shapes));
 
 		switch (collisionBoxShape) {
-			case 0: { // Polygon
-				ImGui::SliderInt("Sides", &numSides, 3, 5); // Choose from 3 to 5 sides
-				sideLengths.resize(numSides);
-				for (int i = 0; i < numSides; ++i) {
-					ImGui::SliderFloat(("Side " + std::to_string(i + 1)).c_str(), &sideLengths[i], 0.0f, 20.0f, "%.2f");
-				}
-				ImGui::SliderFloat("Rotation", &rotationDegrees, 0.0f, 360.0f, "%.2f"); // Rotation of the polygon
-				break;
-			}
-			case 1: { // Circle
-				ImGui::SliderFloat("Radius", &circleRadius, 0.0f, 10.0f, "%.2f");
-				break;
-			}
+		case 0: // Rectangle
+			ImGui::SliderFloat("Width", &collisionBoxWidth, 0.1f, 20.0f);
+			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.1f, 20.0f);
+			break;
+		case 1: // Circle
+			ImGui::SliderFloat("Radius", &collisionBoxWidth, 0.1f, 20.0f); // Use Width as Radius
+			break;
+		case 2: // Triangle
+			ImGui::SliderFloat("Base", &collisionBoxWidth, 0.1f, 20.0f);
+			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.1f, 20.0f);
+			break;
 		}
 
 		if (ImGui::Button("Apply Collision Box")) {
@@ -268,31 +268,50 @@ void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
 			// More properties like friction and restitution can be set here as needed
 
 			switch (collisionBoxShape) {
-				case 0: { // Polygon
-					b2PolygonShape polygonShape;
-					std::vector<b2Vec2> vertices;
-					for (int i = 0; i < numSides; ++i) {
-						float angle = glm::radians(rotationDegrees + i * 360.0f / numSides);
-						// Calculate the position of each vertex using the angle and the side length.
-						vertices.push_back(b2Vec2(sideLengths[i] * cos(angle), sideLengths[i] * sin(angle)));
-					}
-					// Set the vertices to the polygon shape.
-					polygonShape.Set(&vertices[0], numSides);
-					fixtureDef.shape = &polygonShape;
-					gameObject->body->CreateFixture(&fixtureDef);
-					break;
-				}
-				case 1: { // Circle
-					b2CircleShape circleShape;
-					// Set the radius of the circle.
-					circleShape.m_radius = circleRadius;
-					fixtureDef.shape = &circleShape;
-					gameObject->body->CreateFixture(&fixtureDef);
-					break;
-				}
+			case 0: { // Rectangle
+				b2PolygonShape boxShape;
+				boxShape.SetAsBox(collisionBoxWidth / 2.0f, collisionBoxHeight / 2.0f);
+				fixtureDef.shape = &boxShape;
+				gameObject->body->CreateFixture(&fixtureDef);
+				break;
 			}
+			case 1: { // Circle
+				b2CircleShape circleShape;
+				circleShape.m_radius = collisionBoxWidth / 2.0f; // Use Width as Radius
+				fixtureDef.shape = &circleShape;
+				gameObject->body->CreateFixture(&fixtureDef);
+				break;
+			}
+			case 2: { // Triangle
+				b2PolygonShape polygonShape;
+				b2Vec2 vertices[3];
+				vertices[0].Set(0.0f, -collisionBoxHeight / 2.0f); // Top vertex
+				vertices[1].Set(-collisionBoxWidth / 2.0f, collisionBoxHeight / 2.0f); // Bottom left
+				vertices[2].Set(collisionBoxWidth / 2.0f, collisionBoxHeight / 2.0f); // Bottom right
+				polygonShape.Set(vertices, 3);
+				fixtureDef.shape = &polygonShape;
+				gameObject->body->CreateFixture(&fixtureDef);
+				break;
+			}
+			// end of the colision shape  feature
+			ImGui::Separator();
+			ImGui::Unindent();
+			
 		}
+			//end of the "has colision box" feature
+		ImGui::Separator();
+		ImGui::Unindent();
+		}
+		// further colision features here:
+		//........
+		ImGui::TextWrapped("further other colision features here:");
+		
+		
+
 	}
+	//end of the colision features
+	ImGui::Separator();
+	ImGui::Unindent();
 }
 
 void ImGuiEditorWindow::attributeSection()
@@ -334,304 +353,283 @@ void ImGuiEditorWindow::attributeSection()
 		}
 		else if (selectCamera == false && selectObject == true && engine.gameObjects.find(selectedObjectKey) != engine.gameObjects.end()) {
 			ImGui::TextWrapped("in object setting");
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); // red color
 			ImGui::Button("delete game object");
 			if (ImGui::IsItemActive()) {
 				engine.removeGameObject(selectedObjectKey);
-				//selectedObjectKey = 0;
+
 			}
+			ImGui::PopStyleColor();
 			ImGui::Separator();
-			if (ImGui::TreeNode("object data")) {
-
-				ImGui::Separator();
-				// change name
-				ImGui::TextWrapped("Name:");
-				ImGui::SameLine();
-				static char buffer[256];
-				buffer[sizeof(buffer) - 1] = '\0';
-				strncpy(buffer, engine.gameObjects.find(selectedObjectKey)->second->name.c_str(), sizeof(buffer));
-				if (ImGui::InputText("(INPUT TO CHANGE NAME)", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
-					// Update the std::string with the modified buffer
-					engine.gameObjects.find(selectedObjectKey)->second->name = buffer;
-				}
-				ImGui::Separator();
-				//change color
-				ImGui::TextWrapped("color:");
-				float rgb[3] = { engine.gameObjects.find(selectedObjectKey)->second->color.x,
-					engine.gameObjects.find(selectedObjectKey)->second->color.y,
-					engine.gameObjects.find(selectedObjectKey)->second->color.z };
-				if (ImGui::ColorEdit3("object color", rgb)) {
-					engine.gameObjects.find(selectedObjectKey)->second->color.x = rgb[0];
-					engine.gameObjects.find(selectedObjectKey)->second->color.y = rgb[1];
-					engine.gameObjects.find(selectedObjectKey)->second->color.z = rgb[2];
-				}
-				ImGui::Separator();
-				//change pos
-				ImGui::TextWrapped("Object location: ");
-				ImGui::Indent();
-				ImGui::TextWrapped("x = %f", engine.gameObjects.find(selectedObjectKey)->second->getLocation().x);
-				ImGui::SameLine();
-				ImGui::Button("move left");
-				if (ImGui::IsItemActive()) {
-					engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-						engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-						+ b2Vec2(-0.005, 0), 0);
-				}
-				ImGui::SameLine();
-				ImGui::Button("move right");
-				if (ImGui::IsItemActive()) {
-					engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-						engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-						+ b2Vec2(0.005, 0), 0);
-				}
-				ImGui::TextWrapped("y = %f", engine.gameObjects.find(selectedObjectKey)->second->getLocation().y);
-				ImGui::SameLine();
-				ImGui::Button("move up");
-				if (ImGui::IsItemActive()) {
-					engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-						engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-						+ b2Vec2(0, -0.005), 0);
-				}
-				ImGui::SameLine();
-				ImGui::Button("move down");
-				if (ImGui::IsItemActive()) {
-					engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
-						engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
-						+ b2Vec2(0, 0.005), 0);
-				}
-				ImGui::Unindent();
-				//change size
-				ImGui::TextWrapped("Object Size: ");
-				ImGui::Indent();
-				if (ImGui::InputFloat("Width", &engine.gameObjects.find(selectedObjectKey)->second->size.x, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
-					engine.gameObjects.find(selectedObjectKey)->second->resize();
-				}
-				if (ImGui::InputFloat("Height", &engine.gameObjects.find(selectedObjectKey)->second->size.y, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
-					engine.gameObjects.find(selectedObjectKey)->second->resize();
-				}
-				ImGui::Unindent();
-				ImGui::Separator();
-				//ImGui::TextWrapped(std::string(engine.gameObjects.find(selectedObjectKey)->second->type).c_str() );
-        
-        // Call the function to draw collision box controls
-        collisionBoxControls(engine.gameObjects[selectedObjectKey]);
-        
-				ImGui::TreePop();
+			/* together with checking if the key is in the gameobject map
+				or not and checking if the animation is empty successfully
+				gives enough time padding for the game object to be deleted while
+				imgui onrender() runs
+			*/
+			if (engine.gameObjects.count(selectedObjectKey) == 0) {
+				/* this is a second and last check if the object is deleted or not
+					the reason is that even after the game object button is
+					pressed, the imgui widget successfully retrieves the get
+					current animation function while the game object is being
+					deleted.  */
 			}
-			if (ImGui::TreeNode("Gavity:")) {
-				ImGui::Indent();
-				ImGui::TextWrapped("Object gravity: %f", engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale());
-				ImGui::SameLine();
-				ImGui::Button("-");
-				if (ImGui::IsItemActive()) {
-					engine.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale() - 0.001);
+			else {
+				
+				// tab bars for showing object  Subsection
+				
+				if (ImGui::BeginTabBar("object  Subsection")) {
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f)); // yellow color
+					//  first tab
+					if (ImGui::BeginTabItem("Data Subsection")) {
+						objectDataSubsectionOfAttributeSection();
+						physicsSubsectionOfAttributeSection();
+
+						ImGui::EndTabItem();
+					}
+					//  second tab
+					if (ImGui::BeginTabItem("Animation Subsection")) {
+						animationSubsectionOfAttributeSection();
+						ImGui::EndTabItem(); 
+					}
+					if (ImGui::BeginTabItem(" stats Subsection")) {
+						ImGui::TextWrapped("this is the section for the object stats");
+						ImGui::EndTabItem();
+					}
+					ImGui::PopStyleColor();
+					ImGui::EndTabBar(); // End of the tab bar
 				}
-				ImGui::SameLine();
-				ImGui::Button("+");
-				if (ImGui::IsItemActive()) {
-					engine.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale() + 0.001);
-				}
-				ImGui::Unindent();
-				ImGui::TreePop();
 			}
-			if (ImGui::TreeNode("current animation preview:")) {
-				ImGui::Indent();
-				ImGui::TextWrapped("current animation preview:");
-				Texture2D& texture = engine.gameObjects.find(selectedObjectKey)->second->getCurrentTexture2D();
-				ImGui::Image((void*)(intptr_t)texture.ID, ImVec2(80, 80));
-				ImGui::Unindent();
-
-				ImGui::TreePop();
-			}
-			if (ImGui::TreeNode("change current animation:")) {
-
-				ImGui::Indent();
-				selectCurrentAnimation();
-				ImGui::Unindent();
-
-				ImGui::TreePop();
-			}
-			if (ImGui::TreeNode("Add animation:")) {
-
-				ImGui::Indent();
-
-				addNewAnimation();
-				ImGui::Unindent();
-
-				ImGui::TreePop();
-			}
-			if (ImGui::TreeNode("delete animation:")) {
-
-				ImGui::Indent();
-				deleteExistingAnimation();
-				ImGui::Unindent();
-
-				ImGui::TreePop();
-			}
-
 		}
 	}
 	ImGui::End();
-
 }
 void ImGuiEditorWindow::sceneSection()
 {
-	ImGui::Begin("edit display ");
+	ImGui::Begin("scene tab ");
+	ImVec2 wSize = ImGui::GetWindowSize();
+	// scene render section
+	if (engine.State == GameState::GAME_EDITOR) {
+		// Render title screen
+			// frame buffer rendering section
+		frameBuffer.startBind();
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 
-	if (ImGui::BeginTabBar("MyTabBar")) {
-		// Add the first tab
-		if (ImGui::BeginTabItem("scene tab")) {
-			ImVec2 wSize = ImGui::GetWindowSize();
-			// scene render section
-			if (engine.State == GameState::GAME_EDITOR) {
-				// Render title screen
-					// frame buffer rendering section
-				frameBuffer.startBind();
-				glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-				glClear(GL_COLOR_BUFFER_BIT);
+		engine.Render();
+		// unbind the framebuffer that renders the scene
+		frameBuffer.endBind();
+		// gets the scene window size so it can resize the image per frame
+		ImVec2 wSize = ImGui::GetWindowSize();
 
-				engine.Render();
-				// unbind the framebuffer that renders the scene
-				frameBuffer.endBind();
-				// gets the scene window size so it can resize the image per frame
-				ImVec2 wSize = ImGui::GetWindowSize();
+		// renders the buffered texture from the frame buffer into the ImGui image scene
+		ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
+		if (ImGui::IsItemHovered())
+		{
+			if (ImGui::IsMouseDragging(0)) {
+				//std::cout << " h" << std::endl;
+				// Calculate movement based on mouse delta
+				float deltaX = -io.MouseDelta.x / io.DeltaTime;
+				float deltaY = -io.MouseDelta.y / io.DeltaTime;
 
-				// renders the buffered texture from the frame buffer into the ImGui image scene
-				ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
-				if (ImGui::IsItemHovered())
-				{
-					if (ImGui::IsMouseDragging(0)) {
-						//std::cout << " h" << std::endl;
-						// Calculate movement based on mouse delta
-						float deltaX = -io.MouseDelta.x / io.DeltaTime;
-						float deltaY = -io.MouseDelta.y / io.DeltaTime;
-
-						// Update camera position 
-						engine.cameraMan->moveCamera(glm::vec2(deltaX, deltaY), io.DeltaTime);
-						//shows that update in the scene
-						if (engine.player != NULL)
-							engine.player->updateCamera();
-						else
-							engine.updateWorldCamera();
-					}
-				}
+				// Update camera position 
+				engine.cameraMan->moveCamera(glm::vec2(deltaX, deltaY), io.DeltaTime);
+				//shows that update in the scene
+				if (engine.player != NULL)
+					engine.player->updateCamera();
+				else
+					engine.updateWorldCamera();
 			}
-			else if (engine.State == GameState::GAME_ACTIVE) {
-				// frame buffer rendering section
-				frameBuffer.startBind();
-				glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-				glClear(GL_COLOR_BUFFER_BIT);
-				// game is rendered here and updated
-				engine.Update();
-				engine.Render();
-
-				// unbind the framebuffer that renders the scene
-				frameBuffer.endBind();
-				// gets the scene window size so it can resize the image per frame
-				ImVec2 wSize = ImGui::GetWindowSize();
-
-				// renders the buffered texture from the frame buffer into the ImGui image scene
-				ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
-			}
-			else {
-
-
-				// frame buffer rendering section
-				frameBuffer.startBind();
-				glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-				glClear(GL_COLOR_BUFFER_BIT);
-
-				// render default scene
-
-
-				// unbind the framebuffer that renders the scene
-				frameBuffer.endBind();
-				// gets the scene window size so it can resize the image per frame
-				//ImVec2 wSize = ImGui::GetWindowSize();
-
-				// renders the buffered texture from the frame buffer into the ImGui image scene
-				ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
-			}
-			ImGui::EndTabItem();
 		}
-		// Add the second tab
-		if (ImGui::BeginTabItem("tile edit tab")) {
-			ImGui::Text("Content of Tab 2");
-			ImGui::EndTabItem(); // End of Tab 2
-		}
-
-		ImGui::EndTabBar(); // End of the tab bar
 	}
+	else if (engine.State == GameState::GAME_ACTIVE) {
+		// frame buffer rendering section
+		frameBuffer.startBind();
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		// game is rendered here and updated
+		engine.Update();
+		engine.Render();
+
+		// unbind the framebuffer that renders the scene
+		frameBuffer.endBind();
+		// gets the scene window size so it can resize the image per frame
+		ImVec2 wSize = ImGui::GetWindowSize();
+
+		// renders the buffered texture from the frame buffer into the ImGui image scene
+		ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
+	}
+	else {
+
+		// frame buffer rendering section
+		frameBuffer.startBind();
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// render default scene
+
+
+		// unbind the framebuffer that renders the scene
+		frameBuffer.endBind();
+		// gets the scene window size so it can resize the image per frame
+		//ImVec2 wSize = ImGui::GetWindowSize();
+
+		// renders the buffered texture from the frame buffer into the ImGui image scene
+		ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
+	}
+
 	ImGui::End();
 }
 
 void ImGuiEditorWindow::assetSection()
 {
-
 	ImGui::Begin("Assets tab ");
-	ImGui::TextWrapped("this is the asset's tab where the user can import and export assets into the level and outside the level");
+
+	if (ImGui::BeginTabBar("Assets tab")) {
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f)); // yellow color
+		// Add the first tab
+		if (ImGui::BeginTabItem("texture tab")) {
+			
+
+			ImGui::TextWrapped("this is the asset's tab where the user can import and export assets into the level and outside the level");
 
 
-	if (ImGui::Button("Load New Asset")) {
-		// open a file dialog to select a PNG file
-		IGFD::FileDialogConfig config;
-		config.path = "./Start-Your-Engine/textures";
-		ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".png,.jpg", config);
-	}
-
-	// handle file selection
-	if (ImGuiFileDialog::Instance()->Display("ChooseAssetDlgKey")) {
-		if (ImGuiFileDialog::Instance()->IsOk()) {
-			std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-			std::string fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
-			// load the selected asset using LoadTexture
-			ResourceManager::LoadTexture(filePathName.c_str(), true, fileName);
-			ImGui::Text("Loaded: %s", fileName.c_str());
-		}
-		ImGuiFileDialog::Instance()->Close();
-	}
-
-	// display loaded assets
-	ImGui::Text("Loaded Assets:");
-	ImGui::Separator();
-	ImGui::BeginChild("AssetsScrolling", ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
-
-	for (auto it = ResourceManager::Textures.begin(); it != ResourceManager::Textures.end();) {
-		ImGui::PushID(it->second.ID); // use the texture ID to push the ID
-
-		// display asset thumbnail
-		if (ImGui::ImageButton((void*)(intptr_t)it->second.ID, ImVec2(80, 80))) {
-			selectedAssetForPreview = it->first; // set the asset for preview
-		}
-		ImGui::PopID();
-
-		bool remove_item = false; // flag to determine if the item should be removed
-
-		// context menu for asset removal
-		if (ImGui::BeginPopupContextItem()) {
-			if (ImGui::MenuItem("Remove")) {
-				remove_item = true;
+			if (ImGui::Button("Load New Asset")) {
+				// open a file dialog to select a PNG file
+				IGFD::FileDialogConfig config;
+				config.path = "./Start-Your-Engine/textures";
+				ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".png,.jpg", config);
 			}
-			ImGui::EndPopup();
-		}
 
-		if (remove_item) {
-			glDeleteTextures(1, &it->second.ID); // delete OpenGL texture
-			it = ResourceManager::Textures.erase(it); // remove from ResourceManager and safely increment the iterator
-		}
-		else {
-			it++; // only increment the iterator if no item was removed
-		}
+			// handle file selection
+			if (ImGuiFileDialog::Instance()->Display("ChooseAssetDlgKey")) {
+				if (ImGuiFileDialog::Instance()->IsOk()) {
+					std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+					std::string fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
+					// load the selected asset using LoadTexture
+					ResourceManager::LoadTexture(filePathName.c_str(), true, fileName);
+					ImGui::Text("Loaded: %s", fileName.c_str());
+				}
+				ImGuiFileDialog::Instance()->Close();
+			}
 
-		ImGui::SameLine(); // display assets in the same line (horizontally)
+			// display loaded assets
+			ImGui::Text("Loaded Assets:");
+			ImGui::Separator();
+			ImGui::BeginChild("AssetsScrolling", ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+			for (auto it = ResourceManager::Textures.begin(); it != ResourceManager::Textures.end();) {
+				ImGui::PushID(it->second.ID); // use the texture ID to push the ID
+
+				// display asset thumbnail
+				if (ImGui::ImageButton((void*)(intptr_t)it->second.ID, ImVec2(80, 80))) {
+					selectedAssetForPreview = it->first; // set the asset for preview
+				}
+				ImGui::PopID();
+
+				bool remove_item = false; // flag to determine if the item should be removed
+
+				// context menu for asset removal
+				if (ImGui::BeginPopupContextItem()) {
+					if (ImGui::MenuItem("Remove")) {
+						remove_item = true;
+					}
+					ImGui::EndPopup();
+				}
+
+				if (remove_item) {
+					glDeleteTextures(1, &it->second.ID); // delete OpenGL texture
+					it = ResourceManager::Textures.erase(it); // remove from ResourceManager and safely increment the iterator
+				}
+				else {
+					it++; // only increment the iterator if no item was removed
+				}
+
+				ImGui::SameLine(); // display assets in the same line (horizontally)
+			}
+			ImGui::EndChild();
+
+			// asset preview
+			if (!selectedAssetForPreview.empty()) {
+				showAssetPreviewWindow();
+			}
+
+
+
+			ImGui::EndTabItem();
+		}
+		// Add the second tab
+		if (ImGui::BeginTabItem("sound tab")) {
+			ImGui::TextWrapped("this is the asset's tab where the user can import and export assets into the level and outside the level");
+
+
+			if (ImGui::Button("Load New Asset")) {
+				// open a file dialog to select a PNG file
+				IGFD::FileDialogConfig config;
+				config.path = "./Start-Your-Engine/textures";
+				ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".png,.jpg", config);
+			}
+
+			// handle file selection
+			if (ImGuiFileDialog::Instance()->Display("ChooseAssetDlgKey")) {
+				if (ImGuiFileDialog::Instance()->IsOk()) {
+					std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+					std::string fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
+					// load the selected asset using LoadTexture
+					ResourceManager::LoadTexture(filePathName.c_str(), true, fileName);
+					ImGui::Text("Loaded: %s", fileName.c_str());
+				}
+				ImGuiFileDialog::Instance()->Close();
+			}
+
+			// display loaded assets
+			ImGui::Text("Loaded Assets:");
+			ImGui::Separator();
+			ImGui::BeginChild("AssetsScrolling", ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+			for (auto it = ResourceManager::Textures.begin(); it != ResourceManager::Textures.end();) {
+				ImGui::PushID(it->second.ID); // use the texture ID to push the ID
+
+				// display asset thumbnail
+				if (ImGui::ImageButton((void*)(intptr_t)it->second.ID, ImVec2(80, 80))) {
+					selectedAssetForPreview = it->first; // set the asset for preview
+				}
+				ImGui::PopID();
+
+				bool remove_item = false; // flag to determine if the item should be removed
+
+				// context menu for asset removal
+				if (ImGui::BeginPopupContextItem()) {
+					if (ImGui::MenuItem("Remove")) {
+						remove_item = true;
+					}
+					ImGui::EndPopup();
+				}
+
+				if (remove_item) {
+					glDeleteTextures(1, &it->second.ID); // delete OpenGL texture
+					it = ResourceManager::Textures.erase(it); // remove from ResourceManager and safely increment the iterator
+				}
+				else {
+					it++; // only increment the iterator if no item was removed
+				}
+
+				ImGui::SameLine(); // display assets in the same line (horizontally)
+			}
+			ImGui::EndChild();
+
+			// asset preview
+			if (!selectedAssetForPreview.empty()) {
+				showAssetPreviewWindow();
+			}
+
+
+			ImGui::EndTabItem(); // End of Tab 2
+		}
+		ImGui::PopStyleColor();
+		ImGui::EndTabBar(); // End of the tab bar
 	}
-	ImGui::EndChild();
-
-	// asset preview
-	if (!selectedAssetForPreview.empty()) {
-		showAssetPreviewWindow();
-	}
-
 	ImGui::End();
+
 }
 
 
@@ -659,12 +657,177 @@ void ImGuiEditorWindow::showAssetPreviewWindow() {
 	}
 }
 
+void ImGuiEditorWindow::objectDataSubsectionOfAttributeSection()
+{
+	if (ImGui::TreeNode("object data")) {
+
+		ImGui::Separator();
+		// change name
+		ImGui::TextWrapped("Name:");
+		ImGui::SameLine();
+		static char buffer[256];
+		buffer[sizeof(buffer) - 1] = '\0';
+		strncpy(buffer, engine.gameObjects.find(selectedObjectKey)->second->name.c_str(), sizeof(buffer));
+		if (ImGui::InputText("(INPUT TO CHANGE NAME)", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+			// Update the std::string with the modified buffer
+			engine.gameObjects.find(selectedObjectKey)->second->name = buffer;
+		}
+		ImGui::Separator();
+		//change color
+		ImGui::TextWrapped("color:");
+		float rgb[3] = { engine.gameObjects.find(selectedObjectKey)->second->color.x,
+			engine.gameObjects.find(selectedObjectKey)->second->color.y,
+			engine.gameObjects.find(selectedObjectKey)->second->color.z };
+		if (ImGui::ColorEdit3("object color", rgb)) {
+			engine.gameObjects.find(selectedObjectKey)->second->color.x = rgb[0];
+			engine.gameObjects.find(selectedObjectKey)->second->color.y = rgb[1];
+			engine.gameObjects.find(selectedObjectKey)->second->color.z = rgb[2];
+		}
+		ImGui::Separator();
+		//change pos
+		ImGui::TextWrapped("Object location: ");
+		ImGui::Indent();
+		ImGui::TextWrapped("x = %f", engine.gameObjects.find(selectedObjectKey)->second->getLocation().x);
+		ImGui::SameLine();
+		ImGui::Button("move left");
+		if (ImGui::IsItemActive()) {
+			engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+				engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+				+ b2Vec2(-0.005, 0), 0);
+		}
+		ImGui::SameLine();
+		ImGui::Button("move right");
+		if (ImGui::IsItemActive()) {
+			engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+				engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+				+ b2Vec2(0.005, 0), 0);
+		}
+		ImGui::TextWrapped("y = %f", engine.gameObjects.find(selectedObjectKey)->second->getLocation().y);
+		ImGui::SameLine();
+		ImGui::Button("move up");
+		if (ImGui::IsItemActive()) {
+			engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+				engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+				+ b2Vec2(0, -0.005), 0);
+		}
+		ImGui::SameLine();
+		ImGui::Button("move down");
+		if (ImGui::IsItemActive()) {
+			engine.gameObjects.find(selectedObjectKey)->second->body->SetTransform(
+				engine.gameObjects.find(selectedObjectKey)->second->body->GetPosition()
+				+ b2Vec2(0, 0.005), 0);
+		}
+		ImGui::Unindent();
+		//change size
+		ImGui::TextWrapped("Object Size: ");
+		ImGui::Indent();
+		if (ImGui::InputFloat("Width", &engine.gameObjects.find(selectedObjectKey)->second->size.x, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
+			engine.gameObjects.find(selectedObjectKey)->second->resize();
+		}
+		if (ImGui::InputFloat("Height", &engine.gameObjects.find(selectedObjectKey)->second->size.y, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
+			engine.gameObjects.find(selectedObjectKey)->second->resize();
+		}
+		ImGui::Unindent();
+		ImGui::Separator();
+		//ImGui::TextWrapped(std::string(engine.gameObjects.find(selectedObjectKey)->second->type).c_str() );
+
+
+
+		ImGui::TreePop();
+	}
+}
+
+void ImGuiEditorWindow::physicsSubsectionOfAttributeSection()
+{
+	if (ImGui::TreeNode("Physics:")) {
+		ImGui::TextWrapped("Object gravity: ");
+		ImGui::Indent();
+		ImGui::TextWrapped(" %f", engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale());
+		ImGui::SameLine();
+		ImGui::Button("-");
+		if (ImGui::IsItemActive()) {
+			engine.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale() - 0.001);
+		}
+		ImGui::SameLine();
+		ImGui::Button("+");
+		if (ImGui::IsItemActive()) {
+			engine.gameObjects.find(selectedObjectKey)->second->body->SetGravityScale(engine.gameObjects.find(selectedObjectKey)->second->body->GetGravityScale() + 0.001);
+		}
+		ImGui::Unindent();
+		ImGui::Separator();
+		ImGui::TextWrapped("Object Collision: ");
+		ImGui::Indent();
+		// Call the function to draw collision box controls
+		collisionBoxControls(engine.gameObjects[selectedObjectKey]);
+		ImGui::Unindent();
+		ImGui::Separator();
+		// further physics features here:
+		//........
+		ImGui::TextWrapped("further physics features here:");
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+}
+
+void ImGuiEditorWindow::animationSubsectionOfAttributeSection()
+{
+
+	if (ImGui::TreeNode("current animation:")) {
+		ImGui::Separator();
+		if (engine.gameObjects[selectedObjectKey]->animations.empty()) {
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
+			ImGui::TextWrapped("it has no animations in the list. Please add an animation to choose.");
+			ImGui::PopStyleColor();
+
+		}
+		else {
+			ImGui::TextWrapped("current animation Total Frames :");
+			static int frames = engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->getTotalFrames();
+			ImGui::InputInt("total Frames ", &frames);
+			//if the user inputs negative number then it reset to its default value
+			if (frames < 1) {
+				frames = 1;
+			}
+			engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->setTotalFrames(frames);
+
+			ImGui::Separator();
+			ImGui::TextWrapped("current animation preview:");
+			ImGui::Indent();
+			Texture2D& texture = engine.gameObjects.find(selectedObjectKey)->second->getCurrentTexture2D();
+			ImGui::Image((void*)(intptr_t)texture.ID, ImVec2(80, 80));
+			ImGui::Unindent();
+			ImGui::Separator();
+		}
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("change current animation:")) {
+		ImGui::Separator();
+		selectCurrentAnimation();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Add animation:")) {
+		ImGui::Separator();
+		addNewAnimation();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("delete animation:")) {
+		ImGui::Separator();
+		deleteExistingAnimation();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+}
+
 void ImGuiEditorWindow::addNewAnimation()
 {
 	// set the default frames of value 1
 	static int frames = 1;
 	ImGui::TextWrapped("input total frames [ as 1 or more]: ");
 	ImGui::InputInt("total Frames ", &frames);
+	ImGui::Separator();
 	//if the user inputs negative number then it reset to its default value
 	if (frames < 1) {
 		frames = 1;
@@ -694,52 +857,37 @@ void ImGuiEditorWindow::addNewAnimation()
 void ImGuiEditorWindow::deleteExistingAnimation()
 {
 	ImGui::TextWrapped(" animations list : ");
-	/* together with checking if the key is in the gameobject map 
-		or not and checking if the animation is empty successfully
-		gives enough time padding for the game object to be deleted while
-		imgui onrender() runs
+	if (engine.gameObjects[selectedObjectKey]->animations.empty()) {
+		/* this disables the dropdown and displays an information
+				to the user that there is no animation to delete 
 		*/
-	if (engine.gameObjects.count(selectedObjectKey)==0) {
-		/* this is a second and last check if the object is deleted or not
-			the reason is that even after the game object button is 
-			pressed, the imgui widget successfully retrieves the get
-			current animation function while the game object is being 
-			deleted.  */
-	}
-	/* this is the first attempt coudn't elimate the issue of
-		imgui getting access the current animation and creates a glitch
-		for the user to intentionally click the button 2 times to delete.
-		As a bonus this disables the dropdown and displays an information
-		to the user that there is no animation to delete */ 
-	
-	else if (engine.gameObjects[selectedObjectKey]->animations.empty()) {
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
 		ImGui::TextWrapped("it has no animations in the list. Please add an animation to choose.");
 		ImGui::PopStyleColor();
 	}
 	else
 		// this bring out the drop down menu
-	if (ImGui::BeginCombo("select",
-		engine.gameObjects[selectedObjectKey]->getCurrentAnimation().c_str()))	{
-		for (auto& it = engine.gameObjects[selectedObjectKey]->animations.begin(); it != engine.gameObjects[selectedObjectKey]->animations.end();) {
-			ImGui::PushID(it->second->getSpriteSheetName().c_str()); // use the texture ID to push the ID
+		if (ImGui::BeginCombo("select",
+			engine.gameObjects[selectedObjectKey]->getCurrentAnimation().c_str())) {
+			for (auto& it = engine.gameObjects[selectedObjectKey]->animations.begin(); it != engine.gameObjects[selectedObjectKey]->animations.end();) {
+				ImGui::PushID(it->second->getSpriteSheetName().c_str()); // use the texture ID to push the ID
 
-			// display asset thumbnail
-			if (ImGui::ImageButton((void*)(intptr_t)it->second->getSpriteSheet().ID, ImVec2(80, 80))) {
-				//deletes the animation and gets out of the loop
-				engine.gameObjects[selectedObjectKey]->deleteAnimation(it->first);
+				// display asset thumbnail
+				if (ImGui::ImageButton((void*)(intptr_t)it->second->getSpriteSheet().ID, ImVec2(80, 80))) {
+					//deletes the animation and gets out of the loop
+					engine.gameObjects[selectedObjectKey]->deleteAnimation(it->first);
+					ImGui::PopID();
+					break;
+
+				}
+				else {
+					it++; // only increment the iterator if no item was removed
+				}
 				ImGui::PopID();
-				break;
+			}
+			ImGui::EndCombo();
 
-			}
-			else {
-				it++; // only increment the iterator if no item was removed
-			}
-			ImGui::PopID();
 		}
-		ImGui::EndCombo();
-
-	}
 }
 
 void ImGuiEditorWindow::selectCurrentAnimation()
@@ -750,28 +898,29 @@ void ImGuiEditorWindow::selectCurrentAnimation()
 		ImGui::TextWrapped("it has no animations in the list. Please add an animation to choose.");
 		ImGui::PopStyleColor();
 
-	}else
-	if (ImGui::BeginCombo("selectCurrent Animation",
-		engine.gameObjects[selectedObjectKey]->getCurrentAnimation().c_str()))
-	{
-		// this is to tell the user to add animation to choose one
-		
-		for (auto& it = engine.gameObjects[selectedObjectKey]->animations.begin(); it != engine.gameObjects[selectedObjectKey]->animations.end();) {
-			ImGui::PushID(it->second->getSpriteSheetName().c_str()); // use the texture ID to push the ID
-			
-			// display asset thumbnail
-			if (ImGui::ImageButton((void*)(intptr_t)it->second->getSpriteSheet().ID, ImVec2(80, 80))) {
-
-				engine.gameObjects[selectedObjectKey]->setAsCurrentAnimation(it->first);
-			}
-			else {
-				it++; // only increment the iterator if no item was removed
-			}
-			ImGui::PopID();
-		}
-		ImGui::EndCombo();
-
 	}
+	else
+		if (ImGui::BeginCombo("selectCurrent Animation",
+			engine.gameObjects[selectedObjectKey]->getCurrentAnimation().c_str()))
+		{
+			// this is to tell the user to add animation to choose one
+
+			for (auto& it = engine.gameObjects[selectedObjectKey]->animations.begin(); it != engine.gameObjects[selectedObjectKey]->animations.end();) {
+				ImGui::PushID(it->second->getSpriteSheetName().c_str()); // use the texture ID to push the ID
+
+				// display asset thumbnail
+				if (ImGui::ImageButton((void*)(intptr_t)it->second->getSpriteSheet().ID, ImVec2(80, 80))) {
+
+					engine.gameObjects[selectedObjectKey]->setAsCurrentAnimation(it->first);
+				}
+				else {
+					it++; // only increment the iterator if no item was removed
+				}
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+
+		}
 
 
 }

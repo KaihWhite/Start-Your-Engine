@@ -49,6 +49,8 @@ public:
 
 	/* Graphic functions	*/
 	Texture2D getCurrentTexture2D();
+	void renderBox(Renderer& renderer);
+	void unRenderBox(Renderer& renderer);
 	void addAnimation(std::string spriteSheet, int totalFrames);
 	void deleteAnimation(const std::string spriteSheet);
 	void setAsCurrentAnimation(const std::string spriteSheet);
