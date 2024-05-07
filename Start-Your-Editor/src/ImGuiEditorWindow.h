@@ -46,14 +46,12 @@ public:
 	void onRender();
 	void endRender();
 	void destroyWindow();
-	
+
 	// Collision box
 	bool showCollisionBoxControls;
-	int collisionBoxShape = 0;
-	std::vector<float> sideLengths;
-	float rotationDegrees = 0.0f;
-	float circleRadius = 0.0f;
-	int numSides = 3;
+	float collisionBoxWidth;
+	float collisionBoxHeight;
+	int collisionBoxShape; // 0 = Rectangle, 1 = Circle, 2 = Triangle
 	void collisionBoxControls(GameObject* gameObject);
 private:
 	// content funtions for on render
@@ -64,7 +62,7 @@ private:
 	void assetSection();
 
 	// helper methods for assetSection
-	void showAssetPreviewWindow(); 
+	void showAssetPreviewWindow();
 	// helper methods attributeSection
 	void objectDataSubsectionOfAttributeSection();
 	void physicsSubsectionOfAttributeSection();
