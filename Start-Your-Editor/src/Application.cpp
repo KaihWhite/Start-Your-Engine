@@ -95,8 +95,8 @@ int main() {
     imguiWindow->createWindow();
 
     glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {       
@@ -118,7 +118,7 @@ int main() {
         glfwPollEvents();
     }
     imguiWindow->destroyWindow();
-
+    glDisable(GL_BLEND);
     ResourceManager::Clear();
     glfwTerminate();
 
