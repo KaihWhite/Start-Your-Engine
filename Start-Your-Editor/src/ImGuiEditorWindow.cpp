@@ -244,15 +244,47 @@ void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
 
 		switch (collisionBoxShape) {
 		case 0: // Rectangle
-			ImGui::SliderFloat("Width", &collisionBoxWidth, 0.1f, 20.0f);
-			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.1f, 20.0f);
+			ImGui::SliderFloat("Width", &collisionBoxWidth, 0.0f, 20.0f);
+			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.0f, 20.0f);
 			break;
 		case 1: // Circle
-			ImGui::SliderFloat("Radius", &collisionBoxWidth, 0.1f, 20.0f); // Use Width as Radius
+			ImGui::SliderFloat("Radius", &collisionBoxWidth, 0.0f, 20.0f); // Use Width as Radius
 			break;
 		case 2: // Triangle
-			ImGui::SliderFloat("Base", &collisionBoxWidth, 0.1f, 20.0f);
-			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.1f, 20.0f);
+			ImGui::SliderFloat("Base", &collisionBoxWidth, 0.0f, 20.0f);
+			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.0f, 20.0f);
+			break;
+		}
+
+		// Visualization of the shape
+		ImGui::Text("Preview:");
+		ImVec2 canvas_pos = ImGui::GetCursorScreenPos(); // ImDrawList API uses screen coordinates!
+		ImVec2 canvas_size = ImVec2(200, 200); // Size of the canvas area
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+		ImGui::InvisibleButton("canvas", canvas_size);
+		if (ImGui::IsItemHovered()) {
+			// Optional: Add details when hovering over the canvas
+		}
+
+		draw_list->AddRectFilled(canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y), IM_COL32(50, 50, 50, 255)); // Background
+
+		const ImVec2 center = ImVec2(canvas_pos.x + canvas_size.x * 0.5f, canvas_pos.y + canvas_size.y * 0.5f);
+		const float radius = 70.0f; // Use a fixed radius for circle and vertices of the triangle
+
+		switch (collisionBoxShape) {
+		case 0: // Rectangle
+			draw_list->AddRect(ImVec2(center.x - collisionBoxWidth * 2, center.y - collisionBoxHeight * 2),
+				ImVec2(center.x + collisionBoxWidth * 2, center.y + collisionBoxHeight * 2),
+				IM_COL32(255, 255, 0, 255));
+			break;
+		case 1: // Circle
+			draw_list->AddCircle(center, collisionBoxWidth * 2, IM_COL32(255, 255, 0, 255));
+			break;
+		case 2: // Triangle
+			draw_list->AddTriangle(ImVec2(center.x, center.y - collisionBoxHeight * 2),
+				ImVec2(center.x - collisionBoxWidth * 2, center.y + collisionBoxHeight * 2),
+				ImVec2(center.x + collisionBoxWidth * 2, center.y + collisionBoxHeight * 2),
+				IM_COL32(255, 255, 0, 255));
 			break;
 		}
 
@@ -505,9 +537,18 @@ void ImGuiEditorWindow::assetSection()
 				if (ImGuiFileDialog::Instance()->IsOk()) {
 					std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
 					std::string fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
-					// load the selected asset using LoadTexture
-					ResourceManager::LoadTexture(filePathName.c_str(), true, fileName);
-					ImGui::Text("Loaded: %s", fileName.c_str());
+
+					// copy file to the texture folder
+					std::string destination = "./Start-Your-Engine/textures/" + fileName;
+					try {
+						std::filesystem::copy(filePathName, destination, std::filesystem::copy_options::overwrite_existing);
+						// load the copied asset into ResourceManager
+						ResourceManager::LoadTexture(destination.c_str(), true, fileName);
+						ImGui::Text("Loaded: %s", fileName.c_str());
+					}
+					catch (std::filesystem::filesystem_error& e) {
+						ImGui::Text("Failed to load asset: %s", e.what());
+					}
 				}
 				ImGuiFileDialog::Instance()->Close();
 			}
@@ -517,34 +558,50 @@ void ImGuiEditorWindow::assetSection()
 			ImGui::Separator();
 			ImGui::BeginChild("AssetsScrolling", ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
 
-			for (auto it = ResourceManager::Textures.begin(); it != ResourceManager::Textures.end();) {
-				ImGui::PushID(it->second.ID); // use the texture ID to push the ID
+			// update and display loaded assets dynamically
+			std::string texturePath = "./Start-Your-Engine/textures";
+			for (const auto& entry : std::filesystem::directory_iterator(texturePath)) {
+				if (entry.is_regular_file() && (entry.path().extension() == ".png" || entry.path().extension() == ".jpg")) {
+					std::string fileName = entry.path().filename().string();
+					std::string filePath = entry.path().string();
 
-				// display asset thumbnail
-				if (ImGui::ImageButton((void*)(intptr_t)it->second.ID, ImVec2(80, 80))) {
-					selectedAssetForPreview = it->first; // set the asset for preview
-				}
-				ImGui::PopID();
+					ImGui::PushID(filePath.c_str());
 
-				bool remove_item = false; // flag to determine if the item should be removed
-
-				// context menu for asset removal
-				if (ImGui::BeginPopupContextItem()) {
-					if (ImGui::MenuItem("Remove")) {
-						remove_item = true;
+					// check if the texture is loaded, if not, load it
+					if (ResourceManager::Textures.find(fileName) == ResourceManager::Textures.end()) {
+						ResourceManager::LoadTexture(filePath.c_str(), true, fileName);
 					}
-					ImGui::EndPopup();
-				}
+					auto textureID = ResourceManager::GetTexture(fileName).ID;
 
-				if (remove_item) {
-					glDeleteTextures(1, &it->second.ID); // delete OpenGL texture
-					it = ResourceManager::Textures.erase(it); // remove from ResourceManager and safely increment the iterator
-				}
-				else {
-					it++; // only increment the iterator if no item was removed
-				}
+					// display asset thumbnail
+					if (ImGui::ImageButton((void*)(intptr_t)textureID, ImVec2(80, 80))) {
+						selectedAssetForPreview = fileName; // Set the asset for preview
+					}
 
-				ImGui::SameLine(); // display assets in the same line (horizontally)
+					bool remove_item = false;
+
+					// context menu for asset removal
+					if (ImGui::BeginPopupContextItem()) {
+						if (ImGui::MenuItem("Remove")) {
+							remove_item = true;
+						}
+						ImGui::EndPopup();
+					}
+
+					if (remove_item) {
+						glDeleteTextures(1, &textureID); // delete OpenGL texture
+						ResourceManager::Textures.erase(fileName); // remove from ResourceManager
+						try {
+							std::filesystem::remove(filePath); // remove from the filesystem
+						}
+						catch (std::filesystem::filesystem_error& e) {
+							ImGui::Text("Failed to remove asset: %s", e.what());
+						}
+					}
+
+					ImGui::PopID();
+					ImGui::SameLine(); // display assets in the same line (horizontally)
+				}
 			}
 			ImGui::EndChild();
 
