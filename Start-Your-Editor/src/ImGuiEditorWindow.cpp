@@ -425,11 +425,21 @@ void ImGuiEditorWindow::sceneSection()
 		ImGui::Image((void*)(intptr_t)frameBuffer.gettextureID(), ImVec2(wSize.x, wSize.y), ImVec2(0, 1), ImVec2(1, 0));
 		if (ImGui::IsItemHovered())
 		{
+			//mouse to move the camera around or zoom
 			if (ImGui::IsMouseDragging(0)) {
-				//std::cout << " h" << std::endl;
+				
 				// Calculate movement based on mouse delta
 				float deltaX = -io.MouseDelta.x / io.DeltaTime;
 				float deltaY = -io.MouseDelta.y / io.DeltaTime;
+
+				// zoom the camera
+				if (ImGui::GetIO().MouseWheel > 0) {
+					engine.cameraMan->zoomCamera(10, io.DeltaTime);
+				}
+				if (ImGui::GetIO().MouseWheel < 0) {
+					engine.cameraMan->zoomCamera(-10, io.DeltaTime);
+				}
+
 
 				// Update camera position 
 				engine.cameraMan->moveCamera(glm::vec2(deltaX, deltaY), io.DeltaTime);
@@ -438,7 +448,10 @@ void ImGuiEditorWindow::sceneSection()
 					engine.player->updateCamera();
 				else
 					engine.updateWorldCamera();
+
+				
 			}
+			
 		}
 	}
 	else if (engine.State == GameState::GAME_ACTIVE) {
@@ -497,7 +510,7 @@ void ImGuiEditorWindow::assetSection()
 				// open a file dialog to select a PNG file
 				IGFD::FileDialogConfig config;
 				config.path = "./Start-Your-Engine/textures";
-				ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".png,.jpg", config);
+				ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".png, .jpg, .jpeg, .bmp, .tga", config);
 			}
 
 			// handle file selection
@@ -566,7 +579,7 @@ void ImGuiEditorWindow::assetSection()
 				// open a file dialog to select a PNG file
 				IGFD::FileDialogConfig config;
 				config.path = "./Start-Your-Engine/textures";
-				ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".png,.jpg", config);
+				ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".png, .jpg, .jpeg, .bmp, .tga", config);
 			}
 
 			// handle file selection
@@ -759,6 +772,7 @@ void ImGuiEditorWindow::physicsSubsectionOfAttributeSection()
 		ImGui::Indent();
 		// Call the function to draw collision box controls
 		collisionBoxControls(engine.gameObjects[selectedObjectKey]);
+	
 		ImGui::Unindent();
 		ImGui::Separator();
 		// further physics features here:

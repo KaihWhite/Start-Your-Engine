@@ -29,7 +29,7 @@ private:
 	glm::mat4		projectionViewMatrix;
 	glm::mat4		projectionMatrix;
 	glm::mat4		viewMatrix;
-
+	float			maxZoomOutFactor;
 public:
 
 	//	Variables of camera components so camera system can use
@@ -52,7 +52,7 @@ public:
 	
 	//	camera manupulation fuctions
 	void zoomCamera(float zoomFactor,float dt);
-
+	float getMaxZoomOutFactor();
 
 	//    *    CLASS FUNCTIONS	(future if needed)
 	//void rotateCamera(float rotate, float dt);
