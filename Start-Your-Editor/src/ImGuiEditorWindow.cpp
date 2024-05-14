@@ -194,8 +194,10 @@ void ImGuiEditorWindow::objectSection()
 			glm::vec2 size = glm::vec2(5.0, 5.0);
 			glm::vec2 position = glm::vec2(0.0, 0.0);
 
+			std::unordered_set<std::string> sounds; // currently empty
+
 			// This will only be able to handle static, non-player/npc objects
-			engine.addGameObject(name, ObjectType::OBJECT, RigidBodyType::STATIC, animations, color, size, position);
+			engine.addGameObject(name, ObjectType::OBJECT, RigidBodyType::STATIC, animations, sounds, color, size, position);
 
 		}
 		ImGui::PopStyleColor(1);

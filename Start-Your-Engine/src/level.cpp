@@ -12,7 +12,7 @@ std::vector<std::string> split(const std::string& s, char delimiter) {
     return tokens;
 }
 
-void Level::saveToJSON(const std::string& filename, std::unordered_map<int, GameObject*> gameObjects) {
+void Level::saveToJSON(const std::string& filename, std::map<int, GameObject*> gameObjects) {
     rapidjson::Document doc;
     doc.SetObject();
     rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
@@ -107,8 +107,8 @@ void Level::saveToJSON(const std::string& filename, std::unordered_map<int, Game
 }
 
 
-std::unordered_map<int, GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
-    std::unordered_map<int, GameObject*> gameObjects;
+std::map<int, GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
+    std::map<int, GameObject*> gameObjects;
 
     std::string path = filename;
 

@@ -16,6 +16,7 @@
 
 #include <vector>
 #include <random>
+#include <map>
 
 // Represents the current state of the game
 enum GameState {
@@ -43,7 +44,7 @@ public:
     b2World                 *world;
     Camera2DSystem          *cameraMan;
    
-    std::unordered_map<int, GameObject*> gameObjects;
+    std::map<int, GameObject*> gameObjects;
 
     float timeStep = 1.0f / 60.0f;
     int32 velocityIterations = 8;
@@ -57,7 +58,7 @@ public:
     // initialize game state (load all shaders/textures/levels)
     void Init(unsigned int width, unsigned int height);
 
-    void initLevel(std::unordered_map<int, GameObject*> level);
+    void initLevel(std::map<int, GameObject*> level);
 
     Animation* loadAnimation(const char* file, bool alpha, std::string name, int numFrames);
 
@@ -76,7 +77,7 @@ public:
 
     void updatePlayer(std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 
-    static int generateUniqueKey(std::unordered_map<int, GameObject*> map);
+    static int generateUniqueKey(std::map<int, GameObject*> map);
 
     // plays a sound
     static void playSound(std::string sound);
