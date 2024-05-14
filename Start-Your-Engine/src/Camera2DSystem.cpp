@@ -28,6 +28,11 @@ Camera2D& Camera2DSystem::getCamera() {
 	return this->camera;
 }
 
+void Camera2DSystem::updateCamera()
+{
+	camera.updateProjectionViewMatrix();
+}
+
 /**
 * this is the Camera2DSystem Function that sets the camera bounds
 * 

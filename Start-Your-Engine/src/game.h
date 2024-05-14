@@ -28,7 +28,7 @@ class Game
 public:
     // game state
     GameState               State;
-    bool                    Keys[1024];
+    bool                    Keys[1024]; 
     unsigned int            Width; 
     unsigned int            Height;
 
@@ -61,6 +61,7 @@ public:
     // removes the game object from the level
     void removeGameObject(int key);
 
+    void removeAllGameObject();
     // updates a game object in the level
     void updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 
@@ -71,9 +72,11 @@ public:
 
     static int generateUniqueKey(std::unordered_map<int, GameObject*> map);
 
+    //void addAnimationToGameObject(string );
     // game loop
     void ProcessInput(float& dt);
     void Update();
+    void updateWorldCamera();
     void Render();
 };
 

@@ -12,16 +12,13 @@ Game::Game(unsigned int width, unsigned int height)
 
 Game::~Game()
 {
-    delete this->player;
+    //dereference the player pointer
+    this->player == NULL;
+    // delete all the gameobjects from the game object map
+    this->removeAllGameObject();
     delete this->renderer;
     delete this->world;
     delete this->cameraMan;
-    /*
-    for (auto& gameObject : gameObjects)
-    {
-		delete gameObject.second;
-	}
-    */
 }
 
 void Game::Init(unsigned int width, unsigned int height)
@@ -104,6 +101,11 @@ void Game::Update()
 	}
 }
 
+void Game::updateWorldCamera()
+{
+    ResourceManager::GetShader("anim").SetMatrix4("projectionView", cameraMan->getCamera().getProjectionViewMatrix());
+}
+
 void Game::ProcessInput(float& dt)
 {
 
@@ -142,6 +144,8 @@ void Game::addGameObject(std::string name, ObjectType type, RigidBodyType rtype,
 {
     GameObject* gameObject = new GameObject(name, pos, size, color, animations, this->world, type == ObjectType::OBJECT ? "Object" : "Npc", rtype);
     int key = Game::generateUniqueKey(this->gameObjects);
+    // update the object name to a unique name so it can be queried by name
+    gameObject->name = "Object[" + std::to_string(key^1234) + "]";
     this->gameObjects[key] = gameObject;
 }
 
@@ -151,8 +155,25 @@ void Game::removeGameObject(int key)
     {
 		this->player = nullptr;
 	}
-	delete this->gameObjects[key];
+    //destroy the fixture in the heap before deleting the gameobject
+    this->gameObjects[key]->destroyBodyFixture();
+	this->gameObjects[key]->~GameObject();
 	this->gameObjects.erase(key);
+}
+
+void Game::removeAllGameObject()
+{
+   
+    for (auto& gameobject : this->gameObjects) {
+        if (this->gameObjects[gameobject.first]->type == ObjectType::PLAYER)
+        {
+            this->player = nullptr;
+        }
+        //destroy the fixture in the heap before deleting the gameobject
+        this->gameObjects[gameobject.first]->destroyBodyFixture();
+        delete this->gameObjects[gameobject.first];
+    }
+    gameObjects.clear();
 }
 
 void Game::updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
@@ -193,7 +214,7 @@ int Game::generateUniqueKey(std::unordered_map<int, GameObject*> map)
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> distr(1, 100);
-	int unique_key = distr(gen);
+    int unique_key = distr(gen);
     while (map.find(unique_key) != map.end()) {
 		unique_key = distr(gen);
 	}

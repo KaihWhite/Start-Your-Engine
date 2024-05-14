@@ -72,8 +72,8 @@ void Level::saveToJSON(const std::string& filename, std::unordered_map<int, Game
         objValue.AddMember("size", sizeValue, allocator);
 
         rapidjson::Value positionValue(rapidjson::kObjectType);
-        positionValue.AddMember("x", obj.second->getPosition().x, allocator);
-        positionValue.AddMember("y", obj.second->getPosition().y, allocator);
+        positionValue.AddMember("x", obj.second->getLocation().x, allocator);
+        positionValue.AddMember("y", obj.second->getLocation().y, allocator);
         objValue.AddMember("position", positionValue, allocator);
 
         // each objValue is a JSON object representing a GameObject
@@ -159,6 +159,7 @@ std::unordered_map<int, GameObject*> Level::loadFromJSON(const std::string& file
                 GameObject* gameObject = new GameObject(name, position, size, color, animations, world, type, dynam);
                 gameObjects[unique_key] = gameObject;
             }
+            
         }
     }
 
