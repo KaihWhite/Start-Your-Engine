@@ -57,22 +57,46 @@ void GameObject::addAnimation(std::string spriteSheet, int totalFrames)
 void GameObject::deleteAnimation(const std::string spriteSheet)
 {	//check if its not empty
 	if (!animations.empty()) {
-		for (const auto& pair : this->animations) {
-			//in case of more than one animations
-			if (pair.second->getSpriteSheetName() != spriteSheet) {
-				this->setAsCurrentAnimation(pair.first);
-				delete animations[spriteSheet];
-				animations.erase(spriteSheet);
-				break;
+
+		if (animations.find(spriteSheet) != animations.end()) {
+			if (spriteSheet == this->getCurrentAnimation()) {
+				if (animations.size()<2) {
+					this->setAsCurrentAnimation("");
+				}
+				else {
+					auto iter = animations.begin();
+					while (iter != animations.end()) {
+						auto cur = iter->first;
+						if (cur!=spriteSheet) {
+							this->setAsCurrentAnimation(cur);
+							break;
+						}
+						iter++;
+					}
+				}
+				
 			}
-			//in case of the one spritesheet
-			else {
-				delete animations[spriteSheet];
-				animations.erase(spriteSheet);
-				this->setAsCurrentAnimation("");
-				break;
-			}
+			delete animations[spriteSheet];
+			animations.erase(spriteSheet);
 		}
+		
+
+		//for (const auto& pair : this->animations) {
+		//	//in case of more than one animations
+		//	if (pair.second->getSpriteSheetName() != spriteSheet) {
+		//		this->setAsCurrentAnimation(pair.first);
+		//		delete animations[spriteSheet];
+		//		animations.erase(spriteSheet);
+		//		break;
+		//	}
+		//	//in case of the one spritesheet
+		//	else {
+		//		delete animations[spriteSheet];
+		//		animations.erase(spriteSheet);
+		//		this->setAsCurrentAnimation("");
+		//		break;
+		//	}
+		//}
 	}
 }
 	

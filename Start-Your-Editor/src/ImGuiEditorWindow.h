@@ -31,6 +31,7 @@ private:
 	int counter;
 	bool selectObject; // Flag to control visibility of attributes tab
 	int selectedObjectKey; // Index of the currently selected object
+	int previousSelectedObjectKey; //Index of the previously selected object
 	bool selectCamera;
 
 	std::string selectedAssetForPreview; // Declare the member variable
@@ -65,6 +66,7 @@ private:
 	void showAssetPreviewWindow(); 
 
 	// helper methods attributeSection
+	void selectObjectBox();
 	void objectDataSubsectionOfAttributeSection();
 	void physicsSubsectionOfAttributeSection();
 	void animationSubsectionOfAttributeSection();

@@ -17,6 +17,7 @@ ImGuiEditorWindow::ImGuiEditorWindow(GLFWwindow* wind, Game& engine, unsigned in
 	selectCamera = false;
 	selectObject = false;
 	selectedObjectKey = NULL;
+	previousSelectedObjectKey = NULL;
 	// this initialised the setup for the framebuffer for the scene
 	frameBuffer = FrameBuffer();
 	frameBuffer.setupConfig(SCR_WIDTH, SCR_HEIGHT);
@@ -182,6 +183,15 @@ void ImGuiEditorWindow::objectSection()
 {
 	ImGui::Begin("Game Objects tab ");
 	if (engine.State == GAME_EDITOR) {
+
+		if (ImGui::Selectable("Camera", false)) {
+			// Handle selection logic here
+			selectObject = false;
+			selectCamera = true;
+			selectedObjectKey = NULL;
+			previousSelectedObjectKey = NULL;
+		}
+
 		// Optional: Add a button to add a new object
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 1.0f, 1.0f)); // red color
 		if (ImGui::Button("Add Object")) {
@@ -201,18 +211,31 @@ void ImGuiEditorWindow::objectSection()
 		ImGui::PopStyleColor(1);
 		// Start a scrolling region
 		ImGui::BeginChild("ObjectList", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-		if (ImGui::Selectable("Camera", false)) {
-			// Handle selection logic here
-			selectObject = false;
-			selectCamera = true;
-			selectedObjectKey = NULL;
-		}
+		
 		for (const auto& pair : engine.gameObjects) {
 			if (ImGui::Selectable(pair.second->name.c_str(), false)) {
 				// Handle selection logic here
 				selectCamera = false;
 				selectObject = true;
-				selectedObjectKey = pair.first;
+				if (previousSelectedObjectKey == NULL) {
+
+					selectedObjectKey = pair.first;
+					previousSelectedObjectKey = selectedObjectKey;
+					//engine.gameObjects[selectedObjectKey]->renderBox(*engine.renderer);
+				}
+				else if(previousSelectedObjectKey != selectedObjectKey) {
+					
+					selectedObjectKey = pair.first;
+					//engine.gameObjects[previousSelectedObjectKey]->unRenderBox(*engine.renderer);
+					//engine.gameObjects[selectedObjectKey]->renderBox(*engine.renderer);
+					previousSelectedObjectKey = selectedObjectKey;
+				}
+				else {
+					selectedObjectKey = pair.first;
+					//engine.gameObjects[selectedObjectKey]->renderBox(*engine.renderer);
+					//previousSelectedObjectKey = selectedObjectKey;
+				}
+				
 			}
 		}
 
@@ -356,8 +379,10 @@ void ImGuiEditorWindow::attributeSection()
 			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); // red color
 			ImGui::Button("delete game object");
 			if (ImGui::IsItemActive()) {
+				//engine.gameObjects[selectedObjectKey]->unRenderBox(*engine.renderer);
 				engine.removeGameObject(selectedObjectKey);
-
+				
+				selectedObjectKey = NULL;
 			}
 			ImGui::PopStyleColor();
 			ImGui::Separator();
@@ -376,7 +401,7 @@ void ImGuiEditorWindow::attributeSection()
 			else {
 				
 				// tab bars for showing object  Subsection
-				
+				//selectObjectBox();
 				if (ImGui::BeginTabBar("object  Subsection")) {
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f)); // yellow color
 					//  first tab
@@ -667,6 +692,24 @@ void ImGuiEditorWindow::showAssetPreviewWindow() {
 	// if the window is closed clear the selection
 	if (!open) {
 		selectedAssetForPreview.clear();
+	}
+}
+
+void ImGuiEditorWindow::selectObjectBox()
+{
+	if (previousSelectedObjectKey ==NULL ) {
+		engine.gameObjects[selectedObjectKey]->renderBox(*engine.renderer);
+		previousSelectedObjectKey = selectedObjectKey;
+		
+		
+	}
+	else if( previousSelectedObjectKey != selectedObjectKey){
+		engine.gameObjects[selectedObjectKey]->renderBox(*engine.renderer);
+		engine.gameObjects[previousSelectedObjectKey]->unRenderBox(*engine.renderer);
+		previousSelectedObjectKey = selectedObjectKey;
+	}
+	else {
+		// do nothing
 	}
 }
 

@@ -1,0 +1,46 @@
+{
+    "gameObjects": [
+        {
+            "name": "Object[1222]",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "awesomeface,idle": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 5.0,
+                "y": 5.0
+            },
+            "position": {
+                "x": 8.115138053894043,
+                "y": 0.0
+            }
+        },
+        {
+            "name": "Object[1245]",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "awesomeface,idle": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 5.0,
+                "y": 5.0
+            },
+            "position": {
+                "x": 0.0,
+                "y": 0.0
+            }
+        }
+    ]
+}
