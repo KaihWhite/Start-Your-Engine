@@ -95,13 +95,15 @@ int main() {
     ImGuiEditorWindow* imguiWindow = new ImGuiEditorWindow(window, *demo, SCR_WIDTH, SCR_HEIGHT);
     imguiWindow->createWindow();
 
-
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
-    {
-
+    {       
         // Start the Dear ImGui frame
         imguiWindow->startRender();
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         imguiWindow->onRender();

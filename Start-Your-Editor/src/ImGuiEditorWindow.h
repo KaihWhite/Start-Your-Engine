@@ -32,6 +32,8 @@ private:
 	bool selectObject; // Flag to control visibility of attributes tab
 	int selectedObjectKey; // Index of the currently selected object
 	bool selectCamera;
+
+	std::string selectedAssetForPreview; // Declare the member variable
 public:
 
 	// constructor
@@ -44,6 +46,13 @@ public:
 	void onRender();
 	void endRender();
 	void destroyWindow();
+	
+	// Collision box
+	bool showCollisionBoxControls;
+	float collisionBoxWidth;
+	float collisionBoxHeight;
+	int collisionBoxShape; // 0 = Rectangle, 1 = Circle, 2 = Triangle
+	void collisionBoxControls(GameObject* gameObject);
 private:
 	// content funtions for on render
 	void toolBarSection();
@@ -51,4 +60,16 @@ private:
 	void attributeSection();
 	void sceneSection();
 	void assetSection();
+
+	// helper methods for assetSection
+	void showAssetPreviewWindow(); 
+	// helper methods attributeSection
+	void objectDataSubsectionOfAttributeSection();
+	void physicsSubsectionOfAttributeSection();
+	void animationSubsectionOfAttributeSection();
+
+	//helper methods for animationSubsectionOfAttributeSection
+	void addNewAnimation();
+	void deleteExistingAnimation();
+	void selectCurrentAnimation();
 };

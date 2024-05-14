@@ -127,10 +127,8 @@ void Player::updateCamera()
 	this->deltaTime = currentTime - this->previousTime;
 	this->previousTime = currentTime; 
 	cameraMan->follow(this->body->GetPosition().x*100, this->body->GetPosition().y*100, 1.5f, this->deltaTime);
-    //std::cout << this->cameraMan->getCamera().cameraPosition.x << "," << this->cameraMan->getCamera().cameraPosition.y << std::endl;
-    //std::cout << this->cameraMan->getCamera().offset.x << "," << this->cameraMan->getCamera().offset.y << std::endl;    //this->cameraMan->transitionTo(getPosition().x, getPosition().y, 2.0f, deltaTime);
+    // this passes the pvmatrix to the shader
 	ResourceManager::GetShader("anim").SetMatrix4("projectionView", cameraMan->getCamera().getProjectionViewMatrix());
-    //std::cout << this->body->GetLinearVelocity().y << std::endl;
 	
    
 }

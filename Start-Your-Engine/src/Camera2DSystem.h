@@ -19,8 +19,10 @@ private:
 public:
 	//	Constructor
 	Camera2DSystem(float width, float height);
+
 	void setBoundaries(float minX, float maxX, float minY, float maxY);
 	Camera2D& getCamera();
+	void updateCamera();
 
 	// basic camera movement
 	void moveCamera(glm::vec2 direction, float dt);
