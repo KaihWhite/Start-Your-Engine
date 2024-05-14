@@ -244,15 +244,15 @@ void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
 
 		switch (collisionBoxShape) {
 		case 0: // Rectangle
-			ImGui::SliderFloat("Width", &collisionBoxWidth, 0.0f, 20.0f);
-			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.0f, 20.0f);
+			ImGui::SliderFloat("Width", &collisionBoxWidth, 0.1f, 20.0f);
+			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.1f, 20.0f);
 			break;
 		case 1: // Circle
-			ImGui::SliderFloat("Radius", &collisionBoxWidth, 0.0f, 20.0f); // Use Width as Radius
+			ImGui::SliderFloat("Radius", &collisionBoxWidth, 0.1f, 20.0f); // Use Width as Radius
 			break;
 		case 2: // Triangle
-			ImGui::SliderFloat("Base", &collisionBoxWidth, 0.0f, 20.0f);
-			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.0f, 20.0f);
+			ImGui::SliderFloat("Base", &collisionBoxWidth, 0.1f, 20.0f);
+			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.1f, 20.0f);
 			break;
 		}
 
@@ -262,14 +262,9 @@ void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
 		ImVec2 canvas_size = ImVec2(200, 200); // Size of the canvas area
 		ImDrawList* draw_list = ImGui::GetWindowDrawList();
 		ImGui::InvisibleButton("canvas", canvas_size);
-		if (ImGui::IsItemHovered()) {
-			// Optional: Add details when hovering over the canvas
-		}
 
 		draw_list->AddRectFilled(canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y), IM_COL32(50, 50, 50, 255)); // Background
-
 		const ImVec2 center = ImVec2(canvas_pos.x + canvas_size.x * 0.5f, canvas_pos.y + canvas_size.y * 0.5f);
-		const float radius = 70.0f; // Use a fixed radius for circle and vertices of the triangle
 
 		switch (collisionBoxShape) {
 		case 0: // Rectangle

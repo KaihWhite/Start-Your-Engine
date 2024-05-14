@@ -51,8 +51,8 @@ public:
 
 	// Collision box
 	bool showCollisionBoxControls;
-	float collisionBoxWidth = 0.0f;
-	float collisionBoxHeight = 0.0f;
+	float collisionBoxWidth = 0.1f;
+	float collisionBoxHeight = 0.1f;
 	int collisionBoxShape = 0; // 0 = Rectangle, 1 = Circle, 2 = Triangle
 	void collisionBoxControls(GameObject* gameObject);
 private:
