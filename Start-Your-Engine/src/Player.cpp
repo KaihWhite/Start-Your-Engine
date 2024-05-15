@@ -1,5 +1,5 @@
 // Made by Kaih White
-// Edits added by Chonglin Guan
+// Controls edited by Chonglin Guan
 
 #include "Player.h"
 
