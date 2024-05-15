@@ -15,6 +15,26 @@ public:
             return; // Neither fixture is a player
         }
 
+        b2Body* body1 = fixtureA->GetBody();
+        b2Body* body2 = fixtureB->GetBody();
+
+        GameObject* gameObject1 = reinterpret_cast<GameObject*>(body1->GetUserData().pointer);
+        GameObject* gameObject2 = reinterpret_cast<GameObject*>(body2->GetUserData().pointer);
+
+        if (gameObject1->type == ObjectType::NPC) {
+
+        }
+        else if (gameObject1->type == ObjectType::PLAYER) {
+ 
+		}
+
+        if (gameObject2->type == ObjectType::NPC) {
+
+        }
+        else (gameObject2->type == ObjectType::PLAYER) {
+
+        }
+
         b2Body* playerBody = fixtureA->GetBody()->GetType() == b2_dynamicBody ? fixtureA->GetBody() : fixtureB->GetBody();
         Player* player = reinterpret_cast<Player*>(playerBody->GetUserData().pointer);
 
