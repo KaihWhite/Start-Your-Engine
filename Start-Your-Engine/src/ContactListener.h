@@ -2,7 +2,8 @@
 
 #pragma once
 #include "box2d/box2d.h"
-#include "Player.h"  // Include Player header if Player-specific methods are used
+#include "Player.h"
+#include "npc.h"
 
 class ContactListener : public b2ContactListener {
 public:
@@ -21,19 +22,27 @@ public:
         GameObject* gameObject1 = reinterpret_cast<GameObject*>(body1->GetUserData().pointer);
         GameObject* gameObject2 = reinterpret_cast<GameObject*>(body2->GetUserData().pointer);
 
-        if (gameObject1->type == ObjectType::NPC) {
+        if ((gameObject1->type == ObjectType::NPC && gameObject2->type == ObjectType::PLAYER) || (gameObject1->type == ObjectType::PLAYER && gameObject2->type == ObjectType::NPC)) {
+			// Player and NPC collision
+            // Check if the player is on top of the NPC, if so, kill the NPC
+            Player* player;
+            Npc* npc;
+            if (gameObject1->type == ObjectType::NPC) {
+				Npc* npc = reinterpret_cast<Npc*>(gameObject1);
+				Player* player = reinterpret_cast<Player*>(gameObject2);
+			}
+			else {
+				Npc* npc = reinterpret_cast<Npc*>(gameObject2);
+				Player* player = reinterpret_cast<Player*>(gameObject1);
+			}
 
-        }
-        else if (gameObject1->type == ObjectType::PLAYER) {
- 
+            if (player->body->GetPosition().y > npc->body->GetPosition().y) {
+				npc->kill();
+			}
+			else {
+				player->kill();
+			}
 		}
-
-        if (gameObject2->type == ObjectType::NPC) {
-
-        }
-        else (gameObject2->type == ObjectType::PLAYER) {
-
-        }
 
         b2Body* playerBody = fixtureA->GetBody()->GetType() == b2_dynamicBody ? fixtureA->GetBody() : fixtureB->GetBody();
         Player* player = reinterpret_cast<Player*>(playerBody->GetUserData().pointer);

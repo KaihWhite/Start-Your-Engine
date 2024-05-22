@@ -5,13 +5,9 @@
 
 #include<iostream>
 Player::Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, Camera2DSystem* cameraMan, std::string type, std::unordered_set<std::string> sounds, bool dynam)
-	: GameObject("player", pos, size, color, animations, world, type, sounds, dynam), cameraMan(cameraMan), deltaTime(0.0f), previousTime(0.0f)
+	: GameObject("player", pos, size, color, animations, world, type, sounds, dynam), cameraMan(cameraMan), deltaTime(0.0f), previousTime(0.0f), isDead(false), isJumping(false), onPlatform(false), jumpPressDuration(0.0f), maxJumpTime(0.6f)
 {
     offset = glm::vec2(0.0f, 0.0f);
-    onPlatform = false;
-    isJumping = false;
-    jumpPressDuration = 0.0f;
-    maxJumpTime = 0.6f;
 }
 
 Player::~Player()
@@ -129,6 +125,8 @@ void Player::updateCamera()
 	cameraMan->follow(this->body->GetPosition().x*100, this->body->GetPosition().y*100, 1.5f, this->deltaTime);
     // this passes the pvmatrix to the shader
 	ResourceManager::GetShader("anim").SetMatrix4("projectionView", cameraMan->getCamera().getProjectionViewMatrix());
-	
-   
+}
+
+void Player::kill() {
+
 }
