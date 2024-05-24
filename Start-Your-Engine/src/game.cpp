@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "ContactListener.h"
 
+
 SoLoud::Soloud* Game::soundEngine = nullptr;
 
 Game::Game(unsigned int width, unsigned int height)
@@ -19,6 +20,7 @@ Game::~Game()
     delete this->renderer;
     delete this->world;
     delete this->cameraMan;
+    SoundPlayer::deInit();
     Game::soundEngine->deinit();
     delete Game::soundEngine;
 }
@@ -40,6 +42,7 @@ void Game::Init(unsigned int width, unsigned int height)
     renderer = new Renderer(ResourceManager::GetShader("anim"));
 
     /* create sound engine */
+    SoundPlayer::init();
     Game::soundEngine = new SoLoud::Soloud;
     Game::soundEngine->init(); // Initialize SoLoud engine
 
@@ -182,7 +185,7 @@ void Game::removeAllGameObject()
     gameObjects.clear();
 }
 
-void Game::updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
+void Game::updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
 {
     this->gameObjects[key]->name = name;
 	this->gameObjects[key]->animations = animations;

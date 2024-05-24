@@ -193,9 +193,9 @@ void ImGuiEditorWindow::objectSection()
 			glm::vec3 color = glm::vec3(0.5, 0.5, 0.5);
 			glm::vec2 size = glm::vec2(5.0, 5.0);
 			glm::vec2 position = glm::vec2(0.0, 0.0);
-
+			std::unordered_set<std::string> sounds = {};
 			// This will only be able to handle static, non-player/npc objects
-			engine.addGameObject(name, ObjectType::OBJECT, RigidBodyType::STATIC, animations, color, size, position);
+			engine.addGameObject(name, ObjectType::OBJECT, RigidBodyType::STATIC, animations, sounds, color, size, position);
 
 		}
 		ImGui::PopStyleColor(1);
@@ -565,8 +565,8 @@ void ImGuiEditorWindow::assetSection()
 			if (ImGui::Button("Load New Asset")) {
 				// open a file dialog to select a PNG file
 				IGFD::FileDialogConfig config;
-				config.path = "./Start-Your-Engine/textures";
-				ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".png,.jpg", config);
+				config.path = "./Start-Your-Engine/sounds";
+				ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".wav", config);
 			}
 
 			// handle file selection
@@ -575,7 +575,9 @@ void ImGuiEditorWindow::assetSection()
 					std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
 					std::string fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
 					// load the selected asset using LoadTexture
-					ResourceManager::LoadTexture(filePathName.c_str(), true, fileName);
+
+					ResourceManager::LoadSound(filePathName.c_str(), fileName);
+					std::cout << fileName.c_str() << std::endl;
 					ImGui::Text("Loaded: %s", fileName.c_str());
 				}
 				ImGuiFileDialog::Instance()->Close();
@@ -586,12 +588,13 @@ void ImGuiEditorWindow::assetSection()
 			ImGui::Separator();
 			ImGui::BeginChild("AssetsScrolling", ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
 
-			for (auto it = ResourceManager::Textures.begin(); it != ResourceManager::Textures.end();) {
-				ImGui::PushID(it->second.ID); // use the texture ID to push the ID
-
+			for (auto it = ResourceManager::Sounds.begin(); it != ResourceManager::Sounds.end();) {
+				ImGui::PushID(it->first.c_str()); // use the texture ID to push the ID
+				
 				// display asset thumbnail
-				if (ImGui::ImageButton((void*)(intptr_t)it->second.ID, ImVec2(80, 80))) {
-					selectedAssetForPreview = it->first; // set the asset for preview
+				if (ImGui::Button(it->first.c_str(), ImVec2(80, 80))) {
+					std::cout<<it->first.c_str()<<std::endl;
+					Game::playSound(it->first.c_str()); // set the asset for preview
 				}
 				ImGui::PopID();
 
@@ -606,8 +609,7 @@ void ImGuiEditorWindow::assetSection()
 				}
 
 				if (remove_item) {
-					glDeleteTextures(1, &it->second.ID); // delete OpenGL texture
-					it = ResourceManager::Textures.erase(it); // remove from ResourceManager and safely increment the iterator
+					it = ResourceManager::Sounds.erase(it); // remove from ResourceManager and safely increment the iterator
 				}
 				else {
 					it++; // only increment the iterator if no item was removed
@@ -616,12 +618,6 @@ void ImGuiEditorWindow::assetSection()
 				ImGui::SameLine(); // display assets in the same line (horizontally)
 			}
 			ImGui::EndChild();
-
-			// asset preview
-			if (!selectedAssetForPreview.empty()) {
-				showAssetPreviewWindow();
-			}
-
 
 			ImGui::EndTabItem(); // End of Tab 2
 		}

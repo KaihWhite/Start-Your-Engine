@@ -10,10 +10,9 @@
 #include "glm/glm.hpp"
 #include "Animation.h"
 #include "box2d/box2d.h"
-
+#include "SoundPlayer.h"
 #include "soloud.h"
 #include "soloud_wav.h"
-
 #include <vector>
 #include <random>
 
@@ -36,10 +35,9 @@ public:
     bool                    Keys[1024]; 
     unsigned int            Width; 
     unsigned int            Height;
-
+    static SoLoud::Soloud* soundEngine;
     Player                  *player;
     Renderer                *renderer;
-    static SoLoud::Soloud   *soundEngine;
     b2World                 *world;
     Camera2DSystem          *cameraMan;
    
@@ -80,7 +78,6 @@ public:
 
     // plays a sound
     static void playSound(std::string sound);
-
     // game loop
     void ProcessInput(float& dt);
     void Update();
