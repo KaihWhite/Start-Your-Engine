@@ -132,7 +132,7 @@ void Game::Render()
     
 }
 
-void Game::initLevel(std::unordered_map<int, GameObject*> level)
+void Game::initLevel(std::map<int, GameObject*> level)
 {
     for (auto& gameObject : gameObjects)
     {
@@ -220,7 +220,7 @@ Animation* Game::loadAnimation(const char* file, bool alpha, std::string name, i
 	return new Animation(name, numFrames);
 }
 
-int Game::generateUniqueKey(std::unordered_map<int, GameObject*> map)
+int Game::generateUniqueKey(std::map<int, GameObject*> map)
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
