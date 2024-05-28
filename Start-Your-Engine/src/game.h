@@ -41,7 +41,7 @@ public:
     Renderer                *renderer;
     b2World                 *world;
     Camera2DSystem          *cameraMan;
-   
+    bool                    playerExists;
     std::map<int, GameObject*> gameObjects;
 
     float timeStep = 1.0f / 60.0f;
@@ -62,7 +62,7 @@ public:
 
     // adds the game object to the level
     void addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
-    
+    void addPlayerObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, std::string type, std::unordered_set<std::string> sounds, bool dynam);
     // removes the game object from the level
     void removeGameObject(int key);
 

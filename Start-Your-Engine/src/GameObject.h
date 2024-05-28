@@ -12,8 +12,7 @@
 enum ObjectType {
 	PLAYER,
 	OBJECT,
-	NPC,
-	TILEMAP 
+	NPC
 };
 
 enum RigidBodyType {
@@ -28,7 +27,7 @@ public:
 	std::string name;
 
 	ObjectType type;
-
+	std::unordered_map<ObjectType, std::string> objectTypeInString ;
 	std::unordered_map<std::string, Animation*> animations;
 	std::string currentAnimation = "idle";
 
@@ -44,6 +43,7 @@ public:
 	GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, std::unordered_set<std::string> sounds, bool dynam = false);
 	~GameObject();
 
+	std::string getobjectTypeString(ObjectType type);
 	
 	void update();
 	void destroyBodyFixture();
@@ -62,8 +62,6 @@ public:
 	void deleteAllAnimation();
 	void draw(Renderer& renderer);
 
-	/* animation functions that manages the animations of the  */
-	 
 
 	/* converts physics body's position to renderer coordinates */
 	glm::vec2 getPosition();

@@ -198,6 +198,34 @@ void ImGuiEditorWindow::objectSection()
 			engine.addGameObject(name, ObjectType::OBJECT, RigidBodyType::STATIC, animations, sounds, color, size, position);
 
 		}
+		if (ImGui::Button("Add npc")) {
+			// Code to add a new object to the gameObjects vector
+			//addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+			std::string name = "object";
+			std::unordered_map<std::string, Animation*> animations;
+			animations["idle"] = new Animation("awesomeface", 1);
+			glm::vec3 color = glm::vec3(0.5, 0.5, 0.5);
+			glm::vec2 size = glm::vec2(5.0, 5.0);
+			glm::vec2 position = glm::vec2(0.0, 0.0);
+			std::unordered_set<std::string> sounds = {};
+			// This will only be able to handle static, non-player/npc objects
+			engine.addGameObject(name, ObjectType::NPC, RigidBodyType::STATIC, animations, sounds, color, size, position);
+
+		}
+		if (ImGui::Button("Add player")){
+
+			std::unordered_map<std::string, Animation*> animations;
+			animations["idle"] = new Animation("idle", 10);
+			animations["run"] = new Animation("run", 8);
+			animations["jump"] = new Animation("jump", 3);
+			glm::vec3 color = glm::vec3(0.5, 0.5, 0.5);
+			glm::vec2 size = glm::vec2(5.0, 5.0);
+			glm::vec2 position = glm::vec2(0.0, 0.0);
+			std::unordered_set<std::string> sounds = {};
+			
+			
+			engine.addPlayerObject(position, size, color, animations,"Player", sounds, "Dynamic");
+		}
 		ImGui::PopStyleColor(1);
 		// Start a scrolling region
 		ImGui::BeginChild("ObjectList", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);

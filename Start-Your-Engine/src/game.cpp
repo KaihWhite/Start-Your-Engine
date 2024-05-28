@@ -154,8 +154,18 @@ void Game::addGameObject(std::string name, ObjectType type, RigidBodyType rtype,
     GameObject* gameObject = new GameObject(name, pos, size, color, animations, this->world, type == ObjectType::OBJECT ? "Object" : "Npc", sounds, rtype);
     int key = Game::generateUniqueKey(this->gameObjects);
     // update the object name to a unique name so it can be queried by name
-    gameObject->name = "Object[" + std::to_string(key^1234) + "]";
+    gameObject->name = gameObject->getobjectTypeString(type) + "[" + std::to_string(key ^ 1234) + "]";
     this->gameObjects[key] = gameObject;
+
+}
+
+void Game::addPlayerObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, std::string type, std::unordered_set<std::string> sounds, bool dynam)
+{
+    Player* player = new Player(pos, size, color, animations, this->world, this->cameraMan, type, sounds, dynam);
+    int unique_key = Game::generateUniqueKey(this->gameObjects);
+    gameObjects[unique_key] = player;
+    this->player = player;
+    this->playerExists = true;
 }
 
 void Game::removeGameObject(int key)
@@ -163,6 +173,7 @@ void Game::removeGameObject(int key)
     if (this->gameObjects[key]->type == ObjectType::PLAYER)
     {
 		this->player = nullptr;
+        this->playerExists = false;
 	}
     //destroy the fixture in the heap before deleting the gameobject
     this->gameObjects[key]->destroyBodyFixture();

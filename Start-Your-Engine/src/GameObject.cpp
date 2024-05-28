@@ -5,7 +5,8 @@
 
 //#include "ContactListener.h"
 
-GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, std::unordered_set<std::string> sounds, bool dynam)
+
+GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, std::unordered_set<std::string>  sounds, bool dynam)
 	: name(name), color(color), animations(animations), size(size), rigidBodyType(dynam ? RigidBodyType::DYNAMIC : RigidBodyType::STATIC), type(type == "Player" ? ObjectType::PLAYER : type == "Object" ? ObjectType::OBJECT : ObjectType::NPC), sounds(sounds)
 {
 	b2BodyDef bodyDef;
@@ -28,6 +29,12 @@ GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec
 	fixtureDef.shape = &dynamicBox;
 	fixtureDef.density = 1.0f;
 	body->CreateFixture(&fixtureDef);
+
+	objectTypeInString = {
+	{PLAYER, "PLAYER"},
+	{OBJECT, "OBJECT"},
+	{NPC, "NPC"}
+	};
 }
     
 GameObject::~GameObject()
@@ -39,6 +46,11 @@ GameObject::~GameObject()
 
 	//this->body->GetWorld()->DestroyBody(body);
 	//delete reinterpret_cast<BodyUserData*>(body->GetUserData().pointer);
+}
+
+std::string GameObject::getobjectTypeString(ObjectType type )
+{
+	return objectTypeInString.at(type);
 }
 
 
