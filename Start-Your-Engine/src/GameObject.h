@@ -27,7 +27,7 @@ public:
 	std::string name;
 
 	ObjectType type;
-	std::unordered_map<ObjectType, std::string> objectTypeInString ;
+	std::unordered_map<ObjectType, std::string> objectTypeInString;
 	std::unordered_map<std::string, Animation*> animations;
 	std::string currentAnimation = "idle";
 

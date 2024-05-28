@@ -226,7 +226,6 @@ void ImGuiEditorWindow::objectSection()
 
 
 				engine.addPlayerObject(position, size, color, animations, "Player", sounds, "Dynamic");
-				engine.playerExists = true;
 			}
 
 		}
@@ -246,6 +245,9 @@ void ImGuiEditorWindow::objectSection()
 				selectCamera = false;
 				selectObject = true;
 				selectedObjectKey = pair.first;
+			}
+			if (pair.second->getobjectTypeString(pair.second->type) == "PLAYER") {
+				engine.playerExists = true;
 			}
 		}
 
