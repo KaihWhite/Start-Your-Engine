@@ -1,3 +1,5 @@
+// Unnessary. We don't need this
+/*
 #include "SoundPlayer.h"
 
 SoLoud::Soloud* SoundPlayer::soundEngine = nullptr;
@@ -22,3 +24,4 @@ void SoundPlayer::deInit() {
     soundEngine->deinit();
     delete soundEngine;
 }
+*/

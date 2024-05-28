@@ -20,7 +20,7 @@ Game::~Game()
     delete this->renderer;
     delete this->world;
     delete this->cameraMan;
-    SoundPlayer::deInit();
+    //SoundPlayer::deInit();
     Game::soundEngine->deinit();
     delete Game::soundEngine;
 }
@@ -42,7 +42,7 @@ void Game::Init(unsigned int width, unsigned int height)
     renderer = new Renderer(ResourceManager::GetShader("anim"));
 
     /* create sound engine */
-    SoundPlayer::init();
+    //SoundPlayer::init();
     Game::soundEngine = new SoLoud::Soloud;
     Game::soundEngine->init(); // Initialize SoLoud engine
 
@@ -233,5 +233,5 @@ int Game::generateUniqueKey(std::map<int, GameObject*> map)
 }
 
 void Game::playSound(std::string sound) {
-    Game::soundEngine->play(ResourceManager::GetSound(sound));
+    Game::soundEngine->play(*ResourceManager::GetSound(sound));
 }

@@ -1,3 +1,5 @@
+// Unnessary. We don't need this
+/*
 #pragma once
 #include "soloud.h"
 #include "soloud_wav.h"
@@ -18,4 +20,4 @@ private:
     ~SoundPlayer() = default;
     
 };
-
+*/
