@@ -27,6 +27,7 @@ Game::~Game()
 
 void Game::Init(unsigned int width, unsigned int height)
 {
+
     /* load shaders */
     ResourceManager::LoadShader("Start-Your-Engine/shaders/sprite.vs", "Start-Your-Engine/shaders/fragAnim.fs", nullptr, "anim");
 
@@ -79,6 +80,7 @@ void Game::Init(unsigned int width, unsigned int height)
     // Initialize and Set the Contact Listener
     ContactListener* contactListener = new ContactListener();
     world->SetContactListener(contactListener);
+    this->playerExists = false;
 }
 
 void Game::Update()
@@ -165,7 +167,6 @@ void Game::addPlayerObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::
     int unique_key = Game::generateUniqueKey(this->gameObjects);
     gameObjects[unique_key] = player;
     this->player = player;
-    this->playerExists = true;
 }
 
 void Game::removeGameObject(int key)

@@ -212,20 +212,25 @@ void ImGuiEditorWindow::objectSection()
 			engine.addGameObject(name, ObjectType::NPC, RigidBodyType::STATIC, animations, sounds, color, size, position);
 
 		}
-		if (ImGui::Button("Add player")){
+		if (!engine.playerExists) {
+			if(ImGui::Button("Add player")) {
 
-			std::unordered_map<std::string, Animation*> animations;
-			animations["idle"] = new Animation("idle", 10);
-			animations["run"] = new Animation("run", 8);
-			animations["jump"] = new Animation("jump", 3);
-			glm::vec3 color = glm::vec3(0.5, 0.5, 0.5);
-			glm::vec2 size = glm::vec2(5.0, 5.0);
-			glm::vec2 position = glm::vec2(0.0, 0.0);
-			std::unordered_set<std::string> sounds = {};
-			
-			
-			engine.addPlayerObject(position, size, color, animations,"Player", sounds, "Dynamic");
+				std::unordered_map<std::string, Animation*> animations;
+				animations["idle"] = new Animation("idle", 10);
+				animations["run"] = new Animation("run", 8);
+				animations["jump"] = new Animation("jump", 3);
+				glm::vec3 color = glm::vec3(0.5, 0.5, 0.5);
+				glm::vec2 size = glm::vec2(5.0, 5.0);
+				glm::vec2 position = glm::vec2(0.0, 0.0);
+				std::unordered_set<std::string> sounds = {};
+
+
+				engine.addPlayerObject(position, size, color, animations, "Player", sounds, "Dynamic");
+				engine.playerExists = true;
+			}
+
 		}
+			
 		ImGui::PopStyleColor(1);
 		// Start a scrolling region
 		ImGui::BeginChild("ObjectList", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
