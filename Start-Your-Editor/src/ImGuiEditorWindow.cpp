@@ -199,8 +199,6 @@ void ImGuiEditorWindow::objectSection()
 
 		}
 		if (ImGui::Button("Add npc")) {
-			// Code to add a new object to the gameObjects vector
-			//addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 			std::string name = "object";
 			std::unordered_map<std::string, Animation*> animations;
 			animations["idle"] = new Animation("awesomeface", 1);
@@ -209,7 +207,8 @@ void ImGuiEditorWindow::objectSection()
 			glm::vec2 position = glm::vec2(0.0, 0.0);
 			std::unordered_set<std::string> sounds = {};
 			// This will only be able to handle static, non-player/npc objects
-			engine.addGameObject(name, ObjectType::NPC, RigidBodyType::STATIC, animations, sounds, color, size, position);
+			engine.addNPCObject(name, position, size, color, animations,"Npc", sounds,true);
+
 
 		}
 		if (!engine.playerExists) {
@@ -423,7 +422,13 @@ void ImGuiEditorWindow::attributeSection()
 					}
 					//  second tab
 					if (ImGui::BeginTabItem("Animation Subsection")) {
+						if (engine.gameObjects[selectedObjectKey]->type ==PLAYER) {
+
+						}
+						else {
 						animationSubsectionOfAttributeSection();
+						}
+						
 						ImGui::EndTabItem(); 
 					}
 					if (ImGui::BeginTabItem(" stats Subsection")) {
@@ -819,6 +824,59 @@ void ImGuiEditorWindow::animationSubsectionOfAttributeSection()
 			if (frames < 1) {
 				frames = 1;
 			}
+			/*else {
+				frames = engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->getTotalFrames();
+			}*/
+			engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->setTotalFrames(frames);
+
+			ImGui::Separator();
+			ImGui::TextWrapped("current animation preview:");
+			ImGui::Indent();
+			Texture2D& texture = engine.gameObjects.find(selectedObjectKey)->second->getCurrentTexture2D();
+			ImGui::Image((void*)(intptr_t)texture.ID, ImVec2(80, 80));
+			ImGui::Unindent();
+			ImGui::Separator();
+		}
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("change current animation:")) {
+		ImGui::Separator();
+		selectCurrentAnimation();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Add animation:")) {
+		ImGui::Separator();
+		addNewAnimation();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("delete animation:")) {
+		ImGui::Separator();
+		deleteExistingAnimation();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+}
+
+void ImGuiEditorWindow::playerAnimationSubsectionOfAttributeSection()
+{
+	if (ImGui::TreeNode("current animation:")) {
+		ImGui::Separator();
+		if (engine.gameObjects[selectedObjectKey]->animations.empty()) {
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
+			ImGui::TextWrapped("it has no animations in the list. Please add an animation to choose.");
+			ImGui::PopStyleColor();
+		}
+		else {
+			ImGui::TextWrapped("current animation Total Frames :");
+			static int frames = engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->getTotalFrames();
+			ImGui::InputInt("total Frames ", &frames);
+			//if the user inputs negative number then it reset to its default value
+			if (frames < 1) {
+				frames = 1;
+			}
 			engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->setTotalFrames(frames);
 
 			ImGui::Separator();
@@ -872,8 +930,6 @@ void ImGuiEditorWindow::addNewAnimation()
 			if (ImGui::ImageButton((void*)(intptr_t)it->second.ID, ImVec2(80, 80))) {
 
 				engine.gameObjects[selectedObjectKey]->addAnimation(it->first, frames);
-				ImGui::PopID();
-				break;
 			}
 			else {
 				it++; // only increment the iterator if no item was removed

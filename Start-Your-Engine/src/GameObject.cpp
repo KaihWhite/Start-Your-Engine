@@ -7,7 +7,7 @@
 
 
 GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, std::unordered_set<std::string>  sounds, bool dynam)
-	: name(name), color(color), animations(animations), size(size), rigidBodyType(dynam ? RigidBodyType::DYNAMIC : RigidBodyType::STATIC), type(type == "Player" ? ObjectType::PLAYER : type == "Object" ? ObjectType::OBJECT : ObjectType::NPC), sounds(sounds)
+	: name(name), color(color), animations(animations), size(size), rigidBodyType(dynam ? RigidBodyType::DYNAMIC : RigidBodyType::STATIC), type(type == "Player" ? ObjectType::PLAYER : type == "Object" ? ObjectType::OBJECT : ObjectType::NPCOBJECT), sounds(sounds)
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = dynam ? b2_dynamicBody : b2_staticBody;
@@ -33,7 +33,7 @@ GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec
 	objectTypeInString = {
 	{PLAYER, "PLAYER"},
 	{OBJECT, "OBJECT"},
-	{NPC, "NPC"}
+	{NPCOBJECT, "NPC"}
 	};
 }
     
@@ -52,6 +52,7 @@ std::string GameObject::getobjectTypeString(ObjectType type )
 {
 	return objectTypeInString.at(type);
 }
+
 
 
 void GameObject::addAnimation(std::string spriteSheet, int totalFrames)
@@ -152,6 +153,11 @@ void GameObject::unRenderBox(Renderer& renderer)
 	renderer.unRenderBox();
 }
 
+
+void GameObject::move(bool direction)
+{
+
+}
 void GameObject::update()
 {
 

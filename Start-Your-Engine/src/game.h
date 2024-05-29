@@ -16,6 +16,7 @@
 #include <vector>
 #include <random>
 #include <map>
+#include "npc.h"
 
 // Represents the current state of the game
 enum GameState {
@@ -63,6 +64,8 @@ public:
     // adds the game object to the level
     void addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
     void addPlayerObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, std::string type, std::unordered_set<std::string> sounds, bool dynam);
+    void addNPCObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, std::string type, std::unordered_set<std::string> sounds, bool dynam);
+ 
     // removes the game object from the level
     void removeGameObject(int key);
 

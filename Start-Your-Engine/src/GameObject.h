@@ -12,7 +12,7 @@
 enum ObjectType {
 	PLAYER,
 	OBJECT,
-	NPC
+	NPCOBJECT
 };
 
 enum RigidBodyType {
@@ -44,8 +44,8 @@ public:
 	~GameObject();
 
 	std::string getobjectTypeString(ObjectType type);
-	
-	void update();
+	virtual void move(bool direction);
+	virtual void update();
 	void destroyBodyFixture();
 	void resize();
 	void physics(float dt);

@@ -67,7 +67,7 @@ private:
 	void objectDataSubsectionOfAttributeSection();
 	void physicsSubsectionOfAttributeSection();
 	void animationSubsectionOfAttributeSection();
-
+	void playerAnimationSubsectionOfAttributeSection();
 	//helper methods for animationSubsectionOfAttributeSection
 	void addNewAnimation();
 	void deleteExistingAnimation();

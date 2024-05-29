@@ -1,3 +1,4 @@
+#include "game.h"
 // Made by Kaih White
 #include "game.h"
 #include <unordered_map>
@@ -103,11 +104,13 @@ void Game::Update()
 
         this->player->updateCamera();
     }
+
     if (!gameObjects.empty())
     {
         for (auto& gameObject : gameObjects)
         {
             gameObject.second->update();
+
         }
 	}
 }
@@ -168,7 +171,14 @@ void Game::addPlayerObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::
     gameObjects[unique_key] = player;
     this->player = player;
 }
-
+void Game::addNPCObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, std::string type, std::unordered_set<std::string> sounds, bool dynam)
+{
+    int unique_key = Game::generateUniqueKey(this->gameObjects);
+    NPC* npc = new NPC(name, pos, size, color, animations, this->world, type, sounds, dynam);
+   
+    npc->name = type + "[" + std::to_string(unique_key ^ 1234) + "]";
+    gameObjects[unique_key] = npc;
+}
 void Game::removeGameObject(int key)
 {
     if (this->gameObjects[key]->type == ObjectType::PLAYER)
