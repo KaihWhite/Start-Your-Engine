@@ -228,10 +228,12 @@ void ImGuiEditorWindow::objectSection()
 				glm::vec3 color = glm::vec3(0.5, 0.5, 0.5);
 				glm::vec2 size = glm::vec2(5.0, 5.0);
 				glm::vec2 position = glm::vec2(0.0, 0.0);
-				std::unordered_set<std::string> sounds = {};
-
-
+				//default sound values
+				std::unordered_set<std::string> sounds = {"idle","run","jump"};
 				engine.addPlayerObject(position, size, color, animations, "Player", sounds, "Dynamic");
+				engine.player->currentAnimation = "idle";
+				engine.player->currentRunSound = "run";
+				engine.player->currentJumpSound = "jump";
 			}
 
 		}
@@ -457,8 +459,13 @@ void ImGuiEditorWindow::attributeSection()
 						
 						ImGui::EndTabItem(); 
 					}
-					if (ImGui::BeginTabItem(" stats Subsection")) {
-						ImGui::TextWrapped("this is the section for the object stats");
+					if (ImGui::BeginTabItem(" sound Subsection")) {
+						if (engine.gameObjects[selectedObjectKey]->type == PLAYER) {
+							playerSoundSubsectionOfAttributeSection();
+						}
+						else {
+							soundSubsectionOfAttributeSection();
+						}
 						ImGui::EndTabItem();
 					}
 					ImGui::PopStyleColor();
@@ -469,6 +476,7 @@ void ImGuiEditorWindow::attributeSection()
 	}
 	ImGui::End();
 }
+
 void ImGuiEditorWindow::sceneSection()
 {
 	ImGui::Begin("scene tab ");
@@ -668,7 +676,6 @@ void ImGuiEditorWindow::assetSection()
 				
 				// display asset thumbnail
 				if (ImGui::Button(it->first.c_str(), ImVec2(80, 80))) {
-					std::cout<<it->first.c_str()<<std::endl;
 					Game::playSound(it->first.c_str()); // set the asset for preview
 				}
 				ImGui::PopID();
@@ -926,6 +933,218 @@ void ImGuiEditorWindow::playerAnimationSubsectionOfAttributeSection()
 		ImGui::TreePop();
 	}
 }
+
+void ImGuiEditorWindow::playerSoundSubsectionOfAttributeSection() {
+	if (ImGui::TreeNode("change current idle sound:")) {
+		ImGui::Separator();
+		selectCurrentSound("idle");
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("change current jump sound:")) {
+		ImGui::Separator();
+		selectCurrentSound("jump");
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("change current run sound:")) {
+		ImGui::Separator();
+		selectCurrentSound("run");
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Add sound:")) {
+		ImGui::Separator();
+		addNewSound();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("delete sound:")) {
+		ImGui::Separator();
+		deleteExistingSound();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+}
+
+void ImGuiEditorWindow::soundSubsectionOfAttributeSection()
+{
+	if (ImGui::TreeNode("current sound:")) {
+		ImGui::Separator();
+		if (engine.gameObjects[selectedObjectKey]->sounds.empty()) {
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
+			ImGui::TextWrapped("it has no animations in the list. Please add an animation to choose.");
+			ImGui::PopStyleColor();
+
+		}
+		else {
+			ImGui::TextWrapped("current animation preview:");
+			ImGui::Indent();
+			
+			if (ImGui::Button(engine.gameObjects[selectedObjectKey]->currentSound.c_str(), ImVec2(80, 80))) {
+				Game::playSound(engine.gameObjects[selectedObjectKey]->currentSound.c_str()); // set the asset for preview
+			}
+			ImGui::Unindent();
+			ImGui::Separator();
+		}ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("change current sound:")) {
+		ImGui::Separator();
+		selectCurrentSound();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Add sound:")) {
+		ImGui::Separator();
+		addNewSound();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("delete sound:")) {
+		ImGui::Separator();
+		deleteExistingSound();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+}
+void ImGuiEditorWindow::addNewSound() {
+	ImGui::TextWrapped("list of asset sound: ");
+	if (ImGui::BeginCombo("select", nullptr)) {
+		for (auto it = ResourceManager::Sounds.begin(); it != ResourceManager::Sounds.end();) {
+			ImGui::PushID(it->first.c_str());
+			
+			// display asset thumbnail
+			if (ImGui::Button(it->first.c_str(), ImVec2(80, 80))) {
+				engine.gameObjects[selectedObjectKey]->sounds.insert(it->first.c_str());
+				Game::playSound(it->first.c_str()); // set the asset for preview
+			}
+			else {
+				it++; // only increment the iterator if no item was removed
+			}
+			ImGui::PopID();
+		}
+		ImGui::EndCombo();
+
+	}
+}
+void ImGuiEditorWindow::deleteExistingSound() {
+	ImGui::TextWrapped(" sound list : ");
+	if (engine.gameObjects[selectedObjectKey]->sounds.empty()) {
+		/* this disables the dropdown and displays an information
+				to the user that there is no animation to delete
+		*/
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
+		ImGui::TextWrapped("it has no sounds in the list. Please add a sound to choose.");
+		ImGui::PopStyleColor();
+	}
+	else
+		// this bring out the drop down menu
+		if (ImGui::BeginCombo("select", nullptr)) {
+			for (auto& it = engine.gameObjects[selectedObjectKey]->sounds.begin(); it != engine.gameObjects[selectedObjectKey]->sounds.end();) {
+				ImGui::PushID(it->c_str());
+
+				// display asset thumbnail
+				if (ImGui::Button(it->c_str(), ImVec2(80, 80))) {
+					//deletes the animation and gets out of the loop
+					if (engine.gameObjects[selectedObjectKey]->type == PLAYER) {
+						if (it->c_str()!= engine.player->currentRunSound && it->c_str() != engine.player->currentJumpSound
+							&& it->c_str() != engine.player->currentSound) {
+							engine.gameObjects[selectedObjectKey]->deleteAnimation(it->c_str());
+						}
+						else {
+							//do nothing
+						}
+					}
+					else {
+						engine.gameObjects[selectedObjectKey]->deleteAnimation(it->c_str());
+					}
+					ImGui::PopID();
+					break;
+
+				}
+				else {
+					it++; // only increment the iterator if no item was removed
+				}
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+
+		}
+}
+void ImGuiEditorWindow::selectCurrentSound() {
+	ImGui::TextWrapped(" sound list : ");
+	if (engine.gameObjects[selectedObjectKey]->sounds.empty()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
+		ImGui::TextWrapped("it has no sounds in the list. Please add an animation to choose.");
+		ImGui::PopStyleColor();
+
+	}
+	else
+		if (ImGui::BeginCombo("selectCurrent sound",nullptr))
+		{
+			// this is to tell the user to add animation to choose one
+
+			for (auto& it = engine.gameObjects[selectedObjectKey]->sounds.begin(); it != engine.gameObjects[selectedObjectKey]->sounds.end();) {
+				ImGui::PushID(it->c_str()); // use the texture ID to push the ID
+
+				// display asset thumbnail
+				if (ImGui::Button(it->c_str(), ImVec2(80, 80))) {
+
+					engine.gameObjects[selectedObjectKey]->currentSound = it->c_str();
+				}
+				else {
+					it++; // only increment the iterator if no item was removed
+				}
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+
+		}
+
+
+}
+void ImGuiEditorWindow::selectCurrentSound(std::string soundName) {
+	ImGui::TextWrapped(" sound list : ");
+	if (engine.gameObjects[selectedObjectKey]->sounds.empty()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
+		ImGui::TextWrapped("it has no animations in the list. Please add an animation to choose.");
+		ImGui::PopStyleColor();
+
+	}
+	else if (ImGui::BeginCombo("selectCurrent Sound", nullptr))
+	{
+		// this is to tell the user to add animation to choose one
+
+		for (auto& it = engine.gameObjects[selectedObjectKey]->sounds.begin(); it != engine.gameObjects[selectedObjectKey]->sounds.end();) {
+			ImGui::PushID(it->c_str()); // use the texture ID to push the ID
+
+			// display asset thumbnail
+				if (ImGui::Button(it->c_str(), ImVec2(80, 80))) {
+					if (soundName == "run") {
+						engine.player->currentRunSound = it->c_str();
+					}
+					else if (soundName == "jump") {
+						engine.player->currentJumpSound = it->c_str();
+					}
+					else if (soundName == "colide") {
+						engine.player->currentColideSound = it->c_str();
+					}
+					else{
+						engine.player->currentSound = it->c_str();
+					}
+					ImGui::PopID();
+					break;
+				}
+				else {
+					it++; // only increment the iterator if no item was removed
+				}
+			ImGui::PopID();
+		}
+		ImGui::EndCombo();
+
+	}
+}
+
 
 void ImGuiEditorWindow::addNewAnimation()
 {

@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "box2d/box2d.h"
+//#include "game.h"
 
 enum ObjectType {
 	PLAYER,
@@ -33,7 +34,7 @@ public:
 	std::string currentAnimation = "idle";
 
 	std::unordered_set<std::string> sounds;
-
+	std::string currentSound;
 	glm::vec3 color;
 	glm::vec2 size;
 

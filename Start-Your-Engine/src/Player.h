@@ -12,8 +12,11 @@ class Player : public GameObject
 	float					deltaTime;
 	float					previousTime;
 	glm::vec2				offset;
-public:
 	
+public:
+	std::string				currentJumpSound;
+	std::string				currentRunSound;
+	std::string				currentColideSound;
 
 	Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, Camera2DSystem* cameraMan, std::string type, std::unordered_set<std::string> sounds, bool dynam = false);
 	void updateCamera();

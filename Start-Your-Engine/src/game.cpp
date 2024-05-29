@@ -55,7 +55,7 @@ void Game::Init(unsigned int width, unsigned int height)
     ResourceManager::LoadTexture("Start-Your-Engine/textures/player jump 48x48.png", true, "jump");
     ResourceManager::LoadTexture("Start-Your-Engine/textures/awesomeface.png", true, "awesomeface");
 
-    /* create animations */
+    /* creating default animations */
     Animation* idle = new Animation("idle", 10);
     Animation* run = new Animation("run", 8);
     Animation* jump = new Animation("jump", 3);
@@ -85,6 +85,12 @@ void Game::Init(unsigned int width, unsigned int height)
 
     //initialize the vector
     renderGameObjectsList = {};
+
+    // loading default sounds
+    ResourceManager::LoadSound("Start-Your-Engine/sounds/1.wav", "idle");
+    ResourceManager::LoadSound("Start-Your-Engine/sounds/1.wav", "run");
+    ResourceManager::LoadSound("Start-Your-Engine/sounds/1.wav", "jump");
+    ResourceManager::LoadSound("Start-Your-Engine/sounds/1.wav", "colide");
 }
 
 void Game::Update()

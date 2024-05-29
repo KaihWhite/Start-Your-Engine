@@ -35,6 +35,8 @@ GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec
 	{OBJECT, "OBJECT"},
 	{NPCOBJECT, "NPC"}
 	};
+
+	this->currentSound = "idle";
 }
     
 GameObject::~GameObject()
