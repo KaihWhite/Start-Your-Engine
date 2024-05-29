@@ -76,6 +76,12 @@ void Level::saveToJSON(const std::string& filename, std::unordered_map<int, Game
         positionValue.AddMember("y", obj.second->getLocation().y, allocator);
         objValue.AddMember("position", positionValue, allocator);
 
+        // Serialize collision box properties
+        objValue.AddMember("hasCustomCollisionBox", obj.second->hasCustomCollisionBox, allocator);
+        objValue.AddMember("collisionBoxShape", obj.second->collisionBoxShape, allocator);
+        objValue.AddMember("collisionBoxWidth", obj.second->collisionBoxWidth, allocator);
+        objValue.AddMember("collisionBoxHeight", obj.second->collisionBoxHeight, allocator);
+
         // each objValue is a JSON object representing a GameObject
 
         objects.PushBack(objValue, allocator);
@@ -157,6 +163,21 @@ std::unordered_map<int, GameObject*> Level::loadFromJSON(const std::string& file
                 gameObjects[unique_key] = player;
             } else {
                 GameObject* gameObject = new GameObject(name, position, size, color, animations, world, type, dynam);
+                // Deserialize custom collision box properties
+                if (objValue.HasMember("hasCustomCollisionBox")) {
+                    gameObject->hasCustomCollisionBox = objValue["hasCustomCollisionBox"].GetBool();
+                }
+                if (objValue.HasMember("collisionBoxShape")) {
+                    gameObject->collisionBoxShape = objValue["collisionBoxShape"].GetInt();
+                }
+                if (objValue.HasMember("collisionBoxWidth")) {
+                    gameObject->collisionBoxWidth = objValue["collisionBoxWidth"].GetFloat();
+                }
+                if (objValue.HasMember("collisionBoxHeight")) {
+                    gameObject->collisionBoxHeight = objValue["collisionBoxHeight"].GetFloat();
+                }
+                // Apply the custom collision box if it exists
+                gameObject->applyCollisionBox();
                 gameObjects[unique_key] = gameObject;
             }
             

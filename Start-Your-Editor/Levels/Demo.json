@@ -1,0 +1,317 @@
+{
+    "gameObjects": [
+        {
+            "name": "ground7",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "bigSquare.png,bigSquare.png": 1,
+                "bigSquare.png,idle": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 5.0,
+                "y": 5.0
+            },
+            "position": {
+                "x": 1.6199986934661865,
+                "y": 10.085183143615723
+            },
+            "hasCustomCollisionBox": false,
+            "collisionBoxShape": 2,
+            "collisionBoxWidth": 7.059000015258789,
+            "collisionBoxHeight": 4.0
+        },
+        {
+            "name": "ground8",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "bigSquare.png,bigSquare.png": 1,
+                "bigSquare.png,idle": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 5.0,
+                "y": 5.0
+            },
+            "position": {
+                "x": -12.805245399475098,
+                "y": 5.135069847106934
+            },
+            "hasCustomCollisionBox": false,
+            "collisionBoxShape": 0,
+            "collisionBoxWidth": 4.078999996185303,
+            "collisionBoxHeight": 4.0
+        },
+        {
+            "name": "rightSlope2",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "slope.png,idle": 1,
+                "slope.png,slope.png": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 5.0,
+                "y": 5.0
+            },
+            "position": {
+                "x": -10.320188522338867,
+                "y": 5.1450700759887695
+            },
+            "hasCustomCollisionBox": false,
+            "collisionBoxShape": 2,
+            "collisionBoxWidth": 7.059000015258789,
+            "collisionBoxHeight": 4.0
+        },
+        {
+            "name": "ground6",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "bigSquare.png,idle": 1,
+                "bigSquare.png,bigSquare.png": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 5.0,
+                "y": 5.0
+            },
+            "position": {
+                "x": -3.150024652481079,
+                "y": 10.09018325805664
+            },
+            "hasCustomCollisionBox": false,
+            "collisionBoxShape": 0,
+            "collisionBoxWidth": 4.0,
+            "collisionBoxHeight": 4.0
+        },
+        {
+            "name": "leftSlope4",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "slopeL.png,idle": 1,
+                "slopeL.png,slopeL.png": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 5.0,
+                "y": 5.0
+            },
+            "position": {
+                "x": 6.380098342895508,
+                "y": 7.465123176574707
+            },
+            "hasCustomCollisionBox": false,
+            "collisionBoxShape": 2,
+            "collisionBoxWidth": 7.059000015258789,
+            "collisionBoxHeight": 4.0
+        },
+        {
+            "name": "player",
+            "type": "Player",
+            "rigidBodyType": "Dynamic",
+            "animations": {
+                "idle,idle": 10,
+                "run,run": 8,
+                "jump,jump": 3
+            },
+            "color": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "size": {
+                "x": 3.0,
+                "y": 4.0
+            },
+            "position": {
+                "x": -12.175640106201172,
+                "y": 1.1200700998306274
+            },
+            "hasCustomCollisionBox": false,
+            "collisionBoxShape": -842150451,
+            "collisionBoxWidth": -431602080.0,
+            "collisionBoxHeight": -431602080.0
+        },
+        {
+            "name": "leftSlope5",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "slopeL.png,idle": 1,
+                "slopeL.png,slopeL.png": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 5.0,
+                "y": 5.0
+            },
+            "position": {
+                "x": 8.81015396118164,
+                "y": 5.105069160461426
+            },
+            "hasCustomCollisionBox": false,
+            "collisionBoxShape": 2,
+            "collisionBoxWidth": 7.059000015258789,
+            "collisionBoxHeight": 4.0
+        },
+        {
+            "name": "ground9",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "bigSquare.png,bigSquare.png": 1,
+                "bigSquare.png,idle": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 5.0,
+                "y": 5.0
+            },
+            "position": {
+                "x": 11.42021369934082,
+                "y": 5.115069389343262
+            },
+            "hasCustomCollisionBox": false,
+            "collisionBoxShape": 0,
+            "collisionBoxWidth": 4.078999996185303,
+            "collisionBoxHeight": 4.0
+        },
+        {
+            "name": "rightSlope3",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "slope.png,idle": 1,
+                "slope.png,slope.png": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 5.0,
+                "y": 5.0
+            },
+            "position": {
+                "x": -7.90013313293457,
+                "y": 7.505124092102051
+            },
+            "hasCustomCollisionBox": false,
+            "collisionBoxShape": 2,
+            "collisionBoxWidth": 7.059000015258789,
+            "collisionBoxHeight": 4.0
+        },
+        {
+            "name": "platform10",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "horizontalLong.png,idle": 1,
+                "horizontalLong.png,horizontalLong.png": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 5.0,
+                "y": 2.0
+            },
+            "position": {
+                "x": -0.844999372959137,
+                "y": 1.0049992799758911
+            },
+            "hasCustomCollisionBox": false,
+            "collisionBoxShape": 0,
+            "collisionBoxWidth": 4.0,
+            "collisionBoxHeight": 1.0199999809265137
+        },
+        {
+            "name": "wall11",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "verticalLong.png,idle": 1,
+                "verticalLong.png,verticalLong.png": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 3.0,
+                "y": 15.0
+            },
+            "position": {
+                "x": -16.13029670715332,
+                "y": 0.444999635219574
+            },
+            "hasCustomCollisionBox": false,
+            "collisionBoxShape": 0,
+            "collisionBoxWidth": 2.0390000343322754,
+            "collisionBoxHeight": 15.059000015258789
+        },
+        {
+            "name": "wall12",
+            "type": "Object",
+            "rigidBodyType": "Static",
+            "animations": {
+                "verticalLong.png,idle": 1,
+                "verticalLong.png,verticalLong.png": 1
+            },
+            "color": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "size": {
+                "x": 3.0,
+                "y": 15.0
+            },
+            "position": {
+                "x": 15.010295867919922,
+                "y": 0.38999977707862854
+            },
+            "hasCustomCollisionBox": false,
+            "collisionBoxShape": 0,
+            "collisionBoxWidth": 2.0390000343322754,
+            "collisionBoxHeight": 15.059000015258789
+        }
+    ]
+}

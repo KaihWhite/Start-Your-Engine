@@ -228,6 +228,7 @@ void ImGuiEditorWindow::objectSection()
 
 void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
 	if (ImGui::Checkbox("Has Collision Box", &showCollisionBoxControls)) {
+		gameObject->hasCustomCollisionBox = showCollisionBoxControls; // Update gameObject property
 		if (!showCollisionBoxControls) {
 			// If user unchecks the collision box, we remove the fixture from the body
 			if (gameObject->body->GetFixtureList()) {
@@ -241,18 +242,24 @@ void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
 		ImGui::TextWrapped("Colision Shape: ");
 		ImGui::Indent();
 		ImGui::Combo("Shape", &collisionBoxShape, shapes, IM_ARRAYSIZE(shapes));
+		gameObject->collisionBoxShape = collisionBoxShape; // Update gameObject property
 
 		switch (collisionBoxShape) {
 		case 0: // Rectangle
-			ImGui::SliderFloat("Width", &collisionBoxWidth, 0.1f, 20.0f);
-			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.1f, 20.0f);
+			ImGui::SliderFloat("Width", &collisionBoxWidth, 0.0f, 20.0f);
+			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.0f, 20.0f);
+			gameObject->collisionBoxWidth = collisionBoxWidth; // Update gameObject property
+			gameObject->collisionBoxHeight = collisionBoxHeight; // Update gameObject property
 			break;
 		case 1: // Circle
-			ImGui::SliderFloat("Radius", &collisionBoxWidth, 0.1f, 20.0f); // Use Width as Radius
+			ImGui::SliderFloat("Radius", &collisionBoxWidth, 0.0f, 20.0f); // Use Width as Radius
+			gameObject->collisionBoxWidth = collisionBoxWidth; // Update gameObject property
 			break;
 		case 2: // Triangle
-			ImGui::SliderFloat("Base", &collisionBoxWidth, 0.1f, 20.0f);
-			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.1f, 20.0f);
+			ImGui::SliderFloat("Base", &collisionBoxWidth, 0.0f, 20.0f);
+			ImGui::SliderFloat("Height", &collisionBoxHeight, 0.0f, 20.0f);
+			gameObject->collisionBoxWidth = collisionBoxWidth; // Update gameObject property
+			gameObject->collisionBoxHeight = collisionBoxHeight; // Update gameObject property
 			break;
 		}
 
@@ -284,50 +291,9 @@ void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
 		}
 
 		if (ImGui::Button("Apply Collision Box")) {
-			// First remove any existing fixture
-			if (gameObject->body->GetFixtureList()) {
-				gameObject->body->DestroyFixture(gameObject->body->GetFixtureList());
-			}
-
-			// Now create a new fixture based on selected shape and size
-			b2FixtureDef fixtureDef;
-			fixtureDef.density = 1.0f; // Set the fixture density
-			// More properties like friction and restitution can be set here as needed
-
-			switch (collisionBoxShape) {
-			case 0: { // Rectangle
-				b2PolygonShape boxShape;
-				boxShape.SetAsBox(collisionBoxWidth / 2.0f, collisionBoxHeight / 2.0f);
-				fixtureDef.shape = &boxShape;
-				gameObject->body->CreateFixture(&fixtureDef);
-				break;
-			}
-			case 1: { // Circle
-				b2CircleShape circleShape;
-				circleShape.m_radius = collisionBoxWidth / 2.0f; // Use Width as Radius
-				fixtureDef.shape = &circleShape;
-				gameObject->body->CreateFixture(&fixtureDef);
-				break;
-			}
-			case 2: { // Triangle
-				b2PolygonShape polygonShape;
-				b2Vec2 vertices[3];
-				vertices[0].Set(0.0f, -collisionBoxHeight / 2.0f); // Top vertex
-				vertices[1].Set(-collisionBoxWidth / 2.0f, collisionBoxHeight / 2.0f); // Bottom left
-				vertices[2].Set(collisionBoxWidth / 2.0f, collisionBoxHeight / 2.0f); // Bottom right
-				polygonShape.Set(vertices, 3);
-				fixtureDef.shape = &polygonShape;
-				gameObject->body->CreateFixture(&fixtureDef);
-				break;
-			}
-			// end of the colision shape  feature
+			gameObject->applyCollisionBox();
 			ImGui::Separator();
 			ImGui::Unindent();
-			
-		}
-			//end of the "has colision box" feature
-		ImGui::Separator();
-		ImGui::Unindent();
 		}
 		// further colision features here:
 		//........
