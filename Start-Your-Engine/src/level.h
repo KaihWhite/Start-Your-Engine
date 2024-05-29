@@ -1,5 +1,5 @@
 // Made by Kaih White
-//contributed by kunga
+//edited by kunga as per the level editor necessity
 #pragma once
 
 #include "document.h"
@@ -15,7 +15,7 @@
 #include <sstream>
 #include <map>
 #include <random>
-
+#include "npc.h"
 #include "GameObject.h"
 #include "Player.h"
 

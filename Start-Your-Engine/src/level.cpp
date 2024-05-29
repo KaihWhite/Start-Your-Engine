@@ -35,7 +35,7 @@ void Level::saveToJSON(const std::string& filename, std::map<int, GameObject*> g
 			objValue.AddMember("type", "Object", allocator);
 		}
         else {
-			objValue.AddMember("type", "NPC", allocator);
+			objValue.AddMember("type", "Npc", allocator);
 		}
 
         if (obj.second->rigidBodyType == RigidBodyType::DYNAMIC) {
@@ -171,10 +171,16 @@ std::pair<std::vector<int>,std::map<int, GameObject*>> Level::loadFromJSON(const
                 Player* player = new Player(position, size, color, animations, world, cameraMan, type, sounds, dynam);
                 gameObjects[unique_key] = player;
                 renderGameObjectsList.push_back(unique_key);
-            } else {
+            } else if(type == "Npc") {
+                NPC* npc = new NPC(name, position, size, color, animations, world, type, sounds, dynam);
+                gameObjects[unique_key] = npc;
+                renderGameObjectsList.push_back(unique_key);
+            }
+            else {
                 GameObject* gameObject = new GameObject(name, position, size, color, animations, world, type, sounds, dynam);
                 gameObjects[unique_key] = gameObject;
                 renderGameObjectsList.push_back(unique_key);
+
             }
             
         }
