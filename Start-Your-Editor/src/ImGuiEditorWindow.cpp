@@ -253,7 +253,7 @@ void ImGuiEditorWindow::objectSection()
 				selectObject = true;
 				selectedObjectKey = engine.renderGameObjectsList[n];
 			}
-			if (engine.gameObjects[engine.renderGameObjectsList[n]]->getobjectTypeString(engine.gameObjects[engine.renderGameObjectsList[n]]->type) == "PLAYER") {
+			if (engine.gameObjects[engine.renderGameObjectsList[n]]->type == ObjectType::PLAYER) {
 				engine.playerExists = true;
 			}
 			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceNoDisableHover | ImGuiDragDropFlags_SourceNoHoldToOpenOthers))

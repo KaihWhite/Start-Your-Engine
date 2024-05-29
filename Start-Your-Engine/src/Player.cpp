@@ -2,6 +2,7 @@
 // Controls edited by Chonglin Guan
 
 #include "Player.h"
+#include "game.h"
 
 #include<iostream>
 Player::Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, Camera2DSystem* cameraMan, std::string type, std::unordered_set<std::string> sounds, bool dynam)
@@ -24,7 +25,6 @@ void Player::move(bool Keys[1024], float timeStep) {
     float desiredVelocity = 0.0f;
     float jumpImpulse = 0.0f;
     currentAnimation = "idle";
-    //Game::playSound(this->currentSound);
     this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
 
     if (Keys[GLFW_KEY_SPACE]) {
@@ -36,7 +36,7 @@ void Player::move(bool Keys[1024], float timeStep) {
         if (isJumping) {
             jumpPressDuration += timeStep;
             if (jumpPressDuration < maxJumpTime) {
-                jumpImpulse = -5.0f;
+                jumpImpulse = 5.0f;
                 currentAnimation = "jump";
                 //Game::playSound(this->currentJumpSound);
                 

@@ -46,8 +46,8 @@ public:
 	~GameObject();
 
 	std::string getobjectTypeString(ObjectType type);
-	virtual void move(bool direction);
-	virtual void update();
+	void virtual move();
+	void virtual update();
 	// Collision box properties
 	bool hasCustomCollisionBox = false;
 	int collisionBoxShape;
@@ -57,7 +57,6 @@ public:
 	// Method to apply the collision box
 	void applyCollisionBox();
 	
-	void update();
 	void destroyBodyFixture();
 	void resize();
 	void physics(float dt);

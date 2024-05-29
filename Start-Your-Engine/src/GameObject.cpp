@@ -169,7 +169,7 @@ Texture2D GameObject::getCurrentTexture2D()
 }
 
 
-void GameObject::move(bool direction)
+void GameObject::move()
 {
 
 }
