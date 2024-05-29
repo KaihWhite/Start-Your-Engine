@@ -72,4 +72,5 @@ private:
 	void addNewAnimation();
 	void deleteExistingAnimation();
 	void selectCurrentAnimation();
+	void selectCurrentAnimation(std::string animName);
 };

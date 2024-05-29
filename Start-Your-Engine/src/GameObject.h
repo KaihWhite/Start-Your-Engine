@@ -54,6 +54,7 @@ public:
 	Texture2D getCurrentTexture2D();
 	
 	void addAnimation(std::string spriteSheet, int totalFrames);
+	void addAnimation(std::string key, std::string spriteSheet, int totalFrames);
 	void deleteAnimation(const std::string spriteSheet);
 	void setAsCurrentAnimation(const std::string spriteSheet);
 	std::string getCurrentAnimation();

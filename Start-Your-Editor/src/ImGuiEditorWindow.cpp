@@ -424,7 +424,7 @@ void ImGuiEditorWindow::attributeSection()
 					//  second tab
 					if (ImGui::BeginTabItem("Animation Subsection")) {
 						if (engine.gameObjects[selectedObjectKey]->type ==PLAYER) {
-
+							playerAnimationSubsectionOfAttributeSection();
 						}
 						else {
 						animationSubsectionOfAttributeSection();
@@ -834,9 +834,6 @@ void ImGuiEditorWindow::animationSubsectionOfAttributeSection()
 			if (frames < 1) {
 				frames = 1;
 			}
-			/*else {
-				frames = engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->getTotalFrames();
-			}*/
 			engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->setTotalFrames(frames);
 
 			ImGui::Separator();
@@ -872,37 +869,22 @@ void ImGuiEditorWindow::animationSubsectionOfAttributeSection()
 
 void ImGuiEditorWindow::playerAnimationSubsectionOfAttributeSection()
 {
-	if (ImGui::TreeNode("current animation:")) {
-		ImGui::Separator();
-		if (engine.gameObjects[selectedObjectKey]->animations.empty()) {
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
-			ImGui::TextWrapped("it has no animations in the list. Please add an animation to choose.");
-			ImGui::PopStyleColor();
-		}
-		else {
-			ImGui::TextWrapped("current animation Total Frames :");
-			static int frames = engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->getTotalFrames();
-			ImGui::InputInt("total Frames ", &frames);
-			//if the user inputs negative number then it reset to its default value
-			if (frames < 1) {
-				frames = 1;
-			}
-			engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->setTotalFrames(frames);
 
-			ImGui::Separator();
-			ImGui::TextWrapped("current animation preview:");
-			ImGui::Indent();
-			Texture2D& texture = engine.gameObjects.find(selectedObjectKey)->second->getCurrentTexture2D();
-			ImGui::Image((void*)(intptr_t)texture.ID, ImVec2(80, 80));
-			ImGui::Unindent();
-			ImGui::Separator();
-		}
+	if (ImGui::TreeNode("change player idle animation:")) {
+		ImGui::Separator();
+		selectCurrentAnimation("idle");
+		ImGui::Separator();
 		ImGui::TreePop();
 	}
-
-	if (ImGui::TreeNode("change current animation:")) {
+	if (ImGui::TreeNode("change player run animation:")) {
 		ImGui::Separator();
-		selectCurrentAnimation();
+		selectCurrentAnimation("run");
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("change player jump animation:")) {
+		ImGui::Separator();
+		selectCurrentAnimation("jump");
 		ImGui::Separator();
 		ImGui::TreePop();
 	}
@@ -938,8 +920,10 @@ void ImGuiEditorWindow::addNewAnimation()
 
 			// display asset thumbnail
 			if (ImGui::ImageButton((void*)(intptr_t)it->second.ID, ImVec2(80, 80))) {
-
-				engine.gameObjects[selectedObjectKey]->addAnimation(it->first, frames);
+				if (it->first == "jump"|| it->first == "run" || it->first == "idle") {
+					engine.gameObjects[selectedObjectKey]->addAnimation(it->first+it->first, it->first, frames);
+				}else
+					engine.gameObjects[selectedObjectKey]->addAnimation(it->first, frames);
 			}
 			else {
 				it++; // only increment the iterator if no item was removed
@@ -972,7 +956,17 @@ void ImGuiEditorWindow::deleteExistingAnimation()
 				// display asset thumbnail
 				if (ImGui::ImageButton((void*)(intptr_t)it->second->getSpriteSheet().ID, ImVec2(80, 80))) {
 					//deletes the animation and gets out of the loop
-					engine.gameObjects[selectedObjectKey]->deleteAnimation(it->first);
+					if (engine.gameObjects[selectedObjectKey]->type == PLAYER) {
+						if (it->first != "run" && it->first != "jump" && it->first != "idle") {
+							engine.gameObjects[selectedObjectKey]->deleteAnimation(it->first);
+						}
+						else {
+							//do nothing
+						}
+					}
+					else {
+						engine.gameObjects[selectedObjectKey]->deleteAnimation(it->first);
+					}
 					ImGui::PopID();
 					break;
 
@@ -1020,4 +1014,42 @@ void ImGuiEditorWindow::selectCurrentAnimation()
 		}
 
 
+}
+
+void ImGuiEditorWindow::selectCurrentAnimation(std::string animName)
+{
+
+	ImGui::TextWrapped(" animations list : ");
+	if (engine.gameObjects[selectedObjectKey]->animations.empty()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
+		ImGui::TextWrapped("it has no animations in the list. Please add an animation to choose.");
+		ImGui::PopStyleColor();
+
+	}
+	else
+		if (ImGui::BeginCombo("selectCurrent Animation",
+			engine.gameObjects[selectedObjectKey]->animations[animName]->getSpriteSheetName().c_str()))
+		{
+			// this is to tell the user to add animation to choose one
+
+			for (auto& it = engine.gameObjects[selectedObjectKey]->animations.begin(); it != engine.gameObjects[selectedObjectKey]->animations.end();) {
+				ImGui::PushID(it->second->getSpriteSheetName().c_str()); // use the texture ID to push the ID
+
+				// display asset thumbnail
+				if (ImGui::ImageButton((void*)(intptr_t)it->second->getSpriteSheet().ID, ImVec2(80, 80))) {
+					Animation* temp = engine.gameObjects[selectedObjectKey]->animations[animName];
+					engine.gameObjects[selectedObjectKey]->animations[animName] = new Animation(it->second->getSpriteSheetName(), it->second->getTotalFrames());
+					delete temp;
+					engine.gameObjects[selectedObjectKey]->deleteAnimation(it->first);
+					ImGui::PopID();
+					break;
+				}
+				else {
+					it++; // only increment the iterator if no item was removed
+				}
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+
+		}
 }

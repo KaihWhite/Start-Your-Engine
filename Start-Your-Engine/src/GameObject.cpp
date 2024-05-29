@@ -67,6 +67,18 @@ void GameObject::addAnimation(std::string spriteSheet, int totalFrames)
 	}
 	
 }
+void GameObject::addAnimation(std::string key, std::string spriteSheet, int totalFrames)
+{	//set the the newly added animation as the current if the map is empty
+	if (this->animations.empty()) {
+		animations.insert(std::make_pair(key, new Animation(spriteSheet, totalFrames)));
+		this->setAsCurrentAnimation(spriteSheet);
+	}
+	else {
+		//other wise it just adds 
+		animations.insert(std::make_pair(key, new Animation(spriteSheet, totalFrames)));
+	}
+
+}
 
 void GameObject::deleteAnimation(const std::string spriteSheet)
 {	//check if its not empty
