@@ -84,6 +84,12 @@ void Level::saveToJSON(const std::string& filename, std::map<int, GameObject*> g
         positionValue.AddMember("y", obj.second->getLocation().y, allocator);
         objValue.AddMember("position", positionValue, allocator);
 
+        // Serialize collision box properties
+        objValue.AddMember("hasCustomCollisionBox", obj.second->hasCustomCollisionBox, allocator);
+        objValue.AddMember("collisionBoxShape", obj.second->collisionBoxShape, allocator);
+        objValue.AddMember("collisionBoxWidth", obj.second->collisionBoxWidth, allocator);
+        objValue.AddMember("collisionBoxHeight", obj.second->collisionBoxHeight, allocator);
+
         // each objValue is a JSON object representing a GameObject
 
         objects.PushBack(objValue, allocator);
@@ -171,15 +177,69 @@ std::pair<std::vector<int>,std::map<int, GameObject*>> Level::loadFromJSON(const
 
             if (type == "Player") {
                 Player* player = new Player(position, size, color, animations, world, cameraMan, type, sounds, dynam);
+              
+                // Deserialize custom collision box properties
+                if (objValue.HasMember("hasCustomCollisionBox")) {
+                    player->hasCustomCollisionBox = objValue["hasCustomCollisionBox"].GetBool();
+                }
+                if (objValue.HasMember("collisionBoxShape")) {
+                    player->collisionBoxShape = objValue["collisionBoxShape"].GetInt();
+                }
+                if (objValue.HasMember("collisionBoxWidth")) {
+                    player->collisionBoxWidth = objValue["collisionBoxWidth"].GetFloat();
+                }
+                if (objValue.HasMember("collisionBoxHeight")) {
+                    player->collisionBoxHeight = objValue["collisionBoxHeight"].GetFloat();
+                }
+                // Apply the custom collision box if it exists
+                player->applyCollisionBox();
+              
                 gameObjects[unique_key] = player;
                 renderGameObjectsList.push_back(unique_key);
+              
             } else if(type == "Npc") {
                 NPC* npc = new NPC(name, position, size, color, animations, world, type, sounds, dynam);
+              
+                // Deserialize custom collision box properties
+                if (objValue.HasMember("hasCustomCollisionBox")) {
+                    npc->hasCustomCollisionBox = objValue["hasCustomCollisionBox"].GetBool();
+                }
+                if (objValue.HasMember("collisionBoxShape")) {
+                    npc->collisionBoxShape = objValue["collisionBoxShape"].GetInt();
+                }
+                if (objValue.HasMember("collisionBoxWidth")) {
+                    npc->collisionBoxWidth = objValue["collisionBoxWidth"].GetFloat();
+                }
+                if (objValue.HasMember("collisionBoxHeight")) {
+                    npc->collisionBoxHeight = objValue["collisionBoxHeight"].GetFloat();
+                }
+                
+                // Apply the custom collision box if it exists
+                npc->applyCollisionBox();
+              
                 gameObjects[unique_key] = npc;
                 renderGameObjectsList.push_back(unique_key);
-            }
-            else {
+            } else {
+              
                 GameObject* gameObject = new GameObject(name, position, size, color, animations, world, type, sounds, dynam);
+              
+                // Deserialize custom collision box properties
+                if (objValue.HasMember("hasCustomCollisionBox")) {
+                    gameObject->hasCustomCollisionBox = objValue["hasCustomCollisionBox"].GetBool();
+                }
+                if (objValue.HasMember("collisionBoxShape")) {
+                    gameObject->collisionBoxShape = objValue["collisionBoxShape"].GetInt();
+                }
+                if (objValue.HasMember("collisionBoxWidth")) {
+                    gameObject->collisionBoxWidth = objValue["collisionBoxWidth"].GetFloat();
+                }
+                if (objValue.HasMember("collisionBoxHeight")) {
+                    gameObject->collisionBoxHeight = objValue["collisionBoxHeight"].GetFloat();
+                }
+              
+                // Apply the custom collision box if it exists
+                gameObject->applyCollisionBox();
+              
                 gameObjects[unique_key] = gameObject;
                 renderGameObjectsList.push_back(unique_key);
 

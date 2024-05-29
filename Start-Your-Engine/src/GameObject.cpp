@@ -21,13 +21,14 @@ GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec
 	// Updated way to set user data in Box2D
 	body->GetUserData().pointer = reinterpret_cast<uintptr_t>(this);
 
-	b2PolygonShape dynamicBox;
+	/*b2PolygonShape dynamicBox;
 	// TODO: make a function that converts units from pixels to meters and vice versa. I have no idea what this will look like yet
 	dynamicBox.SetAsBox(size.x / 2.0f, size.y / 2.0f);
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &dynamicBox;
 	fixtureDef.density = 1.0f;
+
 	body->CreateFixture(&fixtureDef);
 
 	objectTypeInString = {
@@ -37,6 +38,18 @@ GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec
 	};
 
 	this->currentSound = "idle";
+	body->CreateFixture(&fixtureDef);*/
+
+	// Apply default fixture if no custom collision box exists
+    if (!hasCustomCollisionBox) {
+        b2PolygonShape dynamicBox;
+        dynamicBox.SetAsBox(size.x / 2.0f, size.y / 2.0f);
+
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &dynamicBox;
+        fixtureDef.density = 1.0f;
+        body->CreateFixture(&fixtureDef);
+    }
 }
     
 GameObject::~GameObject()
@@ -109,6 +122,7 @@ void GameObject::setAsCurrentAnimation(const std::string spriteSheet)
 {
 	if (animations.find(spriteSheet) != animations.end()) {
 		this->currentAnimation = spriteSheet;
+		this->animations["idle"] = animations[spriteSheet]; // Update the "idle" animation
 	}
 }
 
@@ -214,4 +228,46 @@ glm::vec2 GameObject::metersToPixels(glm::vec2 v) {
 
 glm::vec2 GameObject::pixelsToMeters(glm::vec2 v) {
 	return glm::vec2(v.x / 100, v.y / 100);
+}
+
+void GameObject::applyCollisionBox() {
+	if (!body) return;
+
+	// Remove existing fixture
+	if (body->GetFixtureList()) {
+		body->DestroyFixture(body->GetFixtureList());
+	}
+
+	// Create new fixture based on stored shape and size
+	b2FixtureDef fixtureDef;
+	fixtureDef.density = 1.0f; // Set the fixture density
+	// More properties like friction and restitution can be set here as needed
+
+	switch (collisionBoxShape) {
+	case 0: { // Rectangle
+		b2PolygonShape boxShape;
+		boxShape.SetAsBox(collisionBoxWidth / 2.0f, collisionBoxHeight / 2.0f);
+		fixtureDef.shape = &boxShape;
+		body->CreateFixture(&fixtureDef);
+		break;
+	}
+	case 1: { // Circle
+		b2CircleShape circleShape;
+		circleShape.m_radius = collisionBoxWidth / 2.0f; // Use Width as Radius
+		fixtureDef.shape = &circleShape;
+		body->CreateFixture(&fixtureDef);
+		break;
+	}
+	case 2: { // Triangle
+		b2PolygonShape polygonShape;
+		b2Vec2 vertices[3];
+		vertices[0].Set(0.0f, -collisionBoxHeight / 2.0f); // Top vertex
+		vertices[1].Set(-collisionBoxWidth / 2.0f, collisionBoxHeight / 2.0f); // Bottom left
+		vertices[2].Set(collisionBoxWidth / 2.0f, collisionBoxHeight / 2.0f); // Bottom right
+		polygonShape.Set(vertices, 3);
+		fixtureDef.shape = &polygonShape;
+		body->CreateFixture(&fixtureDef);
+		break;
+	}
+	}
 }

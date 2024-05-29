@@ -36,7 +36,7 @@ void Player::move(bool Keys[1024], float timeStep) {
         if (isJumping) {
             jumpPressDuration += timeStep;
             if (jumpPressDuration < maxJumpTime) {
-                jumpImpulse = -4.0f;
+                jumpImpulse = -5.0f;
                 currentAnimation = "jump";
                 //Game::playSound(this->currentJumpSound);
                 
@@ -59,7 +59,7 @@ void Player::move(bool Keys[1024], float timeStep) {
 
     }
     if (Keys[GLFW_KEY_D]) {
-        desiredVelocity = 2.0f; // Move right
+        desiredVelocity = 3.0f; // Move right
         currentAnimation = "run";
         
         //Game::playSound(this->currentRunSound);
@@ -87,7 +87,7 @@ void Player::move(bool Keys[1024], float timeStep) {
     }
     if (Keys[GLFW_KEY_A]) {
 
-        desiredVelocity = -2.0f; // Move left
+        desiredVelocity = -3.0f; // Move left
         currentAnimation = "run";
         //Game::playSound(this->currentRunSound);
         
