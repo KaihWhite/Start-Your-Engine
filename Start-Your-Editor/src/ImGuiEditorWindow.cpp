@@ -472,6 +472,15 @@ void ImGuiEditorWindow::sceneSection()
 				float deltaX = -io.MouseDelta.x / io.DeltaTime;
 				float deltaY = -io.MouseDelta.y / io.DeltaTime;
 
+				// zoom the camera
+				if (ImGui::GetIO().MouseWheel > 0) {
+					engine.cameraMan->zoomCamera(10, io.DeltaTime);
+				}
+				if (ImGui::GetIO().MouseWheel < 0) {
+					engine.cameraMan->zoomCamera(-10, io.DeltaTime);
+				}
+
+
 				// Update camera position 
 				engine.cameraMan->moveCamera(glm::vec2(deltaX, deltaY), io.DeltaTime);
 				//shows that update in the scene
