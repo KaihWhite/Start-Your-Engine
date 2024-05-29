@@ -142,9 +142,11 @@ std::pair<std::vector<int>,std::map<int, GameObject*>> Level::loadFromJSON(const
             }
 
             std::unordered_set<std::string> sounds;
-            for (const auto& sound : objValue["sounds"].GetArray()) {
-				sounds.insert(sound.GetString());
-			}
+            if (objValue.HasMember("sounds") && objValue["sounds"].IsArray()) {
+                for (const auto& sound : objValue["sounds"].GetArray()) {
+                    sounds.insert(sound.GetString());
+                }
+            }
 
             std::string dynamCheck = "Dynamic";
             bool dynam = objValue["rigidBodyType"].GetString() == dynamCheck;
