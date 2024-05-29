@@ -18,6 +18,7 @@
 Camera2D::Camera2D(float left, float right, float bottom, float top) {
 	this->projectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 	//this->cameraPosition = glm::vec3(right/2, bottom/2, 0.0f);
+	this->maxZoomOutFactor = 0.001f;
 	this->cameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	this->cameraSpeed = 2.0f;
 	this->zoomFactor = 1.0f;
@@ -67,6 +68,11 @@ glm::mat4 Camera2D::getProjectionViewMatrix() {
 void Camera2D::zoomCamera(float zoomFactor, float dt) {
 	this->zoomFactor = glm::mix(this->zoomFactor, zoomFactor,this->cameraSpeed * dt);
 	updateProjectionViewMatrix();
+}
+
+float Camera2D::getMaxZoomOutFactor()
+{
+	return maxZoomOutFactor;;
 }
 
 //void Camera2D::rotateCamera(float rotate, float dt) {

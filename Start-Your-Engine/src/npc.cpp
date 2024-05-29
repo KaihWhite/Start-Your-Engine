@@ -21,7 +21,6 @@ void NPC::move(bool direction)
 	b2Vec2 velocity = this->body->GetLinearVelocity();
 	float desiredVelocity = direction ? 2.0f : -2.0f;
 	float jumpImpulse = 0.0f;
-	this->currentAnimation = "idle";
 	
 
 	// Calculate the change in velocity needed for the desired movement.

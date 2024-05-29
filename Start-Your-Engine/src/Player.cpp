@@ -24,18 +24,22 @@ void Player::move(bool Keys[1024], float timeStep) {
     float desiredVelocity = 0.0f;
     float jumpImpulse = 0.0f;
     currentAnimation = "idle";
+    //Game::playSound(this->currentSound);
     this->cameraMan->lookAheadCameraMovement(offset.x, offset.y, 1.0f, deltaTime);
 
     if (Keys[GLFW_KEY_SPACE]) {
         if (onPlatform && !isJumping) {
             isJumping = true;
             jumpPressDuration = 0.0f;
+           
         }
         if (isJumping) {
             jumpPressDuration += timeStep;
             if (jumpPressDuration < maxJumpTime) {
                 jumpImpulse = -5.0f;
                 currentAnimation = "jump";
+                //Game::playSound(this->currentJumpSound);
+                
             }
             else {
                 isJumping = false; // End jump after max duration
@@ -57,6 +61,9 @@ void Player::move(bool Keys[1024], float timeStep) {
     if (Keys[GLFW_KEY_D]) {
         desiredVelocity = 3.0f; // Move right
         currentAnimation = "run";
+        
+        //Game::playSound(this->currentRunSound);
+        
         //player->move(glm::vec2(-100.0f, 0.0f));
         //this->cameraMan->moveCameraOffset(glm::vec2(100.0f, 0.0f), deltaTime);
         //this->cameraMan->offsetCameraMovement(100.0f, 0.0f,0.5f,  deltaTime);
@@ -82,6 +89,8 @@ void Player::move(bool Keys[1024], float timeStep) {
 
         desiredVelocity = -3.0f; // Move left
         currentAnimation = "run";
+        //Game::playSound(this->currentRunSound);
+        
         //player->move(glm::vec2(100.0f, 0.0f));
 
         //this->cameraMan->offsetCameraMovement(-100.0f, 0.0f,0.5f,  deltaTime);

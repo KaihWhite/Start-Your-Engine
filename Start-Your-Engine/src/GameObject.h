@@ -1,4 +1,5 @@
 // Made by Kaih White
+//contributed by kunga
 #pragma once
 #include "glm/glm.hpp"
 #include "renderer.h"
@@ -8,12 +9,12 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "box2d/box2d.h"
+//#include "game.h"
 
 enum ObjectType {
 	PLAYER,
 	OBJECT,
-	NPC,
-	TILEMAP 
+	NPCOBJECT
 };
 
 enum RigidBodyType {
@@ -28,12 +29,12 @@ public:
 	std::string name;
 
 	ObjectType type;
-
+	std::unordered_map<ObjectType, std::string> objectTypeInString;
 	std::unordered_map<std::string, Animation*> animations;
 	std::string currentAnimation = "idle";
 
 	std::unordered_set<std::string> sounds;
-
+	std::string currentSound;
 	glm::vec3 color;
 	glm::vec2 size;
 
@@ -44,6 +45,9 @@ public:
 	GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, std::unordered_set<std::string> sounds, bool dynam = false);
 	~GameObject();
 
+	std::string getobjectTypeString(ObjectType type);
+	virtual void move(bool direction);
+	virtual void update();
 	// Collision box properties
 	bool hasCustomCollisionBox = false;
 	int collisionBoxShape;
@@ -60,9 +64,9 @@ public:
 
 	/* Graphic functions	*/
 	Texture2D getCurrentTexture2D();
-	void renderBox(Renderer& renderer);
-	void unRenderBox(Renderer& renderer);
+	
 	void addAnimation(std::string spriteSheet, int totalFrames);
+	void addAnimation(std::string key, std::string spriteSheet, int totalFrames);
 	void deleteAnimation(const std::string spriteSheet);
 	void setAsCurrentAnimation(const std::string spriteSheet);
 	std::string getCurrentAnimation();
@@ -70,8 +74,6 @@ public:
 	void deleteAllAnimation();
 	void draw(Renderer& renderer);
 
-	/* animation functions that manages the animations of the  */
-	 
 
 	/* converts physics body's position to renderer coordinates */
 	glm::vec2 getPosition();

@@ -35,7 +35,7 @@ void Level::saveToJSON(const std::string& filename, std::map<int, GameObject*> g
 			objValue.AddMember("type", "Object", allocator);
 		}
         else {
-			objValue.AddMember("type", "NPC", allocator);
+			objValue.AddMember("type", "Npc", allocator);
 		}
 
         if (obj.second->rigidBodyType == RigidBodyType::DYNAMIC) {
@@ -113,7 +113,9 @@ void Level::saveToJSON(const std::string& filename, std::map<int, GameObject*> g
 }
 
 
-std::map<int, GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
+std::pair<std::vector<int>,std::map<int, GameObject*>> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
+    std::pair < std::vector<int>, std::map<int, GameObject*>> thePair;
+    std::vector <int> renderGameObjectsList;
     std::map<int, GameObject*> gameObjects;
 
     std::string path = filename;
@@ -146,9 +148,11 @@ std::map<int, GameObject*> Level::loadFromJSON(const std::string& filename, b2Wo
             }
 
             std::unordered_set<std::string> sounds;
-            for (const auto& sound : objValue["sounds"].GetArray()) {
-				sounds.insert(sound.GetString());
-			}
+            if (objValue.HasMember("sounds") && objValue["sounds"].IsArray()) {
+                for (const auto& sound : objValue["sounds"].GetArray()) {
+                    sounds.insert(sound.GetString());
+                }
+            }
 
             std::string dynamCheck = "Dynamic";
             bool dynam = objValue["rigidBodyType"].GetString() == dynamCheck;
@@ -162,7 +166,7 @@ std::map<int, GameObject*> Level::loadFromJSON(const std::string& filename, b2Wo
 
             std::mt19937 gen(rd());
 
-            std::uniform_int_distribution<> distr(1, 100);
+            std::uniform_int_distribution<> distr(1, 1000);
 
             // generate unique key
             int unique_key = distr(gen);
@@ -191,9 +195,33 @@ std::map<int, GameObject*> Level::loadFromJSON(const std::string& filename, b2Wo
                 player->applyCollisionBox();
               
                 gameObjects[unique_key] = player;
+                renderGameObjectsList.push_back(unique_key);
+              
+            } else if(type == "Npc") {
+                NPC* npc = new NPC(name, position, size, color, animations, world, type, sounds, dynam);
+              
+                // Deserialize custom collision box properties
+                if (objValue.HasMember("hasCustomCollisionBox")) {
+                    npc->hasCustomCollisionBox = objValue["hasCustomCollisionBox"].GetBool();
+                }
+                if (objValue.HasMember("collisionBoxShape")) {
+                    npc->collisionBoxShape = objValue["collisionBoxShape"].GetInt();
+                }
+                if (objValue.HasMember("collisionBoxWidth")) {
+                    npc->collisionBoxWidth = objValue["collisionBoxWidth"].GetFloat();
+                }
+                if (objValue.HasMember("collisionBoxHeight")) {
+                    npc->collisionBoxHeight = objValue["collisionBoxHeight"].GetFloat();
+                }
+                
+                // Apply the custom collision box if it exists
+                npc->applyCollisionBox();
+              
+                gameObjects[unique_key] = npc;
+                renderGameObjectsList.push_back(unique_key);
             } else {
               
-                GameObject* gameObject = new GameObject(name, position, size, color, animations, world, type, dynam);
+                GameObject* gameObject = new GameObject(name, position, size, color, animations, world, type, sounds, dynam);
               
                 // Deserialize custom collision box properties
                 if (objValue.HasMember("hasCustomCollisionBox")) {
@@ -213,10 +241,13 @@ std::map<int, GameObject*> Level::loadFromJSON(const std::string& filename, b2Wo
                 gameObject->applyCollisionBox();
               
                 gameObjects[unique_key] = gameObject;
+                renderGameObjectsList.push_back(unique_key);
+
             }
             
         }
     }
-
-    return gameObjects;
+    thePair.first = renderGameObjectsList;
+    thePair.second = gameObjects;
+    return thePair;
 }

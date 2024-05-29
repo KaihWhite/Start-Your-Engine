@@ -26,6 +26,7 @@ public:
 
 	// basic camera movement
 	void moveCamera(glm::vec2 direction, float dt);
+	void zoomCamera(float zoomFactor, float dt);
 	void moveCameraOffset(glm::vec2 directionPosition, float dt);
 	
 	// camera effects
@@ -35,5 +36,5 @@ public:
 
 
 	//    *    CLASS FUNCTIONS    (inactive)
-
+	
 };

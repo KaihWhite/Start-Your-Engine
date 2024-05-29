@@ -1,7 +1,9 @@
+#include "game.h"
 // Made by Kaih White
 #include "game.h"
 #include <unordered_map>
 #include "ContactListener.h"
+
 
 SoLoud::Soloud* Game::soundEngine = nullptr;
 
@@ -19,12 +21,14 @@ Game::~Game()
     delete this->renderer;
     delete this->world;
     delete this->cameraMan;
+    //SoundPlayer::deInit();
     Game::soundEngine->deinit();
     delete Game::soundEngine;
 }
 
 void Game::Init(unsigned int width, unsigned int height)
 {
+
     /* load shaders */
     ResourceManager::LoadShader("Start-Your-Engine/shaders/sprite.vs", "Start-Your-Engine/shaders/fragAnim.fs", nullptr, "anim");
 
@@ -40,6 +44,7 @@ void Game::Init(unsigned int width, unsigned int height)
     renderer = new Renderer(ResourceManager::GetShader("anim"));
 
     /* create sound engine */
+    //SoundPlayer::init();
     Game::soundEngine = new SoLoud::Soloud;
     Game::soundEngine->init(); // Initialize SoLoud engine
 
@@ -50,7 +55,7 @@ void Game::Init(unsigned int width, unsigned int height)
     ResourceManager::LoadTexture("Start-Your-Engine/textures/player jump 48x48.png", true, "jump");
     ResourceManager::LoadTexture("Start-Your-Engine/textures/awesomeface.png", true, "awesomeface");
 
-    /* create animations */
+    /* creating default animations */
     Animation* idle = new Animation("idle", 10);
     Animation* run = new Animation("run", 8);
     Animation* jump = new Animation("jump", 3);
@@ -76,6 +81,16 @@ void Game::Init(unsigned int width, unsigned int height)
     // Initialize and Set the Contact Listener
     ContactListener* contactListener = new ContactListener();
     world->SetContactListener(contactListener);
+    this->playerExists = false;
+
+    //initialize the vector
+    renderGameObjectsList = {};
+
+    // loading default sounds
+    ResourceManager::LoadSound("Start-Your-Engine/sounds/1.wav", "idle");
+    ResourceManager::LoadSound("Start-Your-Engine/sounds/1.wav", "run");
+    ResourceManager::LoadSound("Start-Your-Engine/sounds/1.wav", "jump");
+    ResourceManager::LoadSound("Start-Your-Engine/sounds/1.wav", "colide");
 }
 
 void Game::Update()
@@ -98,11 +113,13 @@ void Game::Update()
 
         this->player->updateCamera();
     }
+
     if (!gameObjects.empty())
     {
         for (auto& gameObject : gameObjects)
         {
             gameObject.second->update();
+
         }
 	}
 }
@@ -122,21 +139,28 @@ void Game::Render()
         /*
         Render every game object here
     */
-    for (auto& gameObject : gameObjects)
+   /* for (auto& gameObject : gameObjects)
     {
         gameObject.second->draw(*renderer);
+    }*/
+
+    for (int index = 0; index < this->renderGameObjectsList.size(); index++) {
+        this->gameObjects[this->renderGameObjectsList[index]]->draw(*renderer);
     }
     
 }
 
-void Game::initLevel(std::map<int, GameObject*> level)
+void Game::initLevel(std::pair<std::vector<int>, std::map<int, GameObject*>>level)
 {
     for (auto& gameObject : gameObjects)
     {
         delete gameObject.second;
     }
-	this->gameObjects = level;
-    for (auto& gameObject : level)
+    renderGameObjectsList.clear();
+    this->renderGameObjectsList = level.first;
+	this->gameObjects = level.second;
+
+    for (auto& gameObject : level.second)
     {
         if (gameObject.second->type == ObjectType::PLAYER)
         {
@@ -151,20 +175,46 @@ void Game::addGameObject(std::string name, ObjectType type, RigidBodyType rtype,
     GameObject* gameObject = new GameObject(name, pos, size, color, animations, this->world, type == ObjectType::OBJECT ? "Object" : "Npc", sounds, rtype);
     int key = Game::generateUniqueKey(this->gameObjects);
     // update the object name to a unique name so it can be queried by name
-    gameObject->name = "Object[" + std::to_string(key^1234) + "]";
+    gameObject->name = gameObject->getobjectTypeString(type) + "[" + std::to_string(key ^ 1234) + "]";
     this->gameObjects[key] = gameObject;
+    renderGameObjectsList.push_back(key);
+
 }
 
+void Game::addPlayerObject(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, std::string type, std::unordered_set<std::string> sounds, bool dynam)
+{
+    Player* player = new Player(pos, size, color, animations, this->world, this->cameraMan, type, sounds, dynam);
+    int unique_key = Game::generateUniqueKey(this->gameObjects);
+    gameObjects[unique_key] = player;
+    this->player = player;
+    renderGameObjectsList.push_back(unique_key);
+}
+void Game::addNPCObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, std::string type, std::unordered_set<std::string> sounds, bool dynam)
+{
+    int unique_key = Game::generateUniqueKey(this->gameObjects);
+    NPC* npc = new NPC(name, pos, size, color, animations, this->world, type, sounds, dynam);
+   
+    npc->name = type + "[" + std::to_string(unique_key ^ 1234) + "]";
+    gameObjects[unique_key] = npc;
+    renderGameObjectsList.push_back(unique_key);
+}
 void Game::removeGameObject(int key)
 {
     if (this->gameObjects[key]->type == ObjectType::PLAYER)
     {
 		this->player = nullptr;
+        this->playerExists = false;
+        
 	}
     //destroy the fixture in the heap before deleting the gameobject
     this->gameObjects[key]->destroyBodyFixture();
 	this->gameObjects[key]->~GameObject();
 	this->gameObjects.erase(key);
+    // deletes the value key of regarding th gameobject key in the renderGameObjectsList
+    auto it = std::find(renderGameObjectsList.begin(), renderGameObjectsList.end(), key); // Find the element
+    if (it != renderGameObjectsList.end()) { // Check if the element was found
+        renderGameObjectsList.erase(it); // Erase the element
+    }
 }
 
 void Game::removeAllGameObject()
@@ -180,6 +230,7 @@ void Game::removeAllGameObject()
         delete this->gameObjects[gameobject.first];
     }
     gameObjects.clear();
+    renderGameObjectsList.clear();
 }
 
 void Game::updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos)
@@ -221,7 +272,7 @@ int Game::generateUniqueKey(std::map<int, GameObject*> map)
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> distr(1, 100);
+	std::uniform_int_distribution<> distr(1, 1000);
     int unique_key = distr(gen);
     while (map.find(unique_key) != map.end()) {
 		unique_key = distr(gen);
@@ -230,5 +281,5 @@ int Game::generateUniqueKey(std::map<int, GameObject*> map)
 }
 
 void Game::playSound(std::string sound) {
-    Game::soundEngine->play(ResourceManager::GetSound(sound));
+    Game::soundEngine->play(*ResourceManager::GetSound(sound));
 }

@@ -113,6 +113,16 @@ void Camera2DSystem::moveCamera(glm::vec2 directionPosition, float dt) {
 	camera.updateProjectionViewMatrix();
 }
 
+void Camera2DSystem::zoomCamera(float zoomFactor, float dt)
+{
+	if (this->camera.zoomFactor>0) {
+		this->camera.zoomCamera(zoomFactor, dt);
+	}
+	else {
+		this->camera.zoomFactor = this->camera.getMaxZoomOutFactor();
+	}
+}
+
 /**
 *   This is the camrasystem function that moves the camera offset in a direction by
 *    updating camera offset with the given camera speed and delta time

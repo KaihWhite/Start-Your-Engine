@@ -5,8 +5,9 @@
 
 //#include "ContactListener.h"
 
-GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, std::unordered_set<std::string> sounds, bool dynam)
-	: name(name), color(color), animations(animations), size(size), rigidBodyType(dynam ? RigidBodyType::DYNAMIC : RigidBodyType::STATIC), type(type == "Player" ? ObjectType::PLAYER : type == "Object" ? ObjectType::OBJECT : ObjectType::NPC), sounds(sounds)
+
+GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, std::unordered_set<std::string>  sounds, bool dynam)
+	: name(name), color(color), animations(animations), size(size), rigidBodyType(dynam ? RigidBodyType::DYNAMIC : RigidBodyType::STATIC), type(type == "Player" ? ObjectType::PLAYER : type == "Object" ? ObjectType::OBJECT : ObjectType::NPCOBJECT), sounds(sounds)
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = dynam ? b2_dynamicBody : b2_staticBody;
@@ -27,6 +28,16 @@ GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &dynamicBox;
 	fixtureDef.density = 1.0f;
+
+	body->CreateFixture(&fixtureDef);
+
+	objectTypeInString = {
+	{PLAYER, "PLAYER"},
+	{OBJECT, "OBJECT"},
+	{NPCOBJECT, "NPC"}
+	};
+
+	this->currentSound = "idle";
 	body->CreateFixture(&fixtureDef);*/
 
 	// Apply default fixture if no custom collision box exists
@@ -52,6 +63,12 @@ GameObject::~GameObject()
 	//delete reinterpret_cast<BodyUserData*>(body->GetUserData().pointer);
 }
 
+std::string GameObject::getobjectTypeString(ObjectType type )
+{
+	return objectTypeInString.at(type);
+}
+
+
 
 void GameObject::addAnimation(std::string spriteSheet, int totalFrames)
 {	//set the the newly added animation as the current if the map is empty
@@ -64,6 +81,18 @@ void GameObject::addAnimation(std::string spriteSheet, int totalFrames)
 		animations.insert(std::make_pair(spriteSheet, new Animation(spriteSheet, totalFrames)));
 	}
 	
+}
+void GameObject::addAnimation(std::string key, std::string spriteSheet, int totalFrames)
+{	//set the the newly added animation as the current if the map is empty
+	if (this->animations.empty()) {
+		animations.insert(std::make_pair(key, new Animation(spriteSheet, totalFrames)));
+		this->setAsCurrentAnimation(spriteSheet);
+	}
+	else {
+		//other wise it just adds 
+		animations.insert(std::make_pair(key, new Animation(spriteSheet, totalFrames)));
+	}
+
 }
 
 void GameObject::deleteAnimation(const std::string spriteSheet)
@@ -139,19 +168,11 @@ Texture2D GameObject::getCurrentTexture2D()
 	return this->animations[currentAnimation]->getSpriteSheet();
 }
 
-void GameObject::renderBox(Renderer& renderer)
+
+void GameObject::move(bool direction)
 {
-	ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * glfwGetTime()) % animations[currentAnimation]->getTotalFrames());
-	renderer.RenderBox();
+
 }
-
-
-void GameObject::unRenderBox(Renderer& renderer)
-{
-	ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * glfwGetTime()) % animations[currentAnimation]->getTotalFrames());
-	renderer.unRenderBox();
-}
-
 void GameObject::update()
 {
 

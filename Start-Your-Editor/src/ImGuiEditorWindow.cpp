@@ -182,6 +182,12 @@ void ImGuiEditorWindow::objectSection()
 {
 	ImGui::Begin("Game Objects tab ");
 	if (engine.State == GAME_EDITOR) {
+		if (ImGui::Selectable("Camera", false)) {
+			// Handle selection logic here
+			selectObject = false;
+			selectCamera = true;
+			selectedObjectKey = NULL;
+		}
 		// Optional: Add a button to add a new object
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 1.0f, 1.0f)); // red color
 		if (ImGui::Button("Add Object")) {
@@ -193,36 +199,90 @@ void ImGuiEditorWindow::objectSection()
 			glm::vec3 color = glm::vec3(0.5, 0.5, 0.5);
 			glm::vec2 size = glm::vec2(5.0, 5.0);
 			glm::vec2 position = glm::vec2(0.0, 0.0);
-
-			std::unordered_set<std::string> sounds; // currently empty
-
+			std::unordered_set<std::string> sounds = {};
 			// This will only be able to handle static, non-player/npc objects
 			engine.addGameObject(name, ObjectType::OBJECT, RigidBodyType::STATIC, animations, sounds, color, size, position);
 
+
 		}
+		if (ImGui::Button("Add npc")) {
+			std::string name = "object";
+			std::unordered_map<std::string, Animation*> animations;
+			animations["idle"] = new Animation("awesomeface", 1);
+			glm::vec3 color = glm::vec3(0.5, 0.5, 0.5);
+			glm::vec2 size = glm::vec2(5.0, 5.0);
+			glm::vec2 position = glm::vec2(0.0, 0.0);
+			std::unordered_set<std::string> sounds = {};
+			// This will only be able to handle static, non-player/npc objects
+			engine.addNPCObject(name, position, size, color, animations,"Npc", sounds,true);
+
+
+		}
+		if (!engine.playerExists) {
+			if(ImGui::Button("Add player")) {
+
+				std::unordered_map<std::string, Animation*> animations;
+				animations["idle"] = new Animation("idle", 10);
+				animations["run"] = new Animation("run", 8);
+				animations["jump"] = new Animation("jump", 3);
+				glm::vec3 color = glm::vec3(0.5, 0.5, 0.5);
+				glm::vec2 size = glm::vec2(5.0, 5.0);
+				glm::vec2 position = glm::vec2(0.0, 0.0);
+				//default sound values
+				std::unordered_set<std::string> sounds = {"idle","run","jump"};
+				engine.addPlayerObject(position, size, color, animations, "Player", sounds, "Dynamic");
+				engine.player->currentAnimation = "idle";
+				engine.player->currentRunSound = "run";
+				engine.player->currentJumpSound = "jump";
+			}
+
+		}
+			
 		ImGui::PopStyleColor(1);
 		// Start a scrolling region
+		ImGui::TextWrapped("ObjectList:");
+		ImGui::Separator();
 		ImGui::BeginChild("ObjectList", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-		if (ImGui::Selectable("Camera", false)) {
-			// Handle selection logic here
-			selectObject = false;
-			selectCamera = true;
-			selectedObjectKey = NULL;
-		}
-		for (const auto& pair : engine.gameObjects) {
-			if (ImGui::Selectable(pair.second->name.c_str(), false)) {
+		bool draggingFromIndex = -1;
+		for (int n = 0; n < engine.renderGameObjectsList.size(); n++)
+		{
+
+			if (ImGui::Selectable(engine.gameObjects[engine.renderGameObjectsList[n]]->name.c_str())) {
 				// Handle selection logic here
 				selectCamera = false;
 				selectObject = true;
-				selectedObjectKey = pair.first;
+				selectedObjectKey = engine.renderGameObjectsList[n];
+			}
+			if (engine.gameObjects[engine.renderGameObjectsList[n]]->getobjectTypeString(engine.gameObjects[engine.renderGameObjectsList[n]]->type) == "PLAYER") {
+				engine.playerExists = true;
+			}
+			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceNoDisableHover | ImGuiDragDropFlags_SourceNoHoldToOpenOthers))
+			{
+				draggingFromIndex = n;
+				ImGui::SetDragDropPayload("orderGameObjects", &n, sizeof(int));
+				ImGui::EndDragDropSource();
+			}
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* ogo = ImGui::AcceptDragDropPayload("orderGameObjects"))
+				{
+					int fromIndex = *(const int*)ogo->Data;
+					int toIndex = n;
+
+					// Swap items
+					std::swap(engine.renderGameObjectsList[fromIndex], engine.renderGameObjectsList[toIndex]);
+				}
+				ImGui::EndDragDropTarget();
 			}
 		}
-
+		ImGui::Unindent();
+		ImGui::Separator();
 		std::ostringstream stream;
 		stream << "total objects: " << " ->" << engine.gameObjects.size();
 		std::string lengthText = stream.str();
 		ImGui::TextWrapped(lengthText.c_str());
-		// End the scrolling region
+		//End the scrolling region
 		ImGui::EndChild();
 	}
 	ImGui::End();
@@ -383,11 +443,22 @@ void ImGuiEditorWindow::attributeSection()
 					}
 					//  second tab
 					if (ImGui::BeginTabItem("Animation Subsection")) {
+						if (engine.gameObjects[selectedObjectKey]->type ==PLAYER) {
+							playerAnimationSubsectionOfAttributeSection();
+						}
+						else {
 						animationSubsectionOfAttributeSection();
+						}
+						
 						ImGui::EndTabItem(); 
 					}
-					if (ImGui::BeginTabItem(" stats Subsection")) {
-						ImGui::TextWrapped("this is the section for the object stats");
+					if (ImGui::BeginTabItem(" sound Subsection")) {
+						if (engine.gameObjects[selectedObjectKey]->type == PLAYER) {
+							playerSoundSubsectionOfAttributeSection();
+						}
+						else {
+							soundSubsectionOfAttributeSection();
+						}
 						ImGui::EndTabItem();
 					}
 					ImGui::PopStyleColor();
@@ -398,6 +469,7 @@ void ImGuiEditorWindow::attributeSection()
 	}
 	ImGui::End();
 }
+
 void ImGuiEditorWindow::sceneSection()
 {
 	ImGui::Begin("scene tab ");
@@ -425,6 +497,15 @@ void ImGuiEditorWindow::sceneSection()
 				// Calculate movement based on mouse delta
 				float deltaX = -io.MouseDelta.x / io.DeltaTime;
 				float deltaY = -io.MouseDelta.y / io.DeltaTime;
+
+				// zoom the camera
+				if (ImGui::GetIO().MouseWheel > 0) {
+					engine.cameraMan->zoomCamera(10, io.DeltaTime);
+				}
+				if (ImGui::GetIO().MouseWheel < 0) {
+					engine.cameraMan->zoomCamera(-10, io.DeltaTime);
+				}
+
 
 				// Update camera position 
 				engine.cameraMan->moveCamera(glm::vec2(deltaX, deltaY), io.DeltaTime);
@@ -585,8 +666,8 @@ void ImGuiEditorWindow::assetSection()
 			if (ImGui::Button("Load New Asset")) {
 				// open a file dialog to select a PNG file
 				IGFD::FileDialogConfig config;
-				config.path = "./Start-Your-Engine/textures";
-				ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".png,.jpg", config);
+				config.path = "./Start-Your-Engine/sounds";
+				ImGuiFileDialog::Instance()->OpenDialog("ChooseAssetDlgKey", "Choose Asset", ".wav", config);
 			}
 
 			// handle file selection
@@ -595,7 +676,9 @@ void ImGuiEditorWindow::assetSection()
 					std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
 					std::string fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
 					// load the selected asset using LoadTexture
-					ResourceManager::LoadTexture(filePathName.c_str(), true, fileName);
+
+					ResourceManager::LoadSound(filePathName.c_str(), fileName);
+					std::cout << fileName.c_str() << std::endl;
 					ImGui::Text("Loaded: %s", fileName.c_str());
 				}
 				ImGuiFileDialog::Instance()->Close();
@@ -606,12 +689,12 @@ void ImGuiEditorWindow::assetSection()
 			ImGui::Separator();
 			ImGui::BeginChild("AssetsScrolling", ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
 
-			for (auto it = ResourceManager::Textures.begin(); it != ResourceManager::Textures.end();) {
-				ImGui::PushID(it->second.ID); // use the texture ID to push the ID
-
+			for (auto it = ResourceManager::Sounds.begin(); it != ResourceManager::Sounds.end();) {
+				ImGui::PushID(it->first.c_str()); // use the texture ID to push the ID
+				
 				// display asset thumbnail
-				if (ImGui::ImageButton((void*)(intptr_t)it->second.ID, ImVec2(80, 80))) {
-					selectedAssetForPreview = it->first; // set the asset for preview
+				if (ImGui::Button(it->first.c_str(), ImVec2(80, 80))) {
+					Game::playSound(it->first.c_str()); // set the asset for preview
 				}
 				ImGui::PopID();
 
@@ -626,8 +709,7 @@ void ImGuiEditorWindow::assetSection()
 				}
 
 				if (remove_item) {
-					glDeleteTextures(1, &it->second.ID); // delete OpenGL texture
-					it = ResourceManager::Textures.erase(it); // remove from ResourceManager and safely increment the iterator
+					it = ResourceManager::Sounds.erase(it); // remove from ResourceManager and safely increment the iterator
 				}
 				else {
 					it++; // only increment the iterator if no item was removed
@@ -636,12 +718,6 @@ void ImGuiEditorWindow::assetSection()
 				ImGui::SameLine(); // display assets in the same line (horizontally)
 			}
 			ImGui::EndChild();
-
-			// asset preview
-			if (!selectedAssetForPreview.empty()) {
-				showAssetPreviewWindow();
-			}
-
 
 			ImGui::EndTabItem(); // End of Tab 2
 		}
@@ -841,6 +917,253 @@ void ImGuiEditorWindow::animationSubsectionOfAttributeSection()
 	}
 }
 
+void ImGuiEditorWindow::playerAnimationSubsectionOfAttributeSection()
+{
+
+	if (ImGui::TreeNode("change player idle animation:")) {
+		ImGui::Separator();
+		selectCurrentAnimation("idle");
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("change player run animation:")) {
+		ImGui::Separator();
+		selectCurrentAnimation("run");
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("change player jump animation:")) {
+		ImGui::Separator();
+		selectCurrentAnimation("jump");
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Add animation:")) {
+		ImGui::Separator();
+		addNewAnimation();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("delete animation:")) {
+		ImGui::Separator();
+		deleteExistingAnimation();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+}
+
+void ImGuiEditorWindow::playerSoundSubsectionOfAttributeSection() {
+	if (ImGui::TreeNode("change current idle sound:")) {
+		ImGui::Separator();
+		selectCurrentSound("idle");
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("change current jump sound:")) {
+		ImGui::Separator();
+		selectCurrentSound("jump");
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("change current run sound:")) {
+		ImGui::Separator();
+		selectCurrentSound("run");
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Add sound:")) {
+		ImGui::Separator();
+		addNewSound();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("delete sound:")) {
+		ImGui::Separator();
+		deleteExistingSound();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+}
+
+void ImGuiEditorWindow::soundSubsectionOfAttributeSection()
+{
+	if (ImGui::TreeNode("current sound:")) {
+		ImGui::Separator();
+		if (engine.gameObjects[selectedObjectKey]->sounds.empty()) {
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
+			ImGui::TextWrapped("it has no animations in the list. Please add an animation to choose.");
+			ImGui::PopStyleColor();
+
+		}
+		else {
+			ImGui::TextWrapped("current animation preview:");
+			ImGui::Indent();
+			
+			if (ImGui::Button(engine.gameObjects[selectedObjectKey]->currentSound.c_str(), ImVec2(80, 80))) {
+				Game::playSound(engine.gameObjects[selectedObjectKey]->currentSound.c_str()); // set the asset for preview
+			}
+			ImGui::Unindent();
+			ImGui::Separator();
+		}ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("change current sound:")) {
+		ImGui::Separator();
+		selectCurrentSound();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Add sound:")) {
+		ImGui::Separator();
+		addNewSound();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("delete sound:")) {
+		ImGui::Separator();
+		deleteExistingSound();
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+}
+void ImGuiEditorWindow::addNewSound() {
+	ImGui::TextWrapped("list of asset sound: ");
+	if (ImGui::BeginCombo("select", nullptr)) {
+		for (auto it = ResourceManager::Sounds.begin(); it != ResourceManager::Sounds.end();) {
+			ImGui::PushID(it->first.c_str());
+			
+			// display asset thumbnail
+			if (ImGui::Button(it->first.c_str(), ImVec2(80, 80))) {
+				engine.gameObjects[selectedObjectKey]->sounds.insert(it->first.c_str());
+				Game::playSound(it->first.c_str()); // set the asset for preview
+			}
+			else {
+				it++; // only increment the iterator if no item was removed
+			}
+			ImGui::PopID();
+		}
+		ImGui::EndCombo();
+
+	}
+}
+void ImGuiEditorWindow::deleteExistingSound() {
+	ImGui::TextWrapped(" sound list : ");
+	if (engine.gameObjects[selectedObjectKey]->sounds.empty()) {
+		/* this disables the dropdown and displays an information
+				to the user that there is no animation to delete
+		*/
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
+		ImGui::TextWrapped("it has no sounds in the list. Please add a sound to choose.");
+		ImGui::PopStyleColor();
+	}
+	else
+		// this bring out the drop down menu
+		if (ImGui::BeginCombo("select", nullptr)) {
+			for (auto& it = engine.gameObjects[selectedObjectKey]->sounds.begin(); it != engine.gameObjects[selectedObjectKey]->sounds.end();) {
+				ImGui::PushID(it->c_str());
+
+				// display asset thumbnail
+				if (ImGui::Button(it->c_str(), ImVec2(80, 80))) {
+					//deletes the animation and gets out of the loop
+					if (engine.gameObjects[selectedObjectKey]->type == PLAYER) {
+						if (it->c_str()!= engine.player->currentRunSound && it->c_str() != engine.player->currentJumpSound
+							&& it->c_str() != engine.player->currentSound) {
+							engine.gameObjects[selectedObjectKey]->deleteAnimation(it->c_str());
+						}
+						else {
+							//do nothing
+						}
+					}
+					else {
+						engine.gameObjects[selectedObjectKey]->deleteAnimation(it->c_str());
+					}
+					ImGui::PopID();
+					break;
+
+				}
+				else {
+					it++; // only increment the iterator if no item was removed
+				}
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+
+		}
+}
+void ImGuiEditorWindow::selectCurrentSound() {
+	ImGui::TextWrapped(" sound list : ");
+	if (engine.gameObjects[selectedObjectKey]->sounds.empty()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
+		ImGui::TextWrapped("it has no sounds in the list. Please add an animation to choose.");
+		ImGui::PopStyleColor();
+
+	}
+	else
+		if (ImGui::BeginCombo("selectCurrent sound",nullptr))
+		{
+			// this is to tell the user to add animation to choose one
+
+			for (auto& it = engine.gameObjects[selectedObjectKey]->sounds.begin(); it != engine.gameObjects[selectedObjectKey]->sounds.end();) {
+				ImGui::PushID(it->c_str()); // use the texture ID to push the ID
+
+				// display asset thumbnail
+				if (ImGui::Button(it->c_str(), ImVec2(80, 80))) {
+
+					engine.gameObjects[selectedObjectKey]->currentSound = it->c_str();
+				}
+				else {
+					it++; // only increment the iterator if no item was removed
+				}
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+
+		}
+
+
+}
+void ImGuiEditorWindow::selectCurrentSound(std::string soundName) {
+	ImGui::TextWrapped(" sound list : ");
+	if (engine.gameObjects[selectedObjectKey]->sounds.empty()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
+		ImGui::TextWrapped("it has no animations in the list. Please add an animation to choose.");
+		ImGui::PopStyleColor();
+
+	}
+	else if (ImGui::BeginCombo("selectCurrent Sound", nullptr))
+	{
+		// this is to tell the user to add animation to choose one
+
+		for (auto& it = engine.gameObjects[selectedObjectKey]->sounds.begin(); it != engine.gameObjects[selectedObjectKey]->sounds.end();) {
+			ImGui::PushID(it->c_str()); // use the texture ID to push the ID
+
+			// display asset thumbnail
+				if (ImGui::Button(it->c_str(), ImVec2(80, 80))) {
+					if (soundName == "run") {
+						engine.player->currentRunSound = it->c_str();
+					}
+					else if (soundName == "jump") {
+						engine.player->currentJumpSound = it->c_str();
+					}
+					else if (soundName == "colide") {
+						engine.player->currentColideSound = it->c_str();
+					}
+					else{
+						engine.player->currentSound = it->c_str();
+					}
+					ImGui::PopID();
+					break;
+				}
+				else {
+					it++; // only increment the iterator if no item was removed
+				}
+			ImGui::PopID();
+		}
+		ImGui::EndCombo();
+
+	}
+}
+
+
 void ImGuiEditorWindow::addNewAnimation()
 {
 	// set the default frames of value 1
@@ -859,10 +1182,10 @@ void ImGuiEditorWindow::addNewAnimation()
 
 			// display asset thumbnail
 			if (ImGui::ImageButton((void*)(intptr_t)it->second.ID, ImVec2(80, 80))) {
-
-				engine.gameObjects[selectedObjectKey]->addAnimation(it->first, frames);
-				ImGui::PopID();
-				break;
+				if (it->first == "jump"|| it->first == "run" || it->first == "idle") {
+					engine.gameObjects[selectedObjectKey]->addAnimation(it->first+it->first, it->first, frames);
+				}else
+					engine.gameObjects[selectedObjectKey]->addAnimation(it->first, frames);
 			}
 			else {
 				it++; // only increment the iterator if no item was removed
@@ -895,7 +1218,17 @@ void ImGuiEditorWindow::deleteExistingAnimation()
 				// display asset thumbnail
 				if (ImGui::ImageButton((void*)(intptr_t)it->second->getSpriteSheet().ID, ImVec2(80, 80))) {
 					//deletes the animation and gets out of the loop
-					engine.gameObjects[selectedObjectKey]->deleteAnimation(it->first);
+					if (engine.gameObjects[selectedObjectKey]->type == PLAYER) {
+						if (it->first != "run" && it->first != "jump" && it->first != "idle") {
+							engine.gameObjects[selectedObjectKey]->deleteAnimation(it->first);
+						}
+						else {
+							//do nothing
+						}
+					}
+					else {
+						engine.gameObjects[selectedObjectKey]->deleteAnimation(it->first);
+					}
 					ImGui::PopID();
 					break;
 
@@ -943,4 +1276,42 @@ void ImGuiEditorWindow::selectCurrentAnimation()
 		}
 
 
+}
+
+void ImGuiEditorWindow::selectCurrentAnimation(std::string animName)
+{
+
+	ImGui::TextWrapped(" animations list : ");
+	if (engine.gameObjects[selectedObjectKey]->animations.empty()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f)); // Green color
+		ImGui::TextWrapped("it has no animations in the list. Please add an animation to choose.");
+		ImGui::PopStyleColor();
+
+	}
+	else
+		if (ImGui::BeginCombo("selectCurrent Animation",
+			engine.gameObjects[selectedObjectKey]->animations[animName]->getSpriteSheetName().c_str()))
+		{
+			// this is to tell the user to add animation to choose one
+
+			for (auto& it = engine.gameObjects[selectedObjectKey]->animations.begin(); it != engine.gameObjects[selectedObjectKey]->animations.end();) {
+				ImGui::PushID(it->second->getSpriteSheetName().c_str()); // use the texture ID to push the ID
+
+				// display asset thumbnail
+				if (ImGui::ImageButton((void*)(intptr_t)it->second->getSpriteSheet().ID, ImVec2(80, 80))) {
+					Animation* temp = engine.gameObjects[selectedObjectKey]->animations[animName];
+					engine.gameObjects[selectedObjectKey]->animations[animName] = new Animation(it->second->getSpriteSheetName(), it->second->getTotalFrames());
+					delete temp;
+					engine.gameObjects[selectedObjectKey]->deleteAnimation(it->first);
+					ImGui::PopID();
+					break;
+				}
+				else {
+					it++; // only increment the iterator if no item was removed
+				}
+				ImGui::PopID();
+			}
+			ImGui::EndCombo();
+
+		}
 }

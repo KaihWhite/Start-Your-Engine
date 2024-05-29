@@ -1,7 +1,9 @@
 #pragma once
 
 /*
-  by kunga ngochetsang
+  made by kunga ngochetsang
+  inspired by the cherno 
+  contribution by Guan
 */
 
 #include <iostream>
@@ -69,9 +71,17 @@ private:
 	void objectDataSubsectionOfAttributeSection();
 	void physicsSubsectionOfAttributeSection();
 	void animationSubsectionOfAttributeSection();
-
+	void playerAnimationSubsectionOfAttributeSection();
+	void soundSubsectionOfAttributeSection();
+	void playerSoundSubsectionOfAttributeSection();
 	//helper methods for animationSubsectionOfAttributeSection
 	void addNewAnimation();
 	void deleteExistingAnimation();
 	void selectCurrentAnimation();
+	void selectCurrentAnimation(std::string animName);
+	//helper methods for the soundSubsectionOfAttributeSection
+	void addNewSound();
+	void deleteExistingSound();
+	void selectCurrentSound();
+	void selectCurrentSound(std::string soundName);
 };
