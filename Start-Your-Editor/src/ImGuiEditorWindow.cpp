@@ -799,11 +799,16 @@ void ImGuiEditorWindow::objectDataSubsectionOfAttributeSection()
 		//change size
 		ImGui::TextWrapped("Object Size: ");
 		ImGui::Indent();
+		
 		if (ImGui::InputFloat("Width", &engine.gameObjects.find(selectedObjectKey)->second->size.x, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
-			engine.gameObjects.find(selectedObjectKey)->second->resize();
+			if (engine.gameObjects.find(selectedObjectKey)->second->size.x > 0.01f) {
+				engine.gameObjects.find(selectedObjectKey)->second->resize();
+			}	
 		}
 		if (ImGui::InputFloat("Height", &engine.gameObjects.find(selectedObjectKey)->second->size.y, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
-			engine.gameObjects.find(selectedObjectKey)->second->resize();
+			if (engine.gameObjects.find(selectedObjectKey)->second->size.y > 0.01f) {
+				engine.gameObjects.find(selectedObjectKey)->second->resize();
+			}
 		}
 		ImGui::Unindent();
 		ImGui::Separator();
