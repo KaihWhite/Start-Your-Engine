@@ -2,6 +2,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#define WITH_WINMM
+
 #include "Player.h"
 #include "renderer.h"
 #include "resource_manager.h"
@@ -9,8 +11,12 @@
 #include "Animation.h"
 #include "box2d/box2d.h"
 
+#include "soloud.h"
+#include "soloud_wav.h"
+
 #include <vector>
 #include <random>
+#include <map>
 
 // Represents the current state of the game
 enum GameState {
@@ -34,10 +40,11 @@ public:
 
     Player                  *player;
     Renderer                *renderer;
+    static SoLoud::Soloud   *soundEngine;
     b2World                 *world;
     Camera2DSystem          *cameraMan;
    
-    std::unordered_map<int, GameObject*> gameObjects;
+    std::map<int, GameObject*> gameObjects;
 
     float timeStep = 1.0f / 60.0f;
     int32 velocityIterations = 8;
@@ -51,28 +58,30 @@ public:
     // initialize game state (load all shaders/textures/levels)
     void Init(unsigned int width, unsigned int height);
 
-    void initLevel(std::unordered_map<int, GameObject*> level);
+    void initLevel(std::map<int, GameObject*> level);
 
     Animation* loadAnimation(const char* file, bool alpha, std::string name, int numFrames);
 
     // adds the game object to the level
-    void addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+    void addGameObject(std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
     
     // removes the game object from the level
     void removeGameObject(int key);
 
     void removeAllGameObject();
     // updates a game object in the level
-    void updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+    void updateGameObject(int key, std::string name, ObjectType type, RigidBodyType rtype, std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 
     // Only allows for one player
-    void addPlayer(Camera2DSystem* cameraMan, std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+    void addPlayer(Camera2DSystem* cameraMan, std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 
-    void updatePlayer(std::unordered_map<std::string, Animation*> animations, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
+    void updatePlayer(std::unordered_map<std::string, Animation*> animations, std::unordered_set<std::string> sounds, glm::vec3 color, glm::vec2 size, glm::vec2 pos);
 
-    static int generateUniqueKey(std::unordered_map<int, GameObject*> map);
+    static int generateUniqueKey(std::map<int, GameObject*> map);
 
-    //void addAnimationToGameObject(string );
+    // plays a sound
+    static void playSound(std::string sound);
+
     // game loop
     void ProcessInput(float& dt);
     void Update();

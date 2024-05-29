@@ -1,11 +1,11 @@
 // Made by Kaih White
-// Edits added by Chonglin Guan
+// Controls edited by Chonglin Guan
 
 #include "Player.h"
 
 #include<iostream>
-Player::Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, Camera2DSystem* cameraMan, std::string type, bool dynam)
-	: GameObject("player", pos, size, color, animations, world, type, dynam), cameraMan(cameraMan), deltaTime(0.0f), previousTime(0.0f)
+Player::Player(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, Camera2DSystem* cameraMan, std::string type, std::unordered_set<std::string> sounds, bool dynam)
+	: GameObject("player", pos, size, color, animations, world, type, sounds, dynam), cameraMan(cameraMan), deltaTime(0.0f), previousTime(0.0f)
 {
     offset = glm::vec2(0.0f, 0.0f);
     onPlatform = false;

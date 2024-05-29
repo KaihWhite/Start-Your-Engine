@@ -17,7 +17,7 @@ private:
 
 public:
 	//constructor
-	Tile2DMap(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, bool dynam);
+	Tile2DMap(glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, std::unordered_set<std::string> sounds, bool dynam);
 	// tileMap functions
 };
 

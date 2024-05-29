@@ -1,4 +1,5 @@
 // Made by Kaih White
+
 #include "level.h"
 
 std::vector<std::string> split(const std::string& s, char delimiter) {
@@ -11,7 +12,7 @@ std::vector<std::string> split(const std::string& s, char delimiter) {
     return tokens;
 }
 
-void Level::saveToJSON(const std::string& filename, std::unordered_map<int, GameObject*> gameObjects) {
+void Level::saveToJSON(const std::string& filename, std::map<int, GameObject*> gameObjects) {
     rapidjson::Document doc;
     doc.SetObject();
     rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
@@ -60,6 +61,13 @@ void Level::saveToJSON(const std::string& filename, std::unordered_map<int, Game
 		}
         objValue.AddMember("animations", animations, allocator);
 
+        rapidjson::Value sounds(rapidjson::kArrayType);
+        for (const auto& sound : obj.second->sounds) {
+			rapidjson::Value soundValue;
+			soundValue.SetString(sound.c_str(), allocator);
+			sounds.PushBack(soundValue, allocator);
+        }
+
         rapidjson::Value colorValue(rapidjson::kObjectType);
         colorValue.AddMember("x", obj.second->color.x, allocator);
         colorValue.AddMember("y", obj.second->color.y, allocator);
@@ -105,8 +113,8 @@ void Level::saveToJSON(const std::string& filename, std::unordered_map<int, Game
 }
 
 
-std::unordered_map<int, GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
-    std::unordered_map<int, GameObject*> gameObjects;
+std::map<int, GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
+    std::map<int, GameObject*> gameObjects;
 
     std::string path = filename;
 
@@ -127,7 +135,7 @@ std::unordered_map<int, GameObject*> Level::loadFromJSON(const std::string& file
             glm::vec3 color = glm::vec3(objValue["color"]["x"].GetFloat(), objValue["color"]["y"].GetFloat(), objValue["color"]["z"].GetFloat());
 
             std::unordered_map<std::string, Animation*> animations;
-            for (const auto& anim : objValue["animations"].GetObject()) {
+            for (const auto& anim : objValue["animations"].GetObj()) {
 
                 const std::string name = anim.name.GetString();
                 std::vector<std::string> splitName = split(name, ',');
@@ -136,6 +144,11 @@ std::unordered_map<int, GameObject*> Level::loadFromJSON(const std::string& file
 
                 animations[splitName[1]] = new Animation(splitName[0], totalFrames);
             }
+
+            std::unordered_set<std::string> sounds;
+            for (const auto& sound : objValue["sounds"].GetArray()) {
+				sounds.insert(sound.GetString());
+			}
 
             std::string dynamCheck = "Dynamic";
             bool dynam = objValue["rigidBodyType"].GetString() == dynamCheck;
@@ -159,10 +172,29 @@ std::unordered_map<int, GameObject*> Level::loadFromJSON(const std::string& file
 			}
 
             if (type == "Player") {
-                Player* player = new Player(position, size, color, animations, world, cameraMan, type, dynam);
+                Player* player = new Player(position, size, color, animations, world, cameraMan, type, sounds, dynam);
+              
+                // Deserialize custom collision box properties
+                if (objValue.HasMember("hasCustomCollisionBox")) {
+                    player->hasCustomCollisionBox = objValue["hasCustomCollisionBox"].GetBool();
+                }
+                if (objValue.HasMember("collisionBoxShape")) {
+                    player->collisionBoxShape = objValue["collisionBoxShape"].GetInt();
+                }
+                if (objValue.HasMember("collisionBoxWidth")) {
+                    player->collisionBoxWidth = objValue["collisionBoxWidth"].GetFloat();
+                }
+                if (objValue.HasMember("collisionBoxHeight")) {
+                    player->collisionBoxHeight = objValue["collisionBoxHeight"].GetFloat();
+                }
+                // Apply the custom collision box if it exists
+                player->applyCollisionBox();
+              
                 gameObjects[unique_key] = player;
             } else {
+              
                 GameObject* gameObject = new GameObject(name, position, size, color, animations, world, type, dynam);
+              
                 // Deserialize custom collision box properties
                 if (objValue.HasMember("hasCustomCollisionBox")) {
                     gameObject->hasCustomCollisionBox = objValue["hasCustomCollisionBox"].GetBool();
@@ -176,8 +208,10 @@ std::unordered_map<int, GameObject*> Level::loadFromJSON(const std::string& file
                 if (objValue.HasMember("collisionBoxHeight")) {
                     gameObject->collisionBoxHeight = objValue["collisionBoxHeight"].GetFloat();
                 }
+              
                 // Apply the custom collision box if it exists
                 gameObject->applyCollisionBox();
+              
                 gameObjects[unique_key] = gameObject;
             }
             

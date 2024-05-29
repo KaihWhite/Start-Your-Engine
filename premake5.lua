@@ -12,6 +12,7 @@ workspace "Start-Your-Engine"
    IncludeDir["imgui"] = "Dependencies/imgui/include"
    IncludeDir["rapidjson"] = "Dependencies/rapidjson"
    IncludeDir["ImGuiFileDialog"] = "Dependencies/ImGuiFileDialog"
+   IncludeDir["soloud"] = "Dependencies/soloud/include"
 
 project "Start-Your-Editor"
    kind "ConsoleApp"
@@ -22,16 +23,29 @@ project "Start-Your-Editor"
    targetdir "bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
    objdir "bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
 
-   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c", "Dependencies/imgui/src/*.cpp", "Dependencies/ImGuiFileDialog/*.cpp","Dependencies/ImGuiFileDialog/*.h" }
+   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c",
+   "Dependencies/imgui/src/*.cpp", "Dependencies/ImGuiFileDialog/*.cpp",
+   "Dependencies/ImGuiFileDialog/*.h", "Dependencies/soloud/src/c_api/*.cpp",
+   "Dependencies/soloud/src/backend/winmm/*.cpp", "Dependencies/soloud/src/audiosource/wav/*.h",
+   "Dependencies/soloud/src/core/*.cpp", IncludeDir["soloud"], "Dependencies/soloud/src/audiosource/wav/*.c",
+   "Dependencies/soloud/src/audiosource/vic/*.cpp", "Dependencies/soloud/src/audiosource/wav/*.cpp",
+   "Dependencies/soloud/src/audiosource/monotone/*.cpp", "Dependencies/soloud/src/audiosource/openmpt/*.cpp",
+   "Dependencies/soloud/src/audiosource/speech/*.cpp", "Dependencies/soloud/src/audiosource/sfxr/*.cpp",
+   "Dependencies/soloud/src/audiosource/speech/*.cpp", "Dependencies/soloud/src/audiosource/speech/*.h",
+   "Dependencies/soloud/src/audiosource/tedsid/*.cpp", "Dependencies/soloud/src/audiosource/tedsid/*.h",
+   "Dependencies/soloud/src/audiosource/noise/*.cpp", "Dependencies/soloud/src/audiosource/vizsn/*.cpp",
+   "Dependencies/soloud/src/audiosource/openmpt/*.c"
+   }
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { IncludeDir["Glad"], IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["imgui"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"], IncludeDir["Start-Your-Engine"], IncludeDir["ImGuiFileDialog"] }
-      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] }
+      includedirs { IncludeDir["Glad"], IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["imgui"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"],
+      IncludeDir["Start-Your-Engine"], IncludeDir["ImGuiFileDialog"], IncludeDir["soloud"]}
+      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"],  "Dependencies/soloud/lib"}
       architecture "x64"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
-      links { "glfw3_mt", "opengl32", "box2d", "Start-Your-Engine" }
+      links { "glfw3_mt", "opengl32", "box2d", "Start-Your-Engine", "soloud"}
 
       
    -- MacOS specific settings
@@ -66,16 +80,30 @@ project "Start-Your-Engine"
    targetdir "bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
    objdir "bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}"
 
-   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c"}
+   files { "%{prj.name}/src/**.h", "%{prj.name}/src/**.cpp", "%{prj.name}/src/**.c",
+   "Dependencies/soloud/src/c_api/*.cpp", "Dependencies/soloud/src/backend/winmm/*.cpp",
+   "Dependencies/soloud/src/audiosource/wav/*.c", "Dependencies/soloud/src/audiosource/wav/*.h", 
+   "Dependencies/soloud/src/audiosource/wav/*.cpp", "Dependencies/soloud/src/core/*.cpp",
+   IncludeDir["soloud"], "Dependencies/soloud/src/audiosource/vic/*.cpp",
+   "Dependencies/soloud/src/backend/*.cpp", "Dependencies/soloud/src/filter/*.cpp",
+   "Dependencies/soloud/src/audiosource/monotone/*.cpp", "Dependencies/soloud/src/audiosource/openmpt/*.cpp",
+   "Dependencies/soloud/src/audiosource/speech/*.cpp", "Dependencies/soloud/src/audiosource/sfxr/*.cpp",
+   "Dependencies/soloud/src/audiosource/speech/*.cpp", "Dependencies/soloud/src/audiosource/speech/*.h",
+   "Dependencies/soloud/src/audiosource/tedsid/*.cpp", "Dependencies/soloud/src/audiosource/tedsid/*.h",
+   "Dependencies/soloud/src/audiosource/noise/*.cpp", "Dependencies/soloud/src/audiosource/vizsn/*.cpp",
+   "Dependencies/soloud/src/audiosource/openmpt/*.c"
+   }
 
    -- Windows specific settings
    filter "system:windows"
-      includedirs { IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"], IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"], IncludeDir["ImGuiFileDialog"] }
-      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"] }
+      includedirs { IncludeDir["GLFW"] .. "/Windows/include", IncludeDir["Glad"],
+      IncludeDir["glm"], IncludeDir["box2d"], IncludeDir["rapidjson"],
+      IncludeDir["ImGuiFileDialog"], IncludeDir["soloud"]}
+      libdirs { IncludeDir["GLFW"] .. "/Windows/lib-vc2022", IncludeDir["box2d"], "Dependencies/soloud/lib" }
       architecture "x64"
       systemversion "latest"
       defines { "PLATFORM_WINDOWS" }
-      links { "glfw3_mt", "opengl32", "box2d" }
+      links { "glfw3_mt", "opengl32", "box2d", "soloud"}
 
    -- MacOS specific settings
    -- filter "system:macosx"
