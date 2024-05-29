@@ -17,6 +17,8 @@
 #include "ImGuiFileDialog.h"
 #include "Framebuffer.h"
 #include "level.h"
+#include <filesystem>
+#include <fstream>
 
 class ImGuiEditorWindow
 {
@@ -48,12 +50,12 @@ public:
 	void onRender();
 	void endRender();
 	void destroyWindow();
-	
+
 	// Collision box
 	bool showCollisionBoxControls;
-	float collisionBoxWidth;
-	float collisionBoxHeight;
-	int collisionBoxShape; // 0 = Rectangle, 1 = Circle, 2 = Triangle
+	float collisionBoxWidth = 0.0f;
+	float collisionBoxHeight = 0.0f;
+	int collisionBoxShape = 0; // 0 = Rectangle, 1 = Circle, 2 = Triangle
 	void collisionBoxControls(GameObject* gameObject);
 private:
 	// content funtions for on render
@@ -64,7 +66,7 @@ private:
 	void assetSection();
 
 	// helper methods for assetSection
-	void showAssetPreviewWindow(); 
+	void showAssetPreviewWindow();
 	// helper methods attributeSection
 	void objectDataSubsectionOfAttributeSection();
 	void physicsSubsectionOfAttributeSection();
