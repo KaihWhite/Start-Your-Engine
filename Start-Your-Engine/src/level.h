@@ -1,4 +1,5 @@
 // Made by Kaih White
+//contributed by kunga
 #pragma once
 
 #include "document.h"
@@ -22,7 +23,7 @@ class Level {
 public:
 
     static void saveToJSON(const std::string& filename, std::map<int, GameObject*> gameObjects);
-    static std::map<int, GameObject*> loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan);
+    static std::pair < std::vector<int>, std::map<int, GameObject*>> loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan);
 
 private:
     Level() { };

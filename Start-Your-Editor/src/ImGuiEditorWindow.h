@@ -1,7 +1,9 @@
 #pragma once
 
 /*
-  by kunga ngochetsang
+  made by kunga ngochetsang
+  inspired by the cherno 
+  contribution by Guan
 */
 
 #include <iostream>

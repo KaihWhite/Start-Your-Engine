@@ -1,4 +1,5 @@
 // Made by Kaih White
+//contributed by kunga
 #ifndef GAME_H
 #define GAME_H
 
@@ -44,7 +45,7 @@ public:
     Camera2DSystem          *cameraMan;
     bool                    playerExists;
     std::map<int, GameObject*> gameObjects;
-
+    std::vector< int> renderGameObjectsList;
     float timeStep = 1.0f / 60.0f;
     int32 velocityIterations = 8;
     int32 positionIterations = 3;
@@ -57,7 +58,7 @@ public:
     // initialize game state (load all shaders/textures/levels)
     void Init(unsigned int width, unsigned int height);
 
-    void initLevel(std::map<int, GameObject*> level);
+    void initLevel(std::pair<std::vector<int>, std::map<int, GameObject*>>level);
 
     Animation* loadAnimation(const char* file, bool alpha, std::string name, int numFrames);
 

@@ -1,4 +1,5 @@
 // Made by Kaih White
+//contributed by kunga
 #pragma once
 #include "glm/glm.hpp"
 #include "renderer.h"

@@ -107,7 +107,9 @@ void Level::saveToJSON(const std::string& filename, std::map<int, GameObject*> g
 }
 
 
-std::map<int, GameObject*> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
+std::pair<std::vector<int>,std::map<int, GameObject*>> Level::loadFromJSON(const std::string& filename, b2World* world, Camera2DSystem* cameraMan) {
+    std::pair < std::vector<int>, std::map<int, GameObject*>> thePair;
+    std::vector <int> renderGameObjectsList;
     std::map<int, GameObject*> gameObjects;
 
     std::string path = filename;
@@ -156,7 +158,7 @@ std::map<int, GameObject*> Level::loadFromJSON(const std::string& filename, b2Wo
 
             std::mt19937 gen(rd());
 
-            std::uniform_int_distribution<> distr(1, 100);
+            std::uniform_int_distribution<> distr(1, 1000);
 
             // generate unique key
             int unique_key = distr(gen);
@@ -168,13 +170,16 @@ std::map<int, GameObject*> Level::loadFromJSON(const std::string& filename, b2Wo
             if (type == "Player") {
                 Player* player = new Player(position, size, color, animations, world, cameraMan, type, sounds, dynam);
                 gameObjects[unique_key] = player;
+                renderGameObjectsList.push_back(unique_key);
             } else {
                 GameObject* gameObject = new GameObject(name, position, size, color, animations, world, type, sounds, dynam);
                 gameObjects[unique_key] = gameObject;
+                renderGameObjectsList.push_back(unique_key);
             }
             
         }
     }
-
-    return gameObjects;
+    thePair.first = renderGameObjectsList;
+    thePair.second = gameObjects;
+    return thePair;
 }

@@ -182,6 +182,12 @@ void ImGuiEditorWindow::objectSection()
 {
 	ImGui::Begin("Game Objects tab ");
 	if (engine.State == GAME_EDITOR) {
+		if (ImGui::Selectable("Camera", false)) {
+			// Handle selection logic here
+			selectObject = false;
+			selectCamera = true;
+			selectedObjectKey = NULL;
+		}
 		// Optional: Add a button to add a new object
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 1.0f, 1.0f)); // red color
 		if (ImGui::Button("Add Object")) {
@@ -232,30 +238,49 @@ void ImGuiEditorWindow::objectSection()
 			
 		ImGui::PopStyleColor(1);
 		// Start a scrolling region
+		ImGui::TextWrapped("ObjectList:");
+		ImGui::Separator();
 		ImGui::BeginChild("ObjectList", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-		if (ImGui::Selectable("Camera", false)) {
-			// Handle selection logic here
-			selectObject = false;
-			selectCamera = true;
-			selectedObjectKey = NULL;
-		}
-		for (const auto& pair : engine.gameObjects) {
-			if (ImGui::Selectable(pair.second->name.c_str(), false)) {
+		bool draggingFromIndex = -1;
+		for (int n = 0; n < engine.renderGameObjectsList.size(); n++)
+		{
+
+			if (ImGui::Selectable(engine.gameObjects[engine.renderGameObjectsList[n]]->name.c_str())) {
 				// Handle selection logic here
 				selectCamera = false;
 				selectObject = true;
-				selectedObjectKey = pair.first;
+				selectedObjectKey = engine.renderGameObjectsList[n];
 			}
-			if (pair.second->getobjectTypeString(pair.second->type) == "PLAYER") {
+			if (engine.gameObjects[engine.renderGameObjectsList[n]]->getobjectTypeString(engine.gameObjects[engine.renderGameObjectsList[n]]->type) == "PLAYER") {
 				engine.playerExists = true;
 			}
-		}
+			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceNoDisableHover | ImGuiDragDropFlags_SourceNoHoldToOpenOthers))
+			{
+				draggingFromIndex = n;
+				ImGui::SetDragDropPayload("orderGameObjects", &n, sizeof(int));
+				ImGui::EndDragDropSource();
+			}
 
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* ogo = ImGui::AcceptDragDropPayload("orderGameObjects"))
+				{
+					int fromIndex = *(const int*)ogo->Data;
+					int toIndex = n;
+
+					// Swap items
+					std::swap(engine.renderGameObjectsList[fromIndex], engine.renderGameObjectsList[toIndex]);
+				}
+				ImGui::EndDragDropTarget();
+			}
+		}
+		ImGui::Unindent();
+		ImGui::Separator();
 		std::ostringstream stream;
 		stream << "total objects: " << " ->" << engine.gameObjects.size();
 		std::string lengthText = stream.str();
 		ImGui::TextWrapped(lengthText.c_str());
-		// End the scrolling region
+		//End the scrolling region
 		ImGui::EndChild();
 	}
 	ImGui::End();
