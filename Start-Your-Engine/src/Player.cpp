@@ -34,7 +34,7 @@ void Player::move(bool Keys[1024], float timeStep) {
         if (isJumping) {
             jumpPressDuration += timeStep;
             if (jumpPressDuration < maxJumpTime) {
-                jumpImpulse = -4.0f;
+                jumpImpulse = -5.0f;
                 currentAnimation = "jump";
             }
             else {
@@ -55,7 +55,7 @@ void Player::move(bool Keys[1024], float timeStep) {
 
     }
     if (Keys[GLFW_KEY_D]) {
-        desiredVelocity = 2.0f; // Move right
+        desiredVelocity = 3.0f; // Move right
         currentAnimation = "run";
         //player->move(glm::vec2(-100.0f, 0.0f));
         //this->cameraMan->moveCameraOffset(glm::vec2(100.0f, 0.0f), deltaTime);
@@ -80,7 +80,7 @@ void Player::move(bool Keys[1024], float timeStep) {
     }
     if (Keys[GLFW_KEY_A]) {
 
-        desiredVelocity = -2.0f; // Move left
+        desiredVelocity = -3.0f; // Move left
         currentAnimation = "run";
         //player->move(glm::vec2(100.0f, 0.0f));
 
