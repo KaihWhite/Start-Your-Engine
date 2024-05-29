@@ -197,6 +197,7 @@ void ImGuiEditorWindow::objectSection()
 			// This will only be able to handle static, non-player/npc objects
 			engine.addGameObject(name, ObjectType::OBJECT, RigidBodyType::STATIC, animations, sounds, color, size, position);
 
+
 		}
 		if (ImGui::Button("Add npc")) {
 			std::string name = "object";

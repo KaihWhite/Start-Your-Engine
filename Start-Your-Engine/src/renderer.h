@@ -16,8 +16,6 @@ public:
 	~Renderer();
 
 	void RenderSprite(Texture2D& texture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color);
-	void RenderBox(); //float boxwidth, glm::vec3 boxcolor
-	void unRenderBox();
 
 private:
 	Shader shader;

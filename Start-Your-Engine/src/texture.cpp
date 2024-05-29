@@ -21,9 +21,6 @@ void Texture2D::Generate(unsigned int width, unsigned int height, unsigned char*
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, this->ID);
    
-    float borderColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
 
     // set Texture wrap and filter modes
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, this->Wrap_S);

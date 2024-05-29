@@ -140,19 +140,6 @@ Texture2D GameObject::getCurrentTexture2D()
 	return this->animations[currentAnimation]->getSpriteSheet();
 }
 
-void GameObject::renderBox(Renderer& renderer)
-{
-	ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * glfwGetTime()) % animations[currentAnimation]->getTotalFrames());
-	renderer.RenderBox();
-}
-
-
-void GameObject::unRenderBox(Renderer& renderer)
-{
-	ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * glfwGetTime()) % animations[currentAnimation]->getTotalFrames());
-	renderer.unRenderBox();
-}
-
 
 void GameObject::move(bool direction)
 {
