@@ -44,6 +44,14 @@ public:
 	GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec3 color, std::unordered_map<std::string, Animation*> animations, b2World* world, std::string type, std::unordered_set<std::string> sounds, bool dynam = false);
 	~GameObject();
 
+	// Collision box properties
+	bool hasCustomCollisionBox = false;
+	int collisionBoxShape;
+	float collisionBoxWidth;
+	float collisionBoxHeight;
+
+	// Method to apply the collision box
+	void applyCollisionBox();
 	
 	void update();
 	void destroyBodyFixture();
