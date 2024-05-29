@@ -13,10 +13,10 @@ NPC::~NPC()
 // TODO: check if anythign is in the way, reverse direction if so, and then move
 void NPC::update()
 {
-	move();
+	move(true);
 }
 
-void NPC::move() 
+void NPC::move(bool direction)
 {
 	b2Vec2 velocity = this->body->GetLinearVelocity();
 	float desiredVelocity = direction ? 2.0f : -2.0f;

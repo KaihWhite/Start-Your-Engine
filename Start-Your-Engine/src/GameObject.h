@@ -46,7 +46,7 @@ public:
 	~GameObject();
 
 	std::string getobjectTypeString(ObjectType type);
-	void virtual move();
+	void  move();
 	void virtual update();
 	// Collision box properties
 	bool hasCustomCollisionBox = false;

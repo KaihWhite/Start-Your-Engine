@@ -36,7 +36,7 @@ void Player::move(bool Keys[1024], float timeStep) {
         if (isJumping) {
             jumpPressDuration += timeStep;
             if (jumpPressDuration < maxJumpTime) {
-                jumpImpulse = 5.0f;
+                jumpImpulse = -5.0f;
                 currentAnimation = "jump";
                 //Game::playSound(this->currentJumpSound);
                 

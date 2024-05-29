@@ -178,21 +178,6 @@ std::pair<std::vector<int>,std::map<int, GameObject*>> Level::loadFromJSON(const
             if (type == "Player") {
                 Player* player = new Player(position, size, color, animations, world, cameraMan, type, sounds, dynam);
               
-                // Deserialize custom collision box properties
-                if (objValue.HasMember("hasCustomCollisionBox")) {
-                    player->hasCustomCollisionBox = objValue["hasCustomCollisionBox"].GetBool();
-                }
-                if (objValue.HasMember("collisionBoxShape")) {
-                    player->collisionBoxShape = objValue["collisionBoxShape"].GetInt();
-                }
-                if (objValue.HasMember("collisionBoxWidth")) {
-                    player->collisionBoxWidth = objValue["collisionBoxWidth"].GetFloat();
-                }
-                if (objValue.HasMember("collisionBoxHeight")) {
-                    player->collisionBoxHeight = objValue["collisionBoxHeight"].GetFloat();
-                }
-                // Apply the custom collision box if it exists
-                player->applyCollisionBox();
               
                 gameObjects[unique_key] = player;
                 renderGameObjectsList.push_back(unique_key);
