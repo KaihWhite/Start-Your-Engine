@@ -252,6 +252,11 @@ void ImGuiEditorWindow::objectSection()
 				selectCamera = false;
 				selectObject = true;
 				selectedObjectKey = engine.renderGameObjectsList[n];
+				engine.gameObjects[selectedObjectKey]->color = glm::vec3(1.0f, 1.0f, 1.0f);
+			}
+			else if(engine.renderGameObjectsList[n]!= selectedObjectKey) {
+
+				engine.gameObjects[engine.renderGameObjectsList[n]]->color = glm::vec3(0.5f, 0.5f, 0.5f);
 			}
 			if (engine.gameObjects[engine.renderGameObjectsList[n]]->type == ObjectType::PLAYER) {
 				engine.playerExists = true;
