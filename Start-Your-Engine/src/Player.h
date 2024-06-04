@@ -6,6 +6,7 @@
 #include "glm/glm.hpp"
 #include "renderer.h"
 #include "Camera2DSystem.h"
+
 class Player : public GameObject
 {
 	Camera2DSystem          *cameraMan;

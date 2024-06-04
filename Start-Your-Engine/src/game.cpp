@@ -87,10 +87,9 @@ void Game::Init(unsigned int width, unsigned int height)
     renderGameObjectsList = {};
 
     // loading default sounds
-    ResourceManager::LoadSound("Start-Your-Engine/sounds/1.wav", "idle");
-    ResourceManager::LoadSound("Start-Your-Engine/sounds/1.wav", "run");
+   
     ResourceManager::LoadSound("Start-Your-Engine/sounds/1.wav", "jump");
-    ResourceManager::LoadSound("Start-Your-Engine/sounds/1.wav", "colide");
+    
 }
 
 void Game::Update()

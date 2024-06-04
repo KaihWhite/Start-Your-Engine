@@ -252,8 +252,13 @@ void ImGuiEditorWindow::objectSection()
 				selectCamera = false;
 				selectObject = true;
 				selectedObjectKey = engine.renderGameObjectsList[n];
+				engine.gameObjects[selectedObjectKey]->color = glm::vec3(1.0f, 1.0f, 1.0f);
 			}
-			if (engine.gameObjects[engine.renderGameObjectsList[n]]->getobjectTypeString(engine.gameObjects[engine.renderGameObjectsList[n]]->type) == "PLAYER") {
+			else if(engine.renderGameObjectsList[n]!= selectedObjectKey) {
+
+				engine.gameObjects[engine.renderGameObjectsList[n]]->color = glm::vec3(0.5f, 0.5f, 0.5f);
+			}
+			if (engine.gameObjects[engine.renderGameObjectsList[n]]->type == ObjectType::PLAYER) {
 				engine.playerExists = true;
 			}
 			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceNoDisableHover | ImGuiDragDropFlags_SourceNoHoldToOpenOthers))
@@ -817,11 +822,16 @@ void ImGuiEditorWindow::objectDataSubsectionOfAttributeSection()
 		//change size
 		ImGui::TextWrapped("Object Size: ");
 		ImGui::Indent();
+		
 		if (ImGui::InputFloat("Width", &engine.gameObjects.find(selectedObjectKey)->second->size.x, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
-			engine.gameObjects.find(selectedObjectKey)->second->resize();
+			if (engine.gameObjects.find(selectedObjectKey)->second->size.x > 0.01f) {
+				engine.gameObjects.find(selectedObjectKey)->second->resize();
+			}	
 		}
 		if (ImGui::InputFloat("Height", &engine.gameObjects.find(selectedObjectKey)->second->size.y, 0.1f, 1.0f, "%.2f", ImGuiInputTextFlags_EnterReturnsTrue)) {
-			engine.gameObjects.find(selectedObjectKey)->second->resize();
+			if (engine.gameObjects.find(selectedObjectKey)->second->size.y > 0.01f) {
+				engine.gameObjects.find(selectedObjectKey)->second->resize();
+			}
 		}
 		ImGui::Unindent();
 		ImGui::Separator();
