@@ -31,15 +31,15 @@ GameObject::GameObject(std::string name, glm::vec2 pos, glm::vec2 size, glm::vec
 
 	body->CreateFixture(&fixtureDef);
 
+	
+
+	this->currentSound = "idle";
+	body->CreateFixture(&fixtureDef);*/
 	objectTypeInString = {
 	{PLAYER, "PLAYER"},
 	{OBJECT, "OBJECT"},
 	{NPCOBJECT, "NPC"}
 	};
-
-	this->currentSound = "idle";
-	body->CreateFixture(&fixtureDef);*/
-
 	// Apply default fixture if no custom collision box exists
     if (!hasCustomCollisionBox) {
         b2PolygonShape dynamicBox;
