@@ -87,6 +87,7 @@ void ImGuiEditorWindow::toolBarSection()
 
 			if (ImGui::MenuItem("Exit rogram")) {
 				glfwSetWindowShouldClose(window, true);
+				
 			}
 			// More File menu items...
 			ImGui::EndMenu();
@@ -103,8 +104,13 @@ void ImGuiEditorWindow::toolBarSection()
 					ImGui::OpenPopup("NoLevelLoaded");
 				}
 				else {
-					engine.State = GAME_ACTIVE;  // Proceed to play the level
-					engine.gameObjects[selectedObjectKey]->color = glm::vec3(0.5f, 0.5f, 0.5f);
+					engine.State = GAME_ACTIVE; 
+					// unselect the selected object when going in play mode 
+					if (selectedObjectKey!=NULL) {
+						engine.gameObjects[selectedObjectKey]->color = glm::vec3(0.5f, 0.5f, 0.5f);
+					}
+					selectedObjectKey = NULL;
+					
 				}
 			}
 			if (ImGui::MenuItem("load Level", "Ctrl+O")) {

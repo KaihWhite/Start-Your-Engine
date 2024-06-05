@@ -31,7 +31,7 @@ void Player::move(bool Keys[1024], float timeStep) {
         if (onPlatform && !isJumping) {
             isJumping = true;
             jumpPressDuration = 0.0f;
-           
+            Game::playSound("jump");
         }
         if (isJumping) {
            
@@ -39,8 +39,7 @@ void Player::move(bool Keys[1024], float timeStep) {
             if (jumpPressDuration < maxJumpTime) {
                 jumpImpulse = -5.0f;
                 currentAnimation = "jump";
-                Game::playSound("jump");
-                
+              
             }
             else {
                 isJumping = false; // End jump after max duration
