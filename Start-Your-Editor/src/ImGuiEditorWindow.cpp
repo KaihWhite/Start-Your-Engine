@@ -146,15 +146,7 @@ void ImGuiEditorWindow::toolBarSection()
 			// More File menu items...
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Insert")) {
-			// Add items to the Insert menu here
-			if (ImGui::MenuItem("Text", "?")) {
-			}
-			if (ImGui::MenuItem("Image", "?")) {
-			}
-			// More File menu items...
-			ImGui::EndMenu();
-		}
+		
 		// More toolbar items
 		ImGui::EndMainMenuBar();
 	}
