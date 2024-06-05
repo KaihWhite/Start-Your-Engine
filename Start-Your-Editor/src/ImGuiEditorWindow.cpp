@@ -95,6 +95,7 @@ void ImGuiEditorWindow::toolBarSection()
 		if (ImGui::BeginMenu("LEVEL")) {
 			if (ImGui::MenuItem("create Level")) {
 				engine.removeAllGameObject();
+				engine.playerExists = false;
 				engine.State = GAME_EDITOR;
 			}
 			// Add items to the Edit menu here
@@ -283,7 +284,7 @@ void ImGuiEditorWindow::objectSection()
 		ImGui::Unindent();
 		ImGui::Separator();
 		std::ostringstream stream;
-		stream << "total objects: " << " ->" << engine.gameObjects.size();
+		stream << "    total objects: " << " ->" << engine.gameObjects.size();
 		std::string lengthText = stream.str();
 		ImGui::TextWrapped(lengthText.c_str());
 		//End the scrolling region
@@ -416,7 +417,10 @@ void ImGuiEditorWindow::attributeSection()
 			ImGui::Button("delete game object");
 			if (ImGui::IsItemActive()) {
 				engine.removeGameObject(selectedObjectKey);
-
+				if (engine.gameObjects.find(selectedObjectKey)==engine.gameObjects.end()) {
+					selectedObjectKey = NULL;
+				}
+				
 			}
 			ImGui::PopStyleColor();
 			ImGui::Separator();
@@ -448,7 +452,7 @@ void ImGuiEditorWindow::attributeSection()
 					//  second tab
 					if (ImGui::BeginTabItem("Animation Subsection")) {
 						if (engine.gameObjects[selectedObjectKey]->type ==PLAYER) {
-							playerAnimationSubsectionOfAttributeSection();
+							//playerAnimationSubsectionOfAttributeSection();
 						}
 						else {
 						animationSubsectionOfAttributeSection();
@@ -1311,7 +1315,7 @@ void ImGuiEditorWindow::selectCurrentAnimation(std::string animName)
 					Animation* temp = engine.gameObjects[selectedObjectKey]->animations[animName];
 					engine.gameObjects[selectedObjectKey]->animations[animName] = new Animation(it->second->getSpriteSheetName(), it->second->getTotalFrames());
 					delete temp;
-					engine.gameObjects[selectedObjectKey]->deleteAnimation(it->first);
+					//engine.gameObjects[selectedObjectKey]->deleteAnimation(it->first);
 					ImGui::PopID();
 					break;
 				}

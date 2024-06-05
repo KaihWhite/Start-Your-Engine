@@ -97,7 +97,7 @@ void GameObject::addAnimation(std::string key, std::string spriteSheet, int tota
 
 void GameObject::deleteAnimation(const std::string spriteSheet)
 {	//check if its not empty
-	if (!animations.empty()) {
+	if (!animations.empty()) {	
 		for (const auto& pair : this->animations) {
 			//in case of more than one animations
 			if (pair.second->getSpriteSheetName() != spriteSheet) {
@@ -110,7 +110,7 @@ void GameObject::deleteAnimation(const std::string spriteSheet)
 			else {
 				delete animations[spriteSheet];
 				animations.erase(spriteSheet);
-				this->setAsCurrentAnimation("");
+				this->currentAnimation = "";
 				break;
 			}
 		}
@@ -122,7 +122,7 @@ void GameObject::setAsCurrentAnimation(const std::string spriteSheet)
 {
 	if (animations.find(spriteSheet) != animations.end()) {
 		this->currentAnimation = spriteSheet;
-		this->animations["idle"] = animations[spriteSheet]; // Update the "idle" animation
+		//this->animations["idle"] = animations[spriteSheet]; // this doesn't work as it adds another animatioin called idle
 	}
 }
 
@@ -153,12 +153,12 @@ void GameObject::draw(Renderer& renderer)
 		Check shaders/fragAnim.fs
 	*/
 	if (!this->animations.empty()) {
-
-		ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * glfwGetTime()) % animations[currentAnimation]->getTotalFrames());
-
-		Texture2D sprite = animations[currentAnimation]->getSpriteSheet();
-		//bool flip = dynamic_cast<Player*>(this) ? !dynamic_cast<Player*>(this)->facingRight : false;
-		renderer.RenderSprite(sprite, this->metersToPixels(this->getPosition()), this->metersToPixels(this->size), this->body->GetAngle(), this->color);
+		if (this->currentAnimation != "") {
+			ResourceManager::GetShader("anim").SetInteger("currentFrame", (int)(10 * glfwGetTime()) % animations[currentAnimation]->getTotalFrames());
+			Texture2D sprite = animations[currentAnimation]->getSpriteSheet();
+			//bool flip = dynamic_cast<Player*>(this) ? !dynamic_cast<Player*>(this)->facingRight : false;
+			renderer.RenderSprite(sprite, this->metersToPixels(this->getPosition()), this->metersToPixels(this->size), this->body->GetAngle(), this->color);
+		}
 	}
 	
 }

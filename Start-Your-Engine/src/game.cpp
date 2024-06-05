@@ -201,7 +201,7 @@ void Game::removeGameObject(int key)
 {
     if (this->gameObjects[key]->type == ObjectType::PLAYER)
     {
-		this->player = nullptr;
+        this->player = nullptr;
         this->playerExists = false;
         
 	}
