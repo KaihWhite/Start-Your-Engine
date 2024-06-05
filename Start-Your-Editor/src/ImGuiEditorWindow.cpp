@@ -104,6 +104,7 @@ void ImGuiEditorWindow::toolBarSection()
 				}
 				else {
 					engine.State = GAME_ACTIVE;  // Proceed to play the level
+					engine.gameObjects[selectedObjectKey]->color = glm::vec3(0.5f, 0.5f, 0.5f);
 				}
 			}
 			if (ImGui::MenuItem("load Level", "Ctrl+O")) {
