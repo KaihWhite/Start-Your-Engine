@@ -9,9 +9,10 @@
 
 
 ImGuiEditorWindow::ImGuiEditorWindow(GLFWwindow* wind, Game& engine, unsigned int width, unsigned  int height)
-	: window(wind), engine(engine), SCR_WIDTH(width), SCR_HEIGHT(height), context(ImGui::CreateContext()), io(ImGui::GetIO())
+	: window(wind), engine(engine), SCR_WIDTH(width), SCR_HEIGHT(height), context(ImGui::CreateContext()), io(ImGui::GetIO()),
+	themeColor(ImVec4(0.0f, 0.0f, 0.0f, 1.0f)), textColor(ImVec4(1.0f, 1.0f, 1.0f, 1.0f))
 {
-
+	
 	// this is for the interativity for the object selection and its attributes section
 	counter = 0;
 	selectCamera = false;
@@ -57,10 +58,15 @@ void ImGuiEditorWindow::startRender() {
 
 void ImGuiEditorWindow::onRender() {
 	toolBarSection();
+
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, this->themeColor);
+	
 	objectSection();
 	attributeSection();
 	sceneSection();
 	assetSection();
+
+	ImGui::PopStyleColor();
 }
 
 void ImGuiEditorWindow::endRender() {
@@ -147,7 +153,18 @@ void ImGuiEditorWindow::toolBarSection()
 			// More File menu items...
 			ImGui::EndMenu();
 		}
-		
+		if (ImGui::BeginMenu("THEME")) {
+			// this switches between dark and light theme
+			if (ImGui::MenuItem("DARK")) {
+				this->themeColor = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); //black color
+				this->textColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);	// white
+			}if (ImGui::MenuItem("LIGHT")) {
+				this->themeColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); //gray color
+				this->textColor = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);  //black color
+			}
+			// More File menu items...
+			ImGui::EndMenu();
+		}
 		// More toolbar items
 		ImGui::EndMainMenuBar();
 	}
@@ -181,6 +198,8 @@ void ImGuiEditorWindow::toolBarSection()
 void ImGuiEditorWindow::objectSection()
 {
 	ImGui::Begin("Game Objects tab ");
+	ImGui::PushStyleColor(ImGuiCol_Text, this->textColor);
+	
 	if (engine.State == GAME_EDITOR) {
 		if (ImGui::Selectable("Camera", false)) {
 			// Handle selection logic here
@@ -290,6 +309,8 @@ void ImGuiEditorWindow::objectSection()
 		//End the scrolling region
 		ImGui::EndChild();
 	}
+	
+	ImGui::PopStyleColor();
 	ImGui::End();
 }
 
@@ -377,6 +398,8 @@ void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
 void ImGuiEditorWindow::attributeSection()
 {
 	ImGui::Begin("Game Object attributes tab ");
+	ImGui::PushStyleColor(ImGuiCol_Text, this->textColor);
+	
 	if (engine.State == GAME_EDITOR) {
 		if (selectCamera == false && selectObject == false && engine.gameObjects.find(selectedObjectKey) != engine.gameObjects.end()) {
 
@@ -414,7 +437,7 @@ void ImGuiEditorWindow::attributeSection()
 		else if (selectCamera == false && selectObject == true && engine.gameObjects.find(selectedObjectKey) != engine.gameObjects.end()) {
 			ImGui::TextWrapped("in object setting");
 			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); // red color
-			ImGui::Button("delete game object");
+			ImGui::Button("DELETE GAME OBJECT");
 			if (ImGui::IsItemActive()) {
 				engine.removeGameObject(selectedObjectKey);
 				if (engine.gameObjects.find(selectedObjectKey)==engine.gameObjects.end()) {
@@ -475,6 +498,8 @@ void ImGuiEditorWindow::attributeSection()
 			}
 		}
 	}
+	
+	ImGui::PopStyleColor();
 	ImGui::End();
 }
 
@@ -567,7 +592,8 @@ void ImGuiEditorWindow::sceneSection()
 void ImGuiEditorWindow::assetSection()
 {
 	ImGui::Begin("Assets tab ");
-
+	ImGui::PushStyleColor(ImGuiCol_Text, this->textColor);
+	
 	if (ImGui::BeginTabBar("Assets tab")) {
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f)); // yellow color
 		// Add the first tab
@@ -732,6 +758,9 @@ void ImGuiEditorWindow::assetSection()
 		ImGui::PopStyleColor();
 		ImGui::EndTabBar(); // End of the tab bar
 	}
+
+	
+	ImGui::PopStyleColor();
 	ImGui::End();
 
 }
