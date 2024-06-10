@@ -58,6 +58,8 @@ void ImGuiEditorWindow::startRender() {
 }
 
 void ImGuiEditorWindow::onRender() {
+	
+	
 	toolBarSection();
 	ImGui::PushStyleColor(ImGuiCol_Tab, this->tabBGColor); // Example: gray color
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, this->themeColor);
@@ -68,6 +70,7 @@ void ImGuiEditorWindow::onRender() {
 	assetSection();
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
+
 }
 
 void ImGuiEditorWindow::endRender() {
@@ -523,8 +526,8 @@ void ImGuiEditorWindow::sceneSection()
 		// Render title screen
 			// frame buffer rendering section
 		frameBuffer.startBind();
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(this->themeColor.x , this->themeColor.y , this->themeColor.z, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		engine.Render();
 		// unbind the framebuffer that renders the scene
@@ -564,8 +567,8 @@ void ImGuiEditorWindow::sceneSection()
 	else if (engine.State == GameState::GAME_ACTIVE) {
 		// frame buffer rendering section
 		frameBuffer.startBind();
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(this->themeColor.x, this->themeColor.y, this->themeColor.z, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// game is rendered here and updated
 		engine.Update();
 		engine.Render();
@@ -582,8 +585,8 @@ void ImGuiEditorWindow::sceneSection()
 
 		// frame buffer rendering section
 		frameBuffer.startBind();
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(this->themeColor.x, this->themeColor.y, this->themeColor.z, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// render default scene
 
