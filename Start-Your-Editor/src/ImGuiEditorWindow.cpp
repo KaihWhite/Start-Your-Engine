@@ -10,7 +10,8 @@
 
 ImGuiEditorWindow::ImGuiEditorWindow(GLFWwindow* wind, Game& engine, unsigned int width, unsigned  int height)
 	: window(wind), engine(engine), SCR_WIDTH(width), SCR_HEIGHT(height), context(ImGui::CreateContext()), io(ImGui::GetIO()),
-	themeColor(ImVec4(0.0f, 0.0f, 0.0f, 1.0f)), textColor(ImVec4(1.0f, 1.0f, 1.0f, 1.0f))
+	themeColor(ImVec4(0.0f, 0.0f, 0.0f, 1.0f)), textColor(ImVec4(1.0f, 1.0f, 1.0f, 1.0f)),
+	highlightedTextColor(ImVec4(1.0f, 1.0f, 0.0f, 1.0f)), tabBGColor(0.7f, 0.7f, 1.0f, 1.0f)
 {
 	
 	// this is for the interativity for the object selection and its attributes section
@@ -58,14 +59,14 @@ void ImGuiEditorWindow::startRender() {
 
 void ImGuiEditorWindow::onRender() {
 	toolBarSection();
-
+	ImGui::PushStyleColor(ImGuiCol_Tab, this->tabBGColor); // Example: gray color
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, this->themeColor);
 	
 	objectSection();
 	attributeSection();
 	sceneSection();
 	assetSection();
-
+	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
 }
 
@@ -158,9 +159,12 @@ void ImGuiEditorWindow::toolBarSection()
 			if (ImGui::MenuItem("DARK")) {
 				this->themeColor = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); //black color
 				this->textColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);	// white
+				this->highlightedTextColor = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);// yellow color
 			}if (ImGui::MenuItem("LIGHT")) {
-				this->themeColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f); //gray color
+				this->themeColor = ImVec4(0.9f, 0.9f, 0.9f, 1.0f); //white color
 				this->textColor = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);  //black color
+				this->highlightedTextColor = ImVec4(0.0f, 0.0f, 1.0f, 1.0f); // blue color
+				//ImGui::ColorEdit4(ImGuiCol_Tab, "WHITE");
 			}
 			// More File menu items...
 			ImGui::EndMenu();
@@ -197,7 +201,9 @@ void ImGuiEditorWindow::toolBarSection()
 
 void ImGuiEditorWindow::objectSection()
 {
+	
 	ImGui::Begin("Game Objects tab ");
+	
 	ImGui::PushStyleColor(ImGuiCol_Text, this->textColor);
 	
 	if (engine.State == GAME_EDITOR) {
@@ -397,7 +403,9 @@ void ImGuiEditorWindow::collisionBoxControls(GameObject* gameObject) {
 
 void ImGuiEditorWindow::attributeSection()
 {
+	
 	ImGui::Begin("Game Object attributes tab ");
+	
 	ImGui::PushStyleColor(ImGuiCol_Text, this->textColor);
 	
 	if (engine.State == GAME_EDITOR) {
@@ -464,8 +472,9 @@ void ImGuiEditorWindow::attributeSection()
 				// tab bars for showing object  Subsection
 				
 				if (ImGui::BeginTabBar("object  Subsection")) {
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f)); // yellow color
+					ImGui::PushStyleColor(ImGuiCol_Text, this->highlightedTextColor); // yellow/blue color
 					//  first tab
+					
 					if (ImGui::BeginTabItem("Data Subsection")) {
 						objectDataSubsectionOfAttributeSection();
 						physicsSubsectionOfAttributeSection();
@@ -473,6 +482,7 @@ void ImGuiEditorWindow::attributeSection()
 						ImGui::EndTabItem();
 					}
 					//  second tab
+					
 					if (ImGui::BeginTabItem("Animation Subsection")) {
 						if (engine.gameObjects[selectedObjectKey]->type ==PLAYER) {
 							//playerAnimationSubsectionOfAttributeSection();
@@ -483,6 +493,7 @@ void ImGuiEditorWindow::attributeSection()
 						
 						ImGui::EndTabItem(); 
 					}
+					
 					if (ImGui::BeginTabItem(" sound Subsection")) {
 						if (engine.gameObjects[selectedObjectKey]->type == PLAYER) {
 							playerSoundSubsectionOfAttributeSection();
@@ -595,7 +606,7 @@ void ImGuiEditorWindow::assetSection()
 	ImGui::PushStyleColor(ImGuiCol_Text, this->textColor);
 	
 	if (ImGui::BeginTabBar("Assets tab")) {
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f)); // yellow color
+		ImGui::PushStyleColor(ImGuiCol_Text, this->highlightedTextColor); // yellow / blue color
 		// Add the first tab
 		if (ImGui::BeginTabItem("texture tab")) {
 			

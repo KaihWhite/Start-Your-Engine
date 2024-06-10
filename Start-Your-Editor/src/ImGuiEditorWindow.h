@@ -29,6 +29,8 @@ private:
 	ImGuiIO& io;
 	ImVec4 themeColor;
 	ImVec4 textColor;
+	ImVec4 highlightedTextColor;
+	ImVec4 tabBGColor;
 	unsigned int SCR_WIDTH;
 	unsigned int SCR_HEIGHT;
 	Game& engine;
