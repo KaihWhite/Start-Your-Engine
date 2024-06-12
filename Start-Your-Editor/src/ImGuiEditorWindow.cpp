@@ -934,19 +934,27 @@ void ImGuiEditorWindow::animationSubsectionOfAttributeSection()
 		}
 		else {
 			ImGui::TextWrapped("current animation Total Frames :");
-			static int frames = engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->getTotalFrames();
+			std::string currentAnimation = engine.gameObjects[selectedObjectKey]->getCurrentAnimation();
+			static int frames = 1;
+			if (currentAnimation != "") {
+				frames = engine.gameObjects[selectedObjectKey]->animations[currentAnimation]->getTotalFrames();
+			}
+			
 			ImGui::InputInt("total Frames ", &frames);
 			//if the user inputs negative number then it reset to its default value
 			if (frames < 1) {
 				frames = 1;
 			}
-			engine.gameObjects[selectedObjectKey]->animations[engine.gameObjects[selectedObjectKey]->getCurrentAnimation()]->setTotalFrames(frames);
-
+			if (currentAnimation != "") {
+				engine.gameObjects[selectedObjectKey]->animations[currentAnimation]->setTotalFrames(frames);
+			}
 			ImGui::Separator();
 			ImGui::TextWrapped("current animation preview:");
 			ImGui::Indent();
-			Texture2D& texture = engine.gameObjects.find(selectedObjectKey)->second->getCurrentTexture2D();
-			ImGui::Image((void*)(intptr_t)texture.ID, ImVec2(80, 80));
+			if (currentAnimation != "") {
+				Texture2D& texture = engine.gameObjects.find(selectedObjectKey)->second->getCurrentTexture2D();
+				ImGui::Image((void*)(intptr_t)texture.ID, ImVec2(80, 80));
+			}
 			ImGui::Unindent();
 			ImGui::Separator();
 		}
