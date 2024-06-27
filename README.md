@@ -1,5 +1,5 @@
 # Start-Your-Engine
-Capstone group project. We are creating a game engine from scratch using OpenGL.
+Capstone group project. We created a game engine from scratch using OpenGL and c++.
 
 ![Image](StartYourEngine_Screenshot.png)
 
@@ -40,3 +40,7 @@ box2d for 2D pyhsics library
 glm for openGL math library
 
 stb_image for image loading
+
+SoLoud for a sound library
+
+ImGui for creating a interactive level editor.
