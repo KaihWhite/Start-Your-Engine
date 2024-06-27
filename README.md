@@ -1,6 +1,8 @@
 # Start-Your-Engine
 Capstone group project. We are creating a game engine from scratch using OpenGL.
 
+![Image](StartYourEngine_Screenshot.png)
+
 To get started:
 
 
